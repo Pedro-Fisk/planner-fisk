@@ -207,7 +207,9 @@
       token: tokenSessao(), tipo: 'aluno',
       escola: cardLink.escola, professor: cardLink.prof, turma: cardLink.turma,
       aluno: cardLink.nome || pdf.aluno,
-      filename: pdf.filename, bytes: pdf.bytes
+      filename: pdf.filename, bytes: pdf.bytes,
+      /* aposenta o planner de nome antigo (underline) que possa estar na pasta */
+      substituiPrefixo: pdf.substituiPrefixo || '', substituiSufixo: pdf.substituiSufixo || ''
     }).then(mostrarVerPasta).catch(function () { /* o helper já avisou */ });
   }
 
