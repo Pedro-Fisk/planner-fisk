@@ -217,15 +217,29 @@
     sel.innerHTML = '<option value="" disabled selected>Escolha o aluno…</option>' +
       alunos.map(function (a, i) {
         return '<option value="' + i + '">' + String(a.nome).replace(/</g, '&lt;') + '</option>';
-      }).join('');
-    /* NÃO existe mais "sem vínculo (digitar à mão)". Aluno que não está no card
-       não existe: é problema de cadastro, e deixar gerar um planner solto
-       esconde o problema em vez de resolver. Quem não aparece na lista vira
-       recado para a secretaria (ver o aviso em index.html). */
+      }).join('') +
+      '<option value="__none__">o aluno não está na lista (preencher à mão)</option>';
+    /* A saída à mão CONTINUA existindo. Aluno fora do card quase sempre é
+       cadastro atrasado (transferência que a secretaria ainda não concluiu), e
+       travar o professor por isso põe o custo em quem não causou o problema: o
+       aluno está na sala, atrasado de verdade, e o documento é o que os pais
+       precisam receber. Então o "não está no card" é AVISO, não trava — para o
+       professor aqui, e para a secretaria no portal dela. */
     el('cardAlunoWrap').hidden = false;
     setStatus('Turma carregada, escolha o aluno.', 'ok');
 
     sel.onchange = function () {
+      if (sel.value === '__none__') {
+        cardLink = null; window.RAF_DO_CARD = ''; window.ultimoPDF = null;
+        esconderVerPasta(); syncDriveBtn();
+        /* sem isto o nascimento e o telefone do aluno anterior ficariam no
+           formulario e entrariam no planner do aluno seguinte */
+        ['studentBirth', 'studentPhone'].forEach(function (id) { var e = el(id); if (e) e.value = ''; });
+        var hint = el('cabecalhoHint'); if (hint) hint.textContent = '';
+        mostrarAvisoSemCard(dados);
+        return;
+      }
+      esconderAvisoSemCard();
       var a = alunos[+sel.value]; if (!a) return;
       cardLink = { escola: dados.escola, prof: dados.aba, turma: String(dados.turma || '').split('\n')[0],
                    nome: a.nome, book: a.book, raf: a.raf || '' };
@@ -239,9 +253,28 @@
     };
   }
 
-  /* O botão de calcular/gerar consulta isto: sem aluno do card não há planner.
-     Fica em window porque o script da página é separado deste arquivo. */
+  /* Quem precisa saber se há vínculo: o aviso da página e, mais tarde, o recado
+     para a secretaria. Fica em window porque o script da página é separado. */
   window.fiskAlunoDoCard = function () { return cardLink; };
+
+  /* Aviso de aluno fora do card: para o professor, aqui e agora. Não impede
+     nada — só deixa claro que o documento sai solto e que alguém precisa
+     arrumar o cadastro. */
+  function mostrarAvisoSemCard(dados) {
+    var box = el('avisoSemCard');
+    if (box) {
+      box.hidden = false;
+      window.SEM_CARD = { escola: (dados && dados.escola) || '', prof: (dados && dados.aba) || '',
+                          turma: dados ? String(dados.turma || '').split('\n')[0] : '' };
+    }
+    setStatus('⚠️ Aluno fora do card: o planner sai sem vínculo. Preencha o nome à mão e avise a secretaria.', 'err');
+    var nomeEl = el('studentName');
+    if (nomeEl) { nomeEl.value = ''; nomeEl.focus(); }
+  }
+  function esconderAvisoSemCard() {
+    var box = el('avisoSemCard'); if (box) box.hidden = true;
+    window.SEM_CARD = null;
+  }
 
   /* ---- salvar na pasta do aluno + ver pasta ---- */
   function syncDriveBtn() {
