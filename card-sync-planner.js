@@ -152,6 +152,64 @@
     };
   }
 
+  /* ---- cabeçalho do planner: nascimento, telefone e professor(a) ----
+     O PDF tem campo para os três (pedido dos professores). O professor(a) sai
+     do card na hora: é a aba da turma. Nascimento e telefone dependem de o
+     fn=turma devolver as colunas de dados pessoais do card (I–P); hoje o
+     getTurmaData de lá manda só nome/book/notas, entao estes campos chegam
+     vazios e o professor digita. No dia em que o card passar a mandá-los, isto
+     preenche sozinho — nada aqui precisa mudar. */
+  function primeiroNome(s) { return String(s || '').trim().split(/\s+/)[0] || ''; }
+
+  function nascimentoDoCard(a) {
+    var v = a.nascimento || a.dataNascimento || '';
+    /* Date serializado (ISO) e o unico formato que da para converter com
+       seguranca. A coluna do card se chama "MM/DD/AAAA", mas a auditoria da
+       secretaria mostra que na pratica ela tem os dois sentidos, entao string
+       ja formatada passa como esta — inventar a troca escreveria aniversario
+       errado no planner do aluno. */
+    if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v)) {
+      var p = v.slice(0, 10).split('-');
+      return p[2] + '/' + p[1] + '/' + p[0];
+    }
+    return String(v || '').trim();
+  }
+
+  /* Nem sempre o numero no card e do aluno: a maior parte da base e menor de
+     idade e quem esta ali e o responsavel. Quando o numero vem da coluna do
+     responsavel, o nome dele vai entre parenteses, para o professor saber com
+     quem esta falando antes de ligar. So o primeiro nome: o campo PHONE do PDF
+     tem ~70pt e o nome completo nao caberia nem na menor fonte. */
+  function telefoneDoCard(a) {
+    var doAluno = String(a.telAluno || a.telefone || '').trim();
+    if (doAluno) return doAluno;
+    var doResp = String(a.respTel || a.respWhats || '').trim();
+    if (!doResp) return '';
+    var nome = primeiroNome(a.respNome);
+    return nome ? doResp + ' (' + nome + ')' : doResp;
+  }
+
+  function setCampo(id, valor) {
+    var e = el(id);
+    if (!e || !valor) return false;
+    e.value = valor;
+    e.dispatchEvent(new Event('input'));
+    return true;
+  }
+
+  function preencherCabecalho(a, dados) {
+    var veio = [];
+    var falta = [];
+    if (setCampo('teacherName', dados.professor || dados.aba)) veio.push('professor(a)');
+    (setCampo('studentBirth', nascimentoDoCard(a)) ? veio : falta).push('nascimento');
+    (setCampo('studentPhone', telefoneDoCard(a)) ? veio : falta).push('telefone');
+    var hint = el('cabecalhoHint');
+    if (!hint) return;
+    hint.textContent = 'Do card: ' + veio.join(', ') + '.' +
+      (falta.length ? ' O card não mandou ' + falta.join(' nem ') + ', preencha à mão.' : '') +
+      ' Confira antes de gerar o PDF.';
+  }
+
   /* ---- turma carregada → escolher o aluno ---- */
   function onTurmaLoaded(dados) {
     var alunos = (dados.alunos || []).filter(function (a) { return a && a.nome; });
@@ -168,6 +226,10 @@
     sel.onchange = function () {
       if (sel.value === '__none__') {
         cardLink = null; window.RAF_DO_CARD = ''; syncDriveBtn();
+        /* sem isto o nascimento e o telefone do aluno anterior ficariam no
+           formulario e entrariam no planner do aluno seguinte */
+        ['studentBirth', 'studentPhone'].forEach(function (id) { var e = el(id); if (e) e.value = ''; });
+        var hint = el('cabecalhoHint'); if (hint) hint.textContent = '';
         setStatus('Sem vínculo com o card, digite o nome do aluno à mão.');
         return;
       }
@@ -178,6 +240,7 @@
       window.ultimoPDF = null; esconderVerPasta(); syncDriveBtn();
       var nomeEl = el('studentName');
       if (nomeEl) { nomeEl.value = a.nome; nomeEl.dispatchEvent(new Event('input')); }
+      preencherCabecalho(a, dados);
       setStatus('✓ ' + a.nome + (a.book ? ' · ' + a.book + ' (confira o planner escolhido)' : '') +
                 ', nome preenchido.', 'ok');
     };
