@@ -154,11 +154,10 @@
 
   /* ---- cabeçalho do planner: nascimento, telefone e professor(a) ----
      O PDF tem campo para os três (pedido dos professores). O professor(a) sai
-     do card na hora: é a aba da turma. Nascimento e telefone dependem de o
-     fn=turma devolver as colunas de dados pessoais do card (I–P); hoje o
-     getTurmaData de lá manda só nome/book/notas, entao estes campos chegam
-     vazios e o professor digita. No dia em que o card passar a mandá-los, isto
-     preenche sozinho — nada aqui precisa mudar. */
+     do card na hora: é a aba da turma. Nascimento e telefone vêm das colunas de
+     dados pessoais do card, que o getTurmaData passou a devolver na V22 da API
+     (03/08/2026). Card antigo ou bloco sem essas colunas manda vazio, e aí o
+     professor digita — nada quebra. */
   function primeiroNome(s) { return String(s || '').trim().split(/\s+/)[0] || ''; }
 
   function nascimentoDoCard(a) {
@@ -218,21 +217,15 @@
     sel.innerHTML = '<option value="" disabled selected>Escolha o aluno…</option>' +
       alunos.map(function (a, i) {
         return '<option value="' + i + '">' + String(a.nome).replace(/</g, '&lt;') + '</option>';
-      }).join('') +
-      '<option value="__none__">sem vínculo (digitar à mão), </option>';
+      }).join('');
+    /* NÃO existe mais "sem vínculo (digitar à mão)". Aluno que não está no card
+       não existe: é problema de cadastro, e deixar gerar um planner solto
+       esconde o problema em vez de resolver. Quem não aparece na lista vira
+       recado para a secretaria (ver o aviso em index.html). */
     el('cardAlunoWrap').hidden = false;
     setStatus('Turma carregada, escolha o aluno.', 'ok');
 
     sel.onchange = function () {
-      if (sel.value === '__none__') {
-        cardLink = null; window.RAF_DO_CARD = ''; syncDriveBtn();
-        /* sem isto o nascimento e o telefone do aluno anterior ficariam no
-           formulario e entrariam no planner do aluno seguinte */
-        ['studentBirth', 'studentPhone'].forEach(function (id) { var e = el(id); if (e) e.value = ''; });
-        var hint = el('cabecalhoHint'); if (hint) hint.textContent = '';
-        setStatus('Sem vínculo com o card, digite o nome do aluno à mão.');
-        return;
-      }
       var a = alunos[+sel.value]; if (!a) return;
       cardLink = { escola: dados.escola, prof: dados.aba, turma: String(dados.turma || '').split('\n')[0],
                    nome: a.nome, book: a.book, raf: a.raf || '' };
@@ -245,6 +238,10 @@
                 ', nome preenchido.', 'ok');
     };
   }
+
+  /* O botão de calcular/gerar consulta isto: sem aluno do card não há planner.
+     Fica em window porque o script da página é separado deste arquivo. */
+  window.fiskAlunoDoCard = function () { return cardLink; };
 
   /* ---- salvar na pasta do aluno + ver pasta ---- */
   function syncDriveBtn() {
