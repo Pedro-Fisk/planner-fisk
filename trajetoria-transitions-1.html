@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trajetória · Transitions 1</title>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     O MUNDO DO TRANSITIONS 1 · a cidade ao entardecer — maquete de estética
+     Terceiro mundo do Planner (Pedro validou espaço e floresta em 16/08/2026).
+
+     A GRAMÁTICA continua a mesma: nó redondo = lição · losango = marco ·
+     órbita tracejada = extra (não trava a rua) · branco = você está aqui ·
+     lima SÓ na luz do poste do aluno e no clipe · vermelho Fisk só no skate
+     encostado no poste e na alça da lanterna aposentada.
+
+     CONTINUIDADE: o aluno viu esta cidade DO FIM DA FLORESTA, ao longe, com
+     as janelas âmbar acesas — aqui ele entra nela, na mesma hora do dia: o
+     ENTARDECER (céu dourado→roxo, janelas acendendo). A trilha de terra da
+     floresta entra pela esquerda e VIRA asfalto; a lanterna do E2 fica
+     pendurada na entrada ("your lantern rests here"). Os temas sob cada
+     lição são os REAIS do livro; o Intro não tem subtítulo porque só existe
+     no cartão; os checkpoints do T1 chamam-se REVIEW, como no livro.
+     Os "sistemas" viraram fachadas da cidade: loja de discos = Song Program,
+     cinema de marquise = Movie Program, vitrine de TVs = Video Book.
+     No fim, a próxima promessa: a boca do túnel do Transitions 2.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style>
+:root{
+  /* o entardecer: quente no horizonte, roxo em cima, neon acendendo */
+  --ct-ceu-alto:#2b2350;
+  --ct-ceu-meio:#6e4a7e;
+  --ct-ceu-baixo:#e08a5c;
+  --ct-sol:#ffcf7a;
+  --ct-predio-0:#c4a4c9;     /* skyline distante, lavado de luz */
+  --ct-predio-1:#7a5f95;     /* skyline do meio */
+  --ct-predio-2:#3a3055;     /* prédios da frente */
+  --ct-janela:#ffd98a;       /* janelas acendendo */
+  --ct-rua:#464b5e;          /* o asfalto */
+  --ct-guia:#6a7086;
+  --ct-faixa:#f6c945;        /* a faixa tracejada do meio */
+  --ct-calcada:#8f95ab;
+  --ct-placa-feita:#2e7d4f;  /* verde de placa de rua: lição percorrida */
+  --ct-placa-fut:#4a5064;
+  --ct-neon:#e8c06a;         /* o âmbar da cidade, o mesmo da prévia */
+  --ct-neon-2:#ff8a5c;
+  --ct-rio:#2b5f80;
+  --ct-rio-brilho:#9fd0e8;
+  --ct-tinta:#f4eefc;
+  --ct-tinta-2:#c3b4d6;
+  --ct-lima:#d4e909;         /* só a luz do poste do aluno e o clipe */
+  --pt-vermelho:#d81f26;
+  --disp:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans',sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#eef1f6;color:#22304d;
+  font-family:var(--disp);font-size:16px;line-height:1.5}
+.chrome{display:flex;align-items:center;gap:14px;padding:16px 22px;
+  background:#161414;border-bottom:6px solid #d81f26}
+.chrome .marca{font-weight:700;font-size:20px;color:#d81f26}
+.chrome .sec{font-size:13px;color:#d8d5d5;font-weight:600}
+.wrap{max-width:1240px;margin:0 auto;padding:24px 18px 60px}
+.selo-sim{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:#8a6d00;background:#ffe9a8;border:1px solid #e8c95a;
+  border-radius:999px;padding:4px 12px;margin-bottom:14px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{font-size:14px;color:#66779c;font-weight:600;margin:0 0 18px;max-width:70ch}
+
+.estrada{background:var(--ct-ceu-alto);border-radius:18px;overflow:hidden;
+  box-shadow:0 14px 40px rgba(30,22,60,.35)}
+.est-cab{display:flex;align-items:baseline;gap:14px;padding:18px 24px 4px;color:#fff}
+.est-cab h2{font-weight:600;font-size:23px;margin:0}
+.est-cab .meta{font-size:14px;font-weight:600;color:var(--ct-tinta-2)}
+.est-cab .conta{margin-left:auto;font-size:14px;font-weight:700;color:#fff;
+  font-variant-numeric:tabular-nums}
+.pista{overflow-x:auto;overflow-y:hidden;padding-bottom:4px;
+  scrollbar-width:thin;scrollbar-color:var(--ct-predio-1) transparent;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent)}
+.pista::-webkit-scrollbar{height:9px}
+.pista::-webkit-scrollbar-thumb{background:var(--ct-predio-1);border-radius:6px}
+.legenda{padding:12px 24px 18px;font-size:13.5px;color:var(--ct-tinta-2)}
+.legenda b{color:var(--ct-tinta)}
+
+.est-nome,.est-meta{paint-order:stroke;stroke:#352b58;stroke-width:4.5px;stroke-linejoin:round}
+.est-nome{font-family:var(--disp);font-weight:700;fill:#fff}
+.est-nome.off{fill:#b9a9cf}
+.est-meta{font-family:var(--disp);font-weight:600;fill:var(--ct-tinta-2)}
+
+.no{cursor:pointer}
+.no:focus-visible .anel-foco{opacity:1}
+@media (prefers-reduced-motion:no-preference){
+  .luz-poste{animation:pulsa 3.2s ease-in-out infinite}
+  @keyframes pulsa{0%,100%{opacity:.85}50%{opacity:1}}
+  .no:hover .luz-poste,.no:focus-visible .luz-poste{animation-duration:1s}
+  .janela-pisca{animation:acende 5s ease-in-out infinite;animation-delay:var(--dj,0s)}
+  @keyframes acende{0%,100%{opacity:.35}50%{opacity:.95}}
+  .neon-vivo{animation:neon 2.6s ease-in-out infinite}
+  @keyframes neon{0%,100%{opacity:.75}50%{opacity:1}}
+  .marquise-luz{animation:corre 1.6s steps(2) infinite}
+  @keyframes corre{0%{opacity:.35}50%{opacity:1}100%{opacity:.35}}
+}
+.nota-intencao{margin-top:18px;font-size:13.5px;color:#66779c;max-width:78ch}
+.nota-intencao b{color:#22304d}
+</style>
+
+<div class="chrome">
+  <span class="marca">FISK</span>
+  <span class="sec">Portal do Aluno · Planner — o mundo do Transitions 1</span>
+</div>
+
+<div class="wrap">
+  <span class="selo-sim">Dados simulados · maquete de estética</span>
+  <h1>A cidade ao entardecer</h1>
+  <p class="sub">O terceiro mundo do Planner. A cidade que o aluno viu de longe
+    no fim da floresta, agora por dentro: a trilha de terra vira asfalto, as
+    janelas vão acendendo e cada lição é uma esquina. A gramática é a de
+    sempre; só o mundo muda.</p>
+
+  <section class="estrada" aria-label="Transitions 1 city map">
+    <div class="est-cab">
+      <h2 lang="en">Transitions 1</h2>
+      <span class="meta" lang="en">15 steps · the city at dusk</span>
+      <span class="conta" lang="en" id="conta"></span>
+    </div>
+    <div class="pista" id="pista"></div>
+    <p class="legenda" lang="en">This street is your <b>plan</b>, not a deadline.
+      Round signs are lessons; neon boards are reviews and tests. The record
+      shop sings, the movie theater tells stories, the TV-shop window plays the
+      Video Book — side streets never block your way. At the end of the line,
+      the tunnel to <b>Transitions 2</b> is already lit.</p>
+  </section>
+
+  <p class="nota-intencao"><b>A intenção, para validação:</b> a rua com a faixa
+    amarela é o caminho; as lições são placas redondas de esquina (verde de
+    placa quando percorridas); os <i lang="en">Reviews</i> e <i lang="en">Tests</i>
+    são letreiros-losango de neon, com o troféu nas provas. Os sistemas viraram
+    fachadas: <b>loja de discos</b> = <i lang="en">Song Program</i>,
+    <b>cinema de marquise</b> = <i lang="en">Movie Program</i>,
+    <b>vitrine de TVs</b> = <i lang="en">Video Book</i>. O "você está aqui" é o
+    poste aceso em lima com o skate vermelho encostado, e a lanterna da
+    floresta ficou pendurada na entrada da cidade.</p>
+</div>
+
+<script>
+(function(){
+'use strict';
+window.__e=window.__e||[]; window.addEventListener('error',function(e){__e.push(String(e.message));});
+
+var NS='http://www.w3.org/2000/svg';
+function el(t,at){ var n=document.createElementNS(NS,t);
+  for(var k in at) n.setAttribute(k,at[k]); return n; }
+
+/* ── o plano do mundo: temas REAIS do Transitions 1; Intro sem subtítulo
+     (só existe no cartão) e checkpoints chamados Review, como no livro ── */
+var ETAPAS=[
+  {id:'INTRO',rot:'Intro',    tema:'',                            estado:'feita'},
+  {id:'L1',  rot:'Lesson 1',  tema:'Online habits',               estado:'atual'},
+  {id:'L2',  rot:'Lesson 2',  tema:'Describing places',           estado:'futura'},
+  {id:'L3',  rot:'Lesson 3',  tema:'Feelings and personalities',  estado:'futura'},
+  {id:'L4',  rot:'Lesson 4',  tema:'Networking',                  estado:'futura'},
+  {id:'L5',  rot:'Lesson 5',  tema:'Accommodation',               estado:'futura'},
+  {id:'CHP1',rot:'Review 1',  tema:'Lessons 1–5',                 estado:'futura', marco:1},
+  {id:'TEST1',rot:'Test 1',   tema:'Lessons 1–5',                 estado:'futura', marco:1, trofeu:1},
+  {id:'L6',  rot:'Lesson 6',  tema:'Geeky objects',               estado:'futura'},
+  {id:'L7',  rot:'Lesson 7',  tema:'Professions',                 estado:'futura'},
+  {id:'L8',  rot:'Lesson 8',  tema:'Housing and furniture',       estado:'futura'},
+  {id:'L9',  rot:'Lesson 9',  tema:'Crafts',                      estado:'futura'},
+  {id:'L10', rot:'Lesson 10', tema:'Types of friends',            estado:'futura'},
+  {id:'CHP2',rot:'Review 2',  tema:'Lessons 6–10',                estado:'futura', marco:1},
+  {id:'TEST2',rot:'Test 2',   tema:'Lessons 6–10',                estado:'futura', marco:1, trofeu:1}
+];
+var iAtual=1;
+
+var PASSO=168, MARG=150, ALT=560, R=26;
+var L=MARG*2+PASSO*(ETAPAS.length-1);
+var SEGUE=420, LTOT=L+SEGUE;
+var BASE=300, AMP=26;
+function yDaVia(x){ return BASE + Math.sin(x/260)*AMP + Math.sin(x/110)*8; }
+
+var pista=document.getElementById('pista');
+var svg=el('svg',{width:LTOT,height:ALT,viewBox:'0 0 '+LTOT+' '+ALT,
+  role:'img','aria-label':'Transitions 1: a city street at dusk with 15 corners, a record shop for songs, a movie theater for movies and a TV-shop window for the Video Book.'});
+
+/* ═══ o céu do entardecer ═══ */
+var defs=el('defs');
+var gCeu=el('linearGradient',{id:'gCeu',x1:'0',y1:'0',x2:'0',y2:'1'});
+gCeu.appendChild(el('stop',{offset:'0','stop-color':'#2b2350'}));
+gCeu.appendChild(el('stop',{offset:'.55','stop-color':'#6e4a7e'}));
+gCeu.appendChild(el('stop',{offset:'1','stop-color':'#e08a5c'}));
+defs.appendChild(gCeu);
+svg.appendChild(defs);
+svg.appendChild(el('rect',{x:0,y:0,width:LTOT,height:BASE+30,fill:'url(#gCeu)'}));
+
+/* o sol se pondo atrás do skyline */
+var solX=L*0.62;
+svg.appendChild(el('circle',{cx:solX,cy:BASE-58,r:46,fill:'var(--ct-sol)',opacity:.28}));
+svg.appendChild(el('circle',{cx:solX,cy:BASE-58,r:26,fill:'var(--ct-sol)',opacity:.85}));
+/* primeiras estrelas no alto roxo */
+for(var st=0;st<26;st++){
+  svg.appendChild(el('circle',{cx:(st*247)%LTOT,cy:8+((st*41)%70),
+    r:(st%3?0.9:1.4),fill:'#f4eefc',opacity:.35+((st%3)*0.2)}));
+}
+
+/* ═══ o skyline em três camadas (perspectiva atmosférica) ═══ */
+function predio(g,px,w,h,cor,comJanela){
+  g.appendChild(el('rect',{x:px,y:BASE-8-h,width:w,height:h+8,fill:cor}));
+  if(comJanela){
+    for(var wy=BASE-h+6; wy<BASE-10; wy+=14){
+      for(var wx=px+5; wx<px+w-6; wx+=11){
+        if(((wx+wy)%3)===0) continue;   /* nem toda janela acesa */
+        var j=el('rect',{x:wx,y:wy,width:4,height:6,fill:'var(--ct-janela)',
+          opacity:.25+((wx*wy)%40)/100});
+        if(((wx*3+wy)%7)===0){ j.setAttribute('class','janela-pisca');
+          j.style.setProperty('--dj',((wx%5))+'s'); }
+        g.appendChild(j);
+      }
+    }
+  }
+}
+var sky0=el('g',{opacity:.6});
+for(var s0=0;s0<LTOT;s0+=90) predio(sky0,s0+((s0*7)%30),46+((s0*3)%40),90+((s0*11)%110),'var(--ct-predio-0)',false);
+svg.appendChild(sky0);
+var sky1=el('g',{opacity:.85});
+for(var s1=30;s1<LTOT;s1+=120) predio(sky1,s1+((s1*5)%40),54+((s1*7)%46),60+((s1*13)%86),'var(--ct-predio-1)',false);
+svg.appendChild(sky1);
+var sky2=el('g');
+for(var s2=0;s2<LTOT;s2+=150) predio(sky2,s2+((s2*11)%50),62+((s2*3)%50),36+((s2*7)%60),'var(--ct-predio-2)',true);
+svg.appendChild(sky2);
+
+/* ═══ o rio da floresta atravessa a cidade ═══ */
+var rioX=L*0.475;
+(function(){
+  var g=el('g');
+  var d='M'+rioX+',0';
+  for(var ry=0;ry<=ALT;ry+=40){
+    d+=' Q'+(rioX+Math.sin(ry/80)*30+14)+','+(ry+20)+' '+(rioX+Math.sin((ry+40)/80)*30)+','+(ry+40);
+  }
+  g.appendChild(el('path',{d:d,fill:'none',stroke:'var(--ct-rio)','stroke-width':44,
+    'stroke-linecap':'round',opacity:.9}));
+  g.appendChild(el('path',{d:d,fill:'none',stroke:'var(--ct-rio-brilho)','stroke-width':3,
+    'stroke-dasharray':'10 26',opacity:.5}));
+  /* o reflexo do entardecer na água */
+  g.appendChild(el('path',{d:d,fill:'none',stroke:'var(--ct-neon-2)','stroke-width':8,
+    'stroke-dasharray':'3 34',opacity:.35}));
+  svg.appendChild(g);
+})();
+
+/* ═══ a rua ═══ */
+var dVia='M-40,'+yDaVia(-40);
+for(var vx=-40;vx<=L-6;vx+=24) dVia+=' L'+vx+','+yDaVia(vx);
+svg.appendChild(el('path',{d:dVia,fill:'none',stroke:'var(--ct-guia)',
+  'stroke-width':48,'stroke-linecap':'round'}));
+svg.appendChild(el('path',{d:dVia,fill:'none',stroke:'var(--ct-rua)',
+  'stroke-width':40,'stroke-linecap':'round'}));
+/* a faixa amarela do meio */
+svg.appendChild(el('path',{d:dVia,fill:'none',stroke:'var(--ct-faixa)',
+  'stroke-width':3.5,'stroke-dasharray':'14 18','stroke-linecap':'round',opacity:.9}));
+
+/* a ponte urbana onde a rua cruza o rio */
+(function(){
+  var by=yDaVia(rioX), g=el('g');
+  g.appendChild(el('rect',{x:rioX-40,y:by-26,width:80,height:52,rx:5,fill:'#5a5f74'}));
+  g.appendChild(el('line',{x1:rioX-40,y1:by-28,x2:rioX+40,y2:by-28,stroke:'#8f95ab','stroke-width':5}));
+  g.appendChild(el('line',{x1:rioX-40,y1:by+28,x2:rioX+40,y2:by+28,stroke:'#8f95ab','stroke-width':5}));
+  for(var pb=-32;pb<=32;pb+=16){
+    g.appendChild(el('line',{x1:rioX+pb,y1:by-28,x2:rioX+pb,y2:by-20,stroke:'#8f95ab','stroke-width':2.5}));
+    g.appendChild(el('line',{x1:rioX+pb,y1:by+20,x2:rioX+pb,y2:by+28,stroke:'#8f95ab','stroke-width':2.5}));
+  }
+  svg.appendChild(g);
+})();
+
+/* a entrada da cidade: a trilha de terra da floresta vira asfalto */
+(function(){
+  var y0=yDaVia(-40);
+  var g=el('g');
+  g.appendChild(el('path',{d:'M-40,'+y0+' L'+(MARG-70)+','+yDaVia(MARG-70),
+    fill:'none',stroke:'#c9a06a','stroke-width':40,'stroke-linecap':'round',opacity:.9}));
+  g.appendChild(el('path',{d:'M-40,'+y0+' L'+(MARG-70)+','+yDaVia(MARG-70),
+    fill:'none',stroke:'#efe0c8','stroke-width':3.5,'stroke-dasharray':'2 22',opacity:.8}));
+  /* a lanterna da floresta, aposentada num gancho */
+  var lx=MARG-96, ly=yDaVia(MARG-96)-64;
+  g.appendChild(el('line',{x1:lx,y1:ly+46,x2:lx,y2:ly,stroke:'#5d3a1f','stroke-width':4}));
+  g.appendChild(el('line',{x1:lx,y1:ly,x2:lx+14,y2:ly+6,stroke:'#5d3a1f','stroke-width':3}));
+  g.appendChild(el('path',{d:'M'+(lx+14)+','+(ly+6)+' v4',stroke:'var(--pt-vermelho)','stroke-width':2.5,'stroke-linecap':'round'}));
+  g.appendChild(el('rect',{x:lx+8,y:ly+10,width:13,height:17,rx:3,
+    fill:'#20140b',stroke:'#0c0804','stroke-width':1.2}));
+  g.appendChild(el('rect',{x:lx+10.5,y:ly+12.5,width:8,height:12,rx:1.5,fill:'#ffd98a',opacity:.55}));
+  var t=el('text',{class:'est-meta',x:lx+8,y:ly+64,'text-anchor':'middle','font-size':11});
+  t.textContent='your lantern rests here'; g.appendChild(t);
+  svg.appendChild(g);
+})();
+
+/* a calçada: postes de luz ritmando a rua */
+for(var pl=MARG-30;pl<L;pl+=PASSO*1.5){
+  var py=yDaVia(pl)+52;
+  var gp=el('g',{opacity:.9});
+  gp.appendChild(el('line',{x1:pl,y1:py,x2:pl,y2:py-34,stroke:'#2c2a44','stroke-width':3.5}));
+  gp.appendChild(el('path',{d:'M'+pl+','+(py-34)+' q10,-2 12,6',fill:'none',stroke:'#2c2a44','stroke-width':3}));
+  gp.appendChild(el('circle',{cx:pl+13,cy:py-26,r:4,fill:'var(--ct-janela)',opacity:.9}));
+  gp.appendChild(el('circle',{cx:pl+13,cy:py-26,r:9,fill:'var(--ct-janela)',opacity:.18}));
+  svg.appendChild(gp);
+}
+
+/* ═══ os nós: placas de esquina e letreiros de neon ═══ */
+var pts=ETAPAS.map(function(e,i){ var x=MARG+i*PASSO; return {x:x,y:yDaVia(x)}; });
+
+/* o percorrido: os refletores de chão da rua andada */
+var dAndado='M'+pts[0].x+','+pts[0].y;
+for(var ax=pts[0].x;ax<=pts[iAtual].x;ax+=20) dAndado+=' L'+ax+','+yDaVia(ax);
+svg.appendChild(el('path',{d:dAndado,fill:'none',stroke:'var(--ct-neon)','stroke-width':8,
+  'stroke-dasharray':'2 16','stroke-linecap':'round',opacity:.9}));
+
+ETAPAS.forEach(function(e,i){
+  var p=pts[i];
+  var g=el('g',{class:'no',tabindex:'0',role:'button','aria-label':
+    e.rot+(e.tema?' — '+e.tema:'')+(e.estado==='feita'?', done':e.estado==='atual'?', you are here'
+      :e.trofeu?', finishing this test earns you its badge':'')});
+  g.appendChild(el('circle',{class:'anel-foco',cx:p.x,cy:p.y,r:R+11,fill:'none',
+    stroke:'#fff','stroke-width':3,opacity:0}));
+  var feita=e.estado==='feita', atual=e.estado==='atual';
+
+  if(e.marco){
+    /* letreiro-losango de neon num poste duplo */
+    var r=R*1.05;
+    g.appendChild(el('line',{x1:p.x,y1:p.y+r,x2:p.x,y2:p.y+r+16,stroke:'#2c2a44','stroke-width':4}));
+    g.appendChild(el('path',{d:'M'+p.x+','+(p.y-r)+'L'+(p.x+r)+','+p.y+'L'+p.x+','+(p.y+r)+'L'+(p.x-r)+','+p.y+'Z',
+      fill:feita?'var(--ct-placa-feita)':'#241f3e',stroke:'var(--ct-neon)','stroke-width':2.5,
+      class:'neon-vivo'}));
+    if(e.trofeu){
+      var tr=el('g',{transform:'translate('+(p.x-11)+','+(p.y-11)+') scale(0.92)'});
+      tr.appendChild(el('path',{d:'M6 3h12v5a6 6 0 01-12 0z M6 4H3a3.5 3.5 0 003.8 4.4 M18 4h3a3.5 3.5 0 01-3.8 4.4 M12 14v3 M8 20h8 M9.5 17h5l1 3h-7z',
+        fill:'none',stroke:'#ffd75e','stroke-width':1.9,'stroke-linecap':'round','stroke-linejoin':'round'}));
+      g.appendChild(tr);
+    } else {
+      var num=el('text',{x:p.x,y:p.y+6,'text-anchor':'middle','font-size':16,
+        'font-family':'var(--disp)','font-weight':'700',fill:'var(--ct-neon)'});
+      num.textContent=e.id==='CHP1'?'R1':'R2'; g.appendChild(num);
+    }
+  } else {
+    /* a placa redonda de esquina, no poste baixo */
+    g.appendChild(el('line',{x1:p.x,y1:p.y+R-4,x2:p.x,y2:p.y+R+14,stroke:'#2c2a44','stroke-width':4}));
+    g.appendChild(el('circle',{cx:p.x,cy:p.y,r:R,
+      fill:atual?'#ffffff':feita?'var(--ct-placa-feita)':'var(--ct-placa-fut)',
+      stroke:atual?'var(--ct-neon)':feita?'#215c39':'#31364a','stroke-width':3.5}));
+    g.appendChild(el('circle',{cx:p.x,cy:p.y,r:R-6,fill:'none',
+      stroke:atual?'#d9d2ee':'#ffffff','stroke-width':1.6,opacity:.5}));
+    if(feita){
+      g.appendChild(el('path',{d:'M'+(p.x-9)+','+p.y+' l6,7 12,-14',fill:'none',
+        stroke:'#fff','stroke-width':4,'stroke-linecap':'round','stroke-linejoin':'round'}));
+    } else if(!atual){
+      var n2=el('text',{x:p.x,y:p.y+6,'text-anchor':'middle','font-size':16,
+        'font-family':'var(--disp)','font-weight':'700',fill:'#b9a9cf'});
+      n2.textContent=e.id==='INTRO'?'·':e.id.slice(1); g.appendChild(n2);
+    }
+  }
+
+  /* o "você está aqui": poste aceso em lima com o skate encostado */
+  if(atual){
+    svg.appendChild(el('ellipse',{cx:p.x,cy:p.y+6,rx:64,ry:24,
+      fill:'var(--ct-lima)',opacity:.08}));
+    var lg=el('g');
+    lg.appendChild(el('line',{x1:p.x+2,y1:p.y-30,x2:p.x+2,y2:p.y-94,stroke:'#2c2a44','stroke-width':5}));
+    lg.appendChild(el('path',{d:'M'+(p.x+2)+','+(p.y-94)+' q-14,-2 -17,9',fill:'none',stroke:'#2c2a44','stroke-width':4}));
+    var luz=el('g',{class:'luz-poste'});
+    luz.appendChild(el('circle',{cx:p.x-16,cy:p.y-82,r:6,fill:'var(--ct-lima)'}));
+    luz.appendChild(el('circle',{cx:p.x-16,cy:p.y-82,r:14,fill:'var(--ct-lima)',opacity:.22}));
+    luz.appendChild(el('path',{d:'M'+(p.x-26)+','+(p.y-76)+' L'+(p.x-38)+','+(p.y-38)
+      +' L'+(p.x+6)+','+(p.y-38)+' L'+(p.x-6)+','+(p.y-76)+'z',
+      fill:'var(--ct-lima)',opacity:.10}));
+    lg.appendChild(luz);
+    /* o skate vermelho encostado no poste */
+    var sk=el('g',{transform:'rotate(-64 '+(p.x+13)+' '+(p.y-34)+')'});
+    sk.appendChild(el('rect',{x:p.x+1,y:p.y-38,width:26,height:5,rx:2.5,fill:'var(--pt-vermelho)'}));
+    sk.appendChild(el('circle',{cx:p.x+7,cy:p.y-31,r:3,fill:'#20140b'}));
+    sk.appendChild(el('circle',{cx:p.x+21,cy:p.y-31,r:3,fill:'#20140b'}));
+    lg.appendChild(sk);
+    g.appendChild(lg);
+  }
+
+  /* rótulos com halo; o tema real do livro embaixo */
+  var acima=(i%2===0);
+  var ly=acima? p.y-R-40 : p.y+R+34;
+  if(atual) ly=p.y+R+34;
+  var n1=el('text',{class:'est-nome'+(e.estado==='futura'?' off':''),x:p.x,y:ly,
+    'text-anchor':'middle','font-size':17});
+  n1.textContent=e.rot; g.appendChild(n1);
+  if(e.tema){
+    var n3=el('text',{class:'est-meta',x:p.x,y:ly+18,'text-anchor':'middle','font-size':12.5});
+    n3.textContent=e.tema; g.appendChild(n3);
+  }
+  svg.appendChild(g);
+});
+
+/* ═══ as fachadas dos extras ═══ */
+function orbita(cx,cy,rotulo,conta,itens,rotCima){
+  var g=el('g');
+  g.appendChild(el('circle',{cx:cx,cy:cy,r:58,fill:'none',stroke:'#e9def4',
+    'stroke-width':1.6,'stroke-dasharray':'4 9',opacity:.45}));
+  itens.forEach(function(ok,k){
+    var ang=-Math.PI/2 + k*(Math.PI*2/itens.length);
+    var ix=cx+Math.cos(ang)*58, iy=cy+Math.sin(ang)*58;
+    g.appendChild(el('circle',{cx:ix,cy:iy,r:6.5,
+      fill:ok?'var(--ct-neon)':'transparent',
+      stroke:ok?'var(--ct-neon-2)':'#b9a9cf','stroke-width':2,opacity:ok?1:.7}));
+    if(ok) g.appendChild(el('circle',{cx:ix,cy:iy,r:11,fill:'var(--ct-neon)',opacity:.2}));
+  });
+  var t=el('text',{class:'est-meta',x:cx,y:rotCima?cy-80:cy+88,'text-anchor':'middle','font-size':13});
+  t.textContent=rotulo+' · '+conta; g.appendChild(t);
+  return g;
+}
+function fachada(g,cx,cy,w,h,cor){
+  g.appendChild(el('rect',{x:cx-w/2,y:cy-h,width:w,height:h,rx:3,
+    fill:cor,stroke:'#241f3e','stroke-width':2}));
+  g.appendChild(el('rect',{x:cx-w/2-5,y:cy-h-10,width:w+10,height:12,rx:3,
+    fill:'#241f3e'}));
+}
+
+/* loja de discos = Song Program (abaixo da rua, no vão da L2/L3) */
+(function(){
+  var cx=(pts[2].x+pts[3].x)/2, cy=yDaVia(cx)+168;
+  var g=el('g',{role:'button',tabindex:'0','aria-label':'Songs: the record shop. 1 of 5 songs done. Opens the Song Program.',class:'no'});
+  g.appendChild(orbita(cx,cy,'Songs','1/5',[1,0,0,0,0]));
+  fachada(g,cx,cy+34,72,58,'#4a2f5e');
+  /* vitrine quente com um vinil girando */
+  g.appendChild(el('rect',{x:cx-26,y:cy-14,width:52,height:36,rx:3,fill:'#ffd98a',opacity:.9}));
+  g.appendChild(el('circle',{cx:cx,cy:cy+4,r:13,fill:'#20140b'}));
+  g.appendChild(el('circle',{cx:cx,cy:cy+4,r:4.5,fill:'var(--ct-neon-2)'}));
+  g.appendChild(el('circle',{cx:cx,cy:cy+4,r:8.5,fill:'none',stroke:'#4a4a4a','stroke-width':1}));
+  /* o neon da nota em cima */
+  var neon=el('g',{class:'neon-vivo'});
+  neon.appendChild(el('path',{d:'M'+(cx+6)+','+(cy-34)+' v-14 l9,-2.5 v14',fill:'none',
+    stroke:'var(--ct-neon-2)','stroke-width':2.5,'stroke-linecap':'round','stroke-linejoin':'round'}));
+  neon.appendChild(el('circle',{cx:cx+3,cy:cy-34,r:3.4,fill:'none',stroke:'var(--ct-neon-2)','stroke-width':2.5}));
+  neon.appendChild(el('circle',{cx:cx+12,cy:cy-36.5,r:3.4,fill:'none',stroke:'var(--ct-neon-2)','stroke-width':2.5}));
+  g.appendChild(neon);
+  svg.appendChild(g);
+})();
+
+/* cinema de marquise = Movie Program (acima da rua, entre o Test 1 e a L6) */
+(function(){
+  var cx=(pts[7].x+pts[8].x)/2, cy=yDaVia(cx)-188;
+  var g=el('g',{role:'button',tabindex:'0','aria-label':'Movies: the movie theater. 1 of 5 movies done. Opens the Movie Program.',class:'no'});
+  g.appendChild(orbita(cx,cy,'Movies','1/5',[1,0,0,0,0],true));
+  fachada(g,cx,cy+44,84,64,'#5e2f3e');
+  /* a marquise com lâmpadas correndo */
+  g.appendChild(el('rect',{x:cx-46,y:cy-30,width:92,height:24,rx:4,fill:'#f4eefc'}));
+  var cine=el('text',{x:cx,y:cy-13,'text-anchor':'middle','font-size':13,
+    'font-family':'var(--disp)','font-weight':'800',fill:'#5e2f3e','letter-spacing':'3'});
+  cine.textContent='CINE'; g.appendChild(cine);
+  for(var lb=0;lb<8;lb++){
+    g.appendChild(el('circle',{cx:cx-42+lb*12,cy:cy-34,r:2.6,fill:'var(--ct-janela)',
+      class:'marquise-luz',style:'animation-delay:'+(lb%2)*0.8+'s'}));
+  }
+  /* as portas com luz saindo */
+  g.appendChild(el('rect',{x:cx-18,y:cy+8,width:15,height:26,rx:2,fill:'#ffd98a',opacity:.85}));
+  g.appendChild(el('rect',{x:cx+3,y:cy+8,width:15,height:26,rx:2,fill:'#ffd98a',opacity:.7}));
+  svg.appendChild(g);
+})();
+
+/* vitrine de TVs = Video Book (abaixo da rua, no vão da L8/L9) */
+(function(){
+  var cx=(pts[10].x+pts[11].x)/2, cy=yDaVia(cx)+170;
+  var g=el('g',{role:'button',tabindex:'0','aria-label':'Video Book: the TV-shop window. 0 of 5 episodes done.',class:'no'});
+  g.appendChild(orbita(cx,cy,'Video Book','0/5',[0,0,0,0,0]));
+  fachada(g,cx,cy+36,80,60,'#2f4a5e');
+  /* a pilha de TVs, todas passando o mesmo play */
+  [[-24,-12],[0,-12],[24,-12],[-12,10],[12,10]].forEach(function(tv,k){
+    g.appendChild(el('rect',{x:cx+tv[0]-11,y:cy+tv[1]-8,width:22,height:16,rx:2,
+      fill:'#20140b',stroke:'#4a4a5e','stroke-width':1.5}));
+    g.appendChild(el('rect',{x:cx+tv[0]-8,y:cy+tv[1]-5,width:16,height:10,rx:1,
+      fill:k===1?'#9fd8ff':'#6fb4de',opacity:k===1?1:.8}));
+    g.appendChild(el('path',{d:'M'+(cx+tv[0]-2)+','+(cy+tv[1]-3)+' l5,3 -5,3z',fill:'#20140b'}));
+  });
+  svg.appendChild(g);
+})();
+
+/* ═══ o fim da linha: a boca do túnel do Transitions 2 ═══ */
+(function(){
+  var fim=pts[pts.length-1];
+  var gT=el('linearGradient',{id:'gT2',x1:'0',y1:'0',x2:'1',y2:'0'});
+  gT.appendChild(el('stop',{offset:'0','stop-color':'#2b2350','stop-opacity':'0'}));
+  gT.appendChild(el('stop',{offset:'1','stop-color':'#171226','stop-opacity':'.96'}));
+  svg.appendChild(gT);
+  svg.appendChild(el('rect',{x:L-40,y:0,width:LTOT-(L-40),height:ALT,fill:'url(#gT2)'}));
+  /* o colar de pérolas rosa-neon até o túnel */
+  var gS=el('linearGradient',{id:'gSegue3',x1:'0',y1:'0',x2:'1',y2:'0'});
+  gS.appendChild(el('stop',{offset:'0','stop-color':'#e86aa6','stop-opacity':'.8'}));
+  gS.appendChild(el('stop',{offset:'1','stop-color':'#e86aa6','stop-opacity':'0'}));
+  svg.appendChild(gS);
+  var dSeg='M'+fim.x+','+fim.y
+    +' C'+(fim.x+110)+','+(fim.y+2)+' '+(fim.x+190)+','+(fim.y-14)+' '+(LTOT-10)+','+(fim.y-20);
+  svg.appendChild(el('path',{d:dSeg,fill:'none',stroke:'url(#gSegue3)',
+    'stroke-width':14,'stroke-linecap':'round','stroke-dasharray':'2 26'}));
+  /* a boca do túnel, com o anel de luz */
+  var tx=L+SEGUE*0.64, ty=fim.y-20;
+  var tun=el('g');
+  tun.appendChild(el('path',{d:'M'+(tx-52)+','+(ty+34)+' v-44 a52,52 0 0 1 104,0 v44 z',
+    fill:'#171226',stroke:'#3a3055','stroke-width':3}));
+  tun.appendChild(el('path',{d:'M'+(tx-38)+','+(ty+34)+' v-38 a38,38 0 0 1 76,0 v38 z',
+    fill:'#0b081a'}));
+  tun.appendChild(el('path',{d:'M'+(tx-38)+','+(ty+34)+' v-38 a38,38 0 0 1 76,0 v38',
+    fill:'none',stroke:'#e86aa6','stroke-width':2.5,'stroke-dasharray':'5 7',class:'neon-vivo'}));
+  svg.appendChild(tun);
+  var sel=el('g',{role:'img','aria-label':'The street goes on: Transitions 2 comes after Test 2.'});
+  sel.appendChild(el('circle',{cx:tx,cy:ty-94,r:24,fill:'#171226',stroke:'#e86aa6',
+    'stroke-width':2.5,'stroke-dasharray':'5 7',opacity:.95}));
+  var tS=el('text',{x:tx,y:ty-88,'text-anchor':'middle','font-size':14,
+    'font-family':'var(--disp)','font-weight':'600',fill:'#e86aa6'});
+  tS.textContent='T2'; sel.appendChild(tS);
+  var nS=el('text',{class:'est-nome off',x:tx,y:ty+58,'text-anchor':'middle','font-size':15});
+  nS.textContent='Transitions 2'; sel.appendChild(nS);
+  var mS=el('text',{class:'est-meta',x:tx,y:ty+76,'text-anchor':'middle','font-size':12});
+  mS.textContent='the street goes on'; sel.appendChild(mS);
+  svg.appendChild(sel);
+})();
+
+pista.appendChild(svg);
+document.getElementById('conta').textContent='1 of 15 steps';
+
+var alvo=Math.max(0,pts[iAtual].x-pista.clientWidth*0.45);
+var rel=(alvo-MARG)%PASSO;
+pista.scrollLeft=Math.max(0,alvo-rel+PASSO/2);
+})();
+</script>
+</html>
