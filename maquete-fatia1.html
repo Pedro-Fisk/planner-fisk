@@ -1,0 +1,1705 @@
+<title>Planner · trajetória do aluno</title>
+<style>
+/* ============================================================
+   PALETA CLARA COMPLETA no :root puro. O bloco escuro aparece
+   duas vezes mais abaixo e só redefine token, nunca componente.
+   ============================================================ */
+:root{
+  color-scheme:light;
+  /* Portal do Aluno, o recipiente */
+  --pt-bg:#f7f6f6; --pt-superficie:#ffffff; --pt-borda:#ececec;
+  --pt-tinta:#161414; --pt-tinta-2:#4a4a4a; --pt-vermelho:#d81f26;
+
+  /* Planner: identidade do documento impresso */
+  --pl-marinho:#1d3685;
+  --pl-marinho-2:#16265e;
+  /* marinho como TEXTO sobre superficie: no escuro tem de clarear, senao some */
+  --pl-acento:#1d3685;
+  --pl-pilula:#dce6f2;
+  --pl-espinha:#7385b6;
+  --pl-lima:#d4e909;
+  /* cores de preenchimento das marcas (14/08/2026): azul = exercício do
+     aluno, rosa = tarefa, verde = professor. O verde vem do portal (--green). */
+  --pl-exerc:#3f63d9;
+  --pl-verde:#27866e;
+  --pl-prova:#912d99;
+  --pl-casa:#d91e9e;
+  --pl-item-off:#eef3f8;
+  --pl-item-tinta:#12244f;
+  --pl-item-pg:#33477d;
+  --pl-tinta:#161414;
+  --pl-tinta-2:#4a4a4a;
+  --pl-superficie:#ffffff;
+  --pl-borda:#ececec;
+  --pl-bg:#f7f6f6;
+
+  /* estrada, nível do estágio. O céu é MAIS escuro que o marinho da lição
+     (#1d3685) de propósito: os dois painéis não podem parecer o mesmo azul. */
+  --pl-ceu:#0d1539;
+  --pl-asfalto:#22317a;
+  --pl-andado:#3f63d9;
+  --pl-futuro:#c3cbe0;
+
+  --pl-aviso:#a8781f; --pl-aviso-bg:#fdf6e6;
+  --pl-foco:#161414; --pl-foco-inv:#ffffff;
+  --pl-sombra:0 6px 22px rgba(22,20,20,.07);
+  --pl-borda-int:transparent;
+
+  /* fonte do SISTEMA, universalmente legível (Pedro, 15/08/2026): a Poppins
+     nunca chegava à tela e cada máquina via outra coisa; agora todo mundo vê
+     a melhor fonte nativa do próprio aparelho. */
+  --disp:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans',sans-serif;
+  --corpo:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans',sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --pt-bg:#211e1e; --pt-superficie:#2a2727; --pt-borda:#3a3535;
+    --pt-tinta:#f2efef; --pt-tinta-2:#b5aeae;
+    --pl-marinho:#24356b; --pl-marinho-2:#1b2851; --pl-acento:#9db4f0;
+    --pl-pilula:#2f4382; --pl-espinha:#8fa8e8;
+    --pl-prova:#c07ac9; --pl-casa:#f06fc4; --pl-exerc:#6b8bef; --pl-verde:#3fbf9f;
+    --pl-item-off:#25315c;
+    --pl-item-tinta:#e8edfb;
+  --pl-item-pg:#aebbdf;
+  --pl-tinta:#f2efef; --pl-tinta-2:#c3c9dd;
+    --pl-superficie:#2a2727; --pl-borda:#3a3535; --pl-bg:#211e1e;
+    --pl-ceu:#0a1030; --pl-asfalto:#2c3d84; --pl-andado:#6b8bef; --pl-futuro:#4a5270;
+    --pl-aviso:#e0b45c; --pl-aviso-bg:#332b18;
+    --pl-foco:#ffffff;
+    --pl-sombra:none; --pl-borda-int:rgba(255,255,255,.10);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --pt-bg:#211e1e; --pt-superficie:#2a2727; --pt-borda:#3a3535;
+  --pt-tinta:#f2efef; --pt-tinta-2:#b5aeae;
+  --pl-marinho:#24356b; --pl-marinho-2:#1b2851; --pl-acento:#9db4f0;
+  --pl-pilula:#2f4382; --pl-espinha:#8fa8e8;
+  --pl-prova:#c07ac9; --pl-casa:#f06fc4; --pl-exerc:#6b8bef; --pl-verde:#3fbf9f;
+  --pl-item-off:#25315c;
+  --pl-item-tinta:#e8edfb;
+--pl-item-pg:#aebbdf;
+--pl-tinta:#f2efef; --pl-tinta-2:#c3c9dd;
+  --pl-superficie:#2a2727; --pl-borda:#3a3535; --pl-bg:#211e1e;
+  --pl-ceu:#0a1030; --pl-asfalto:#2c3d84; --pl-andado:#6b8bef; --pl-futuro:#4a5270;
+  --pl-aviso:#e0b45c; --pl-aviso-bg:#332b18;
+  --pl-foco:#ffffff;
+  --pl-sombra:none; --pl-borda-int:rgba(255,255,255,.10);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--pt-bg);color:var(--pt-tinta);
+  font-family:var(--corpo);font-size:16px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums;
+}
+.wrap{max-width:1440px;margin:0 auto;padding:0 20px 80px}
+
+/* ---------- chrome do Portal ---------- */
+/* O topo é o do PORTAL (Pedro, 15/08/2026): preto com a barra vermelha de
+   toda tela do Portal do Aluno (.hero), fixo nos dois temas, como lá. */
+.chrome{display:flex;align-items:center;gap:14px;padding:16px 22px;
+  background:#161414;border-bottom:6px solid #d81f26}
+.chrome .marca{font-family:var(--disp);font-weight:700;font-size:20px;color:#d81f26}
+.chrome .sec{font-size:13px;color:#d8d5d5;font-weight:600}
+.chrome .dir{margin-left:auto;display:flex;align-items:center;gap:12px}
+.av{width:36px;height:36px;border-radius:50%;background:var(--pl-marinho);color:#fff;
+  display:grid;place-items:center;font-family:var(--disp);font-weight:600;font-size:13px}
+.tema{background:transparent;border:1.5px solid rgba(255,255,255,.32);border-radius:999px;
+  color:#fff;font:inherit;font-size:13px;font-weight:700;padding:9px 16px;cursor:pointer;min-height:44px}
+.tema:hover{border-color:#fff}
+.tema:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.av{border:1.5px solid rgba(255,255,255,.4)}
+
+/* ============ PLANNER ============ */
+.planner{padding-top:26px}
+.secao-rot{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--pl-tinta-2);margin:0 0 12px}
+/* blocos colapsáveis */
+.bloco{margin-bottom:30px}
+.bloco>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:9px;
+  min-height:44px;margin:0 0 12px;user-select:none}
+.bloco>summary::-webkit-details-marker{display:none}
+/* o rótulo acompanha a largura do card da seção: a ficha e o registro são
+   900px centrados, e o cabeçalho tem de bater com a borda deles */
+.bloco.estreito>summary{max-width:900px;margin-left:auto;margin-right:auto}
+.bloco>summary:focus-visible{outline:3px solid var(--pl-foco);outline-offset:3px;border-radius:8px}
+.bloco>summary .seta{width:18px;height:18px;flex:0 0 auto;color:var(--pl-tinta-2)}
+.bloco[open]>summary .seta{transform:rotate(90deg)}
+.bloco>summary .dica-abre{margin-left:auto;font-size:12px;font-weight:700;color:var(--pl-tinta-2);
+  text-transform:none;letter-spacing:0}
+.bloco[open]>summary .dica-abre::after{content:'recolher'}
+.bloco:not([open])>summary .dica-abre::after{content:'abrir'}
+@media (prefers-reduced-motion:no-preference){ .bloco>summary .seta{transition:transform .18s ease} }
+
+/* ---------- 1. PRÓXIMO PASSO (o maior texto da tela) ---------- */
+.agora{background:var(--pl-superficie);border:1px solid var(--pl-borda);border-radius:16px;
+  padding:26px 28px;box-shadow:var(--pl-sombra);display:grid;
+  grid-template-columns:minmax(0,1fr) auto;gap:26px;align-items:center}
+.agora .kicker{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--pl-acento);margin-bottom:10px}
+.agora h2{font-family:var(--disp);font-weight:600;font-size:30px;line-height:1.2;
+  letter-spacing:-.01em;margin:0 0 12px;max-width:24ch;text-wrap:balance;color:var(--pl-tinta)}
+.agora .apoio{font-size:16px;font-weight:600;color:var(--pl-tinta-2);margin:0;max-width:56ch}
+.agora .lado{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.acao{background:var(--pl-lima);color:#161414;border:0;border-radius:12px;min-height:48px;
+  padding:0 26px;font-family:var(--disp);font-weight:600;font-size:15px;cursor:pointer;white-space:nowrap}
+.acao:hover{background:#c4d708}
+.acao:focus-visible{outline:3px solid var(--pl-foco);outline-offset:3px}
+.fantasma{background:transparent;color:var(--pl-acento);border:1px solid var(--pl-borda);
+  border-radius:12px;min-height:48px;padding:0 22px;font-family:var(--disp);font-weight:600;font-size:15px;cursor:pointer}
+.elo{background:none;border:0;padding:8px 0;font:inherit;font-size:13px;font-weight:600;
+  color:var(--pl-acento);text-decoration:underline;cursor:pointer;min-height:44px;text-align:left}
+.elo:focus-visible{outline:3px solid var(--pl-foco);outline-offset:2px}
+
+/* ---------- 2. A ESTRADA ---------- */
+.estrada{background:var(--pl-ceu);border:1px solid var(--pl-borda-int);border-radius:16px;
+  overflow:hidden}
+.estrada-cab{display:flex;align-items:baseline;gap:16px;padding:20px 24px 6px;flex-wrap:wrap}
+.estrada-cab h3{font-family:var(--disp);font-weight:600;font-size:23px;margin:0;color:#fff}
+.estrada-cab .meta{font-size:14px;font-weight:600;color:#b9c6e8}
+.estrada-cab .conta{margin-left:auto;font-size:14px;font-weight:700;color:#fff;min-width:9ch;text-align:right}
+/* vagalumes da prévia do E2: respiram devagar, cada um no seu tempo */
+@media (prefers-reduced-motion:no-preference){
+  .vagalume{animation:vaga 4.5s ease-in-out infinite;animation-delay:var(--dv,0s)}
+  @keyframes vaga{0%,100%{opacity:.45}50%{opacity:1}}
+}
+.pista{overflow-x:auto;overflow-y:hidden;padding-bottom:4px;
+  scrollbar-width:thin;scrollbar-color:var(--pl-andado) transparent;
+  /* as bordas esmaecem: corte vira "a estrada segue", não dado errado */
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent)}
+.pista::-webkit-scrollbar{height:9px}
+.pista::-webkit-scrollbar-thumb{background:var(--pl-andado);border-radius:6px}
+.pista::-webkit-scrollbar-track{background:rgba(255,255,255,.07)}
+.pista svg{display:block}
+.estrada-pe{padding:4px 24px 20px;font-size:14px;color:#b9c6e8}
+/* halo da cor do céu: o rótulo vence estrada, estrela e ícone atrás dele */
+.est-nome,.est-meta{paint-order:stroke;stroke:var(--pl-ceu);stroke-width:4px;stroke-linejoin:round}
+.est-nome{font-family:var(--disp);font-weight:600;fill:#fff}
+.est-nome.off{fill:#9aa9d4}
+.est-meta{font-family:var(--corpo);font-weight:600;fill:#b9c6e8}
+.no{cursor:pointer}
+.no:focus-visible{outline:none}
+.no:focus-visible .anel-foco{opacity:1}
+/* os sistemas solares: o SOL é o botão; os planetas só registram */
+.sol{cursor:pointer}
+.sol:hover .sol-halo,.sol:focus-visible .sol-halo{opacity:.45}
+@media (prefers-reduced-motion:no-preference){
+  .sol .sol-halo{transition:opacity .2s ease}
+  .orbita{animation:orbitar 150s linear infinite}
+  @keyframes orbitar{to{transform:rotate(360deg)}}
+}
+/* O FOGUETE.
+   A posição (translate + scale) vive num grupo de FORA, como atributo.
+   A animação vive num grupo de DENTRO, só por CSS. Misturar os dois no mesmo
+   elemento foi o bug: `transform` de CSS substitui o atributo inteiro, então
+   no hover o foguete perdia posição e escala e saltava para o canto do SVG.
+   A chama também não usa transition: duas animações que trocam no hover, senão
+   transition e animation brigam pela mesma propriedade. */
+.foguete{transform-box:fill-box;transform-origin:center bottom}
+.fogo{transform-box:fill-box;transform-origin:top center}
+@media (prefers-reduced-motion:no-preference){
+  .foguete{transition:transform .32s cubic-bezier(.2,.7,.3,1.3)}
+  .no:hover .foguete,.no:focus-visible .foguete{transform:translateY(-11px)}
+  .fogo{animation:chama 1.3s ease-in-out infinite}
+  .no:hover .fogo,.no:focus-visible .fogo{animation:chama-forte .34s ease-in-out infinite}
+  @keyframes chama{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.78)}}
+  @keyframes chama-forte{0%,100%{transform:scaleY(1.7) scaleX(1.05)}50%{transform:scaleY(1.25) scaleX(.9)}}
+}
+
+/* ---------- 3. A FICHA (Planner de Mesa) ---------- */
+/* A ficha não ocupa a página: a estrada é paisagem e pode ser larga, mas a
+   lição é leitura, e leitura tem medida. 900px e centrada. */
+/* O painel da lição é UM DEGRAU MAIS ESCURO que os blocos de aula (Pedro,
+   15/08/2026): o fundo recua e cada aula lê como um cartão apoiado nele. */
+.ficha{background:var(--pl-marinho-2);border:1px solid var(--pl-borda-int);border-radius:16px;
+  overflow:hidden;box-shadow:var(--pl-sombra);max-width:900px;margin:0 auto}
+.ficha.flash{box-shadow:0 0 0 4px var(--pl-lima),0 0 0 10px rgba(212,233,9,.35)}
+@media (prefers-reduced-motion:no-preference){ .ficha{transition:box-shadow .25s ease} }
+.ficha-cab{display:flex;align-items:center;gap:18px;padding:20px 24px;flex-wrap:wrap}
+.ficha-cab h3{font-family:var(--disp);font-weight:600;font-size:23px;margin:0;color:#fff}
+.ficha-cab .sub{font-size:14px;font-weight:600;color:#b9c6e8}
+.regua{margin-left:auto;text-align:right;color:#fff}
+.regua b{font-family:var(--disp);font-weight:600;font-size:19px;min-width:5ch;display:inline-block}
+.regua span{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#b9c6e8}
+
+.corpo{display:flex;gap:0;padding:0 24px 24px}
+.lombada{flex:0 0 46px;position:relative;padding-top:6px}
+.lomb-linha{position:absolute;left:21px;top:10px;bottom:10px;width:4px;background:var(--pl-espinha);border-radius:2px}
+.lomb-aula{position:relative;height:var(--h);display:flex;align-items:flex-start;justify-content:center}
+.lomb-aula .lomb-tick{margin-top:22px}
+.lomb-tick{position:relative;z-index:1;width:34px;height:34px;border-radius:50%;
+  background:var(--pl-marinho-2);border:3px solid var(--pl-espinha);
+  display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff}
+.lomb-aula[data-extra="1"] .lomb-tick{border-style:dashed}
+.lomb-aula[data-atual="1"] .lomb-tick{background:#fff;border-color:#fff;color:#12244f}
+
+.aulas{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;padding-top:6px}
+/* o contorno que diz "isto aqui é UM dia de aula" */
+.aula-box{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.075);
+  border-radius:16px;padding:14px 16px 16px}
+
+.aula-tit{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.aula-tit .papel{order:1;font-family:var(--disp);font-weight:600;font-size:19px;color:#fff}
+/* A DATA DA AULA, que estava escondida num metadado de 13px no canto.
+   Ela vem do Abridor de Planners e é a única âncora temporal do aluno dentro
+   da lição, então ganha o degrau 20 e abre a linha, em vez de fechá-la. */
+.data-aula{flex:0 0 auto;order:3;margin-left:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-width:64px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.20);line-height:1}
+.data-aula b{font-family:var(--disp);font-weight:600;font-size:23px;color:#fff}
+.data-aula span{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:#b9c6e8;margin-top:4px}
+/* aula que ainda não aconteceu: a data é previsão, e o desenho diz isso */
+.data-aula[data-prevista="1"]{background:transparent;border-style:dashed}
+.data-aula[data-prevista="1"] b{color:#c3cee5}
+.aula-tit .prevista{order:2;margin-left:auto;margin-right:0;font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:#8fa0cf}
+
+/* ── aula colapsável (Pedro, 15/08/2026): aula com tudo feito NASCE fechada;
+   aberta fica só a que ainda tem conteúdo em aberto. O título alterna. ── */
+.aula-tit{cursor:pointer;-webkit-user-select:none;user-select:none}
+.aula-tit .seta{order:0;flex:0 0 auto;width:20px;height:20px;display:flex;align-items:center;
+  justify-content:center;color:#8fa0cf;transition:transform .28s ease}
+.aula-tit .seta svg{width:18px;height:18px}
+.aula-box.colapsada .aula-tit .seta{transform:rotate(-90deg)}
+.aula-tit .resumo-feito{order:2;margin-left:auto;display:none;font-size:12px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:#d4e909;white-space:nowrap}
+@media (max-width:480px){ .aula-tit .resumo-feito{font-size:11px;letter-spacing:.04em} }
+/* o pronome muda com a vista: "sua" para o aluno, "do aluno" para o professor */
+body[data-visao="professor"] .rf-alu{display:none}
+body[data-visao="aluno"] .rf-prof{display:none}
+/* o cheque é STATUS DO ALUNO, não do bloco (Pedro, 15/08/2026): aparece
+   quando ele fez tudo o que compete a ele naquela aula, mesmo sem a metade
+   do professor — e aparece aberto ou fechado. Colapsar é só fechar. */
+.aula-box.sua-parte .aula-tit .resumo-feito{display:inline}
+.aula-box.colapsada .aula-tit{margin-bottom:0}
+.aula-box.colapsada .data-aula{margin-left:0}
+.aula-box.colapsada > :not(.aula-tit){display:none}
+.aula-box:not(.colapsada) > .itens,
+.aula-box:not(.colapsada) > .checking{animation:aulaAbre .3s ease}
+@keyframes aulaAbre{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .aula-box > *{animation:none!important}
+  .aula-tit .seta{transition:none}
+}
+
+.itens{display:flex;flex-direction:column;gap:7px}
+
+.item{display:flex;align-items:center;gap:11px;background:var(--pl-pilula);border-radius:999px;
+  padding:8px 18px 8px 8px;min-height:52px;flex-wrap:wrap;row-gap:7px}
+.item .nm{font-size:17px;font-weight:600;color:var(--pl-item-tinta);flex:0 1 auto;min-width:0}
+.item .pg{font-weight:400;color:var(--pl-item-pg)}
+.item.fim{background:var(--pl-item-off)}
+.item.fim .nm{color:var(--pl-tinta-2);text-decoration:line-through;text-decoration-thickness:2px}
+.item.fim .pg{color:var(--pl-tinta-2)}
+.item.alvo{box-shadow:0 0 0 3px var(--pl-lima)}
+.ir{margin-left:auto;background:var(--pl-marinho);color:#fff;border:0;border-radius:999px;
+  min-height:46px;padding:0 20px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.ir:focus-visible{outline:3px solid var(--pl-foco-inv);outline-offset:2px}
+.item.fim .ir{background:#7d88a6}
+
+/* quadro do checking: lima é herança do papel */
+.checking{margin-top:7px;background:var(--pl-lima);border-radius:14px;padding:14px 18px;display:flex;
+  align-items:center;gap:14px;flex-wrap:wrap}
+.checking .t{font-family:var(--disp);font-weight:600;font-size:19px;color:#161414}
+/* O DEGRAU ZERO do checking (Pedro, 15/08/2026): treinar antes, no Quick
+   Practice, já vale como parte do rito da 3ª aula — por isso mora DENTRO do
+   quadro lima, antes da bolinha e do título. Só o aluno vê; o professor não
+   precisa do botão. */
+.chk-prep{width:100%;order:-1;display:flex}
+body[data-visao="professor"] .chk-prep{display:none}
+.chk-prep .prep{flex:1;background:var(--pl-marinho);color:#fff;border:0;border-radius:12px;
+  min-height:46px;padding:0 20px;font-family:var(--disp);font-weight:600;font-size:15px;
+  cursor:pointer}
+@media (prefers-reduced-motion:no-preference){
+  .chk-prep .prep{transition:background .18s ease,color .18s ease,transform .18s ease,
+    box-shadow .18s ease}
+}
+/* o hover é para CHAMAR: inverte para branco sobre o lima, cresce e projeta */
+.chk-prep .prep:hover,.chk-prep .prep:focus-visible{background:#fff;color:var(--pl-marinho);
+  transform:scale(1.03);box-shadow:0 6px 18px rgba(22,38,94,.35)}
+.chk-cab{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+/* dentro do quadro lima, a marca do professor pinta em marinho, senão some */
+.checking .mk .ring{stroke:#3d4406}
+.checking .mk .toda{fill:#16265e}
+.chk-prof{width:100%;margin-top:10px;border-top:1.5px solid rgba(22,38,94,.25);padding-top:10px}
+body[data-visao="aluno"] .chk-prof{display:none}
+.chk-sub{font-size:14px;font-weight:800;color:#161414;margin-bottom:8px}
+.chk-chips{display:flex;flex-wrap:wrap;gap:8px}
+.chk-chip{font:inherit;font-size:14px;font-weight:700;color:#161414;background:transparent;
+  border:1.5px solid #3d4406;border-radius:999px;padding:9px 16px;cursor:pointer;min-height:44px}
+.chk-chip[aria-pressed="true"]{background:#16265e;color:var(--pl-lima);border-color:#16265e}
+.chk-chip:focus-visible{outline:3px solid #16265e;outline-offset:2px}
+.chk-bilhete{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+.chk-bilhete label{font-size:13.5px;font-weight:800;color:#161414}
+#bilheteProf{font:inherit;font-size:15px;border:1.5px solid #3d4406;border-radius:10px;
+  background:#fffef2;color:#161414;padding:10px 12px;resize:vertical;min-height:58px}
+#bilheteProf:focus-visible{outline:3px solid #16265e;outline-offset:2px}
+.chk-nota{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+.chk-nota label{font-size:13.5px;font-weight:800;color:#161414}
+.chk-nota-linha{display:flex;gap:8px;align-items:center}
+.chk-nota-linha .ir{margin-left:0}
+#notaChk{font:inherit;font-size:17px;font-weight:700;width:76px;min-height:44px;text-align:center;
+  border:1.5px solid #3d4406;border-radius:10px;background:#fffef2;color:#161414}
+#notaChk:focus-visible{outline:3px solid #16265e;outline-offset:2px}
+.chk-lock{font-size:13.5px;font-weight:700;color:#3d4406}
+/* o pedido do professor aparece para o aluno na home */
+.pedido-prof{margin-top:13px;border-left:4px solid var(--pl-lima);background:var(--pl-aviso-bg);
+  border-radius:0 10px 10px 0;padding:10px 14px;font-size:15px;color:var(--pl-tinta)}
+
+/* ═══ A MARCA (14/08/2026) ═══
+   Duas metades: o ALUNO à esquerda, o PROFESSOR à direita, sempre.
+   Azul = exercício (aluno) · rosa = tarefa (aluno) · LIMA = professor,
+   o mesmo verde-amarelado do quadro do checking e do planner impresso
+   (decisão do Pedro, 15/08/2026; o verde-portal ficou escuro demais).
+   Exploration e Checking são só do professor: um clique, verde inteiro.
+   O professor sobrescreve qualquer marca em ciclo: vazio → meio → cheio → vazio. */
+.mk{flex:0 0 auto;width:50px;height:50px;padding:0;border:0;background:transparent;
+  cursor:pointer;display:grid;place-items:center}
+.mk svg{width:38px;height:38px;display:block}
+.mk .bg{fill:#fff}
+.mk .ring{fill:none;stroke:var(--pl-acento);stroke-width:1.3}
+.mk[data-f="tri"] .ring{stroke:var(--pl-casa)}
+.mk[data-modo="prof"] .ring{stroke:var(--pl-lima)}
+.mk .ha,.mk .hp,.mk .toda{opacity:0}
+.mk .ha{fill:var(--pl-exerc)}
+.mk[data-f="tri"] .ha{fill:var(--pl-casa)}
+.mk .hp{fill:var(--pl-lima)}
+.mk .toda{fill:var(--pl-lima)}
+.mk[data-a="1"] .ha{opacity:1}
+.mk[data-p="1"] .hp{opacity:1}
+.mk[data-modo="prof"][data-p="1"] .toda{opacity:1}
+/* homework é SÓ do aluno (Pedro, 15/08/2026): o clique dele gira o
+   triângulo completo, rosa de tarefa; não existe metade do professor */
+.mk[data-modo="aluno"] .toda{fill:var(--pl-casa)}
+.mk[data-modo="aluno"][data-a="1"] .toda{opacity:1}
+.mk[data-modo="aluno"] .ha,.mk[data-modo="aluno"] .hp{opacity:0!important}
+body[data-visao="aluno"] .mk[data-modo="prof"],body[data-visao="aluno"] .mk[data-soprova="1"]{cursor:default}
+.mk[data-modo="extra"]{cursor:default}
+.mk:focus-visible{outline:3px solid var(--pl-foco-inv);outline-offset:2px;border-radius:50%}
+
+/* ícone do tipo de atividade, entre a marca e o nome */
+.it-ic{flex:0 0 auto;width:24px;height:24px;stroke:var(--pl-acento);fill:none;
+  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.item.fim .it-ic{opacity:.45}
+/* a capa do Smart Pack ao lado do botão do Video Book */
+.capa-vbk{height:46px;border-radius:8px;border:1.5px solid rgba(255,255,255,.55);
+  margin-left:auto;display:block}
+.capa-vbk+.ir{margin-left:10px}
+.item.fim .capa-vbk{opacity:.5}
+
+/* ═══ EXTRA: a side quest ═══
+   Song e movie não travam a lição. Vivem DENTRO da aula a que pertencem
+   (Pedro, 15/08/2026), na mesma posição do planner impresso, mas a tira
+   tracejada os mantém visualmente fora da trajetória obrigatória: não
+   contam na régua nem seguram o colapso da aula. */
+.extra-strip{margin:12px 0 0;border:1.5px dashed rgba(255,255,255,.38);border-radius:14px;
+  padding:11px 14px;background:rgba(255,255,255,.05)}
+.extra-strip .ex-rot{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:#b9c6e8;margin-bottom:8px}
+.rg-extra{display:block;font-size:12px;font-weight:700;color:#b9c6e8;margin-top:3px}
+
+/* registro, no lugar de medalha */
+/* lição futura: ver sempre, fazer só com a nota */
+.ficha.so-leitura .mk{pointer-events:none;cursor:default}
+.trava-futura{margin:0;padding:12px 24px;font-size:13.5px;font-weight:700;
+  color:#ffd9a0;background:rgba(246,168,33,.12);border-bottom:1px solid rgba(246,168,33,.35)}
+.prox-licao{display:flex;align-items:center;gap:14px;max-width:900px;margin:26px auto 8px}
+.pl-linha{flex:1;border-top:2px dashed #a7aec2}
+.pl-cadeado{position:relative;width:48px;height:48px;border-radius:50%;flex:0 0 auto;
+  border:2px dashed #a7aec2;display:grid;place-items:center;color:#8a93ab}
+.pl-cadeado svg{width:24px;height:24px}
+.pl-anel{position:absolute;inset:-3px;border-radius:50%;border:3px solid #a7aec2;opacity:0}
+@media (prefers-reduced-motion:no-preference){
+  .pl-anel{animation:plPulsa 2.6s ease-out infinite}
+  @keyframes plPulsa{0%{transform:scale(1);opacity:.45}70%,100%{transform:scale(1.6);opacity:0}}
+}
+.prox-licao-txt{max-width:900px;margin:0 auto 4px;text-align:center;font-size:14px;
+  font-weight:600;color:var(--pl-tinta-2)}
+/* destravada: o cadeado abre e o pulso vira lima */
+.prox-licao.aberta .pl-cadeado{border-style:solid;border-color:var(--pl-lima);color:#3d4406;background:var(--pl-aviso-bg)}
+.prox-licao.aberta .pl-anel{border-color:var(--pl-lima)}
+.registro{border-top:1px solid var(--pl-borda);padding-top:4px;max-width:900px;margin:0 auto}
+.registro h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--pl-tinta-2);margin:0 0 10px}
+.reg-linha{display:flex;gap:12px;align-items:baseline;padding:9px 0;font-size:13px;
+  border-bottom:1px solid var(--pl-borda);flex-wrap:wrap}
+.reg-linha:last-child{border-bottom:0}
+.reg-linha b{font-family:var(--disp);font-weight:600;font-size:13px;color:var(--pl-tinta)}
+.reg-linha span{color:var(--pl-tinta-2)}
+.reg-linha .qd{margin-left:auto;color:var(--pl-tinta-2)}
+
+.aud{margin-top:26px;background:var(--pl-superficie);border:1px solid var(--pl-borda);
+  border-left:5px solid var(--pl-aviso);border-radius:12px;padding:16px 20px;font-size:13px;
+  color:var(--pl-tinta-2);max-width:88ch}
+.aud b{color:var(--pl-tinta)}
+.barra-demo{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:22px 0 0}
+.barra-demo label{font-size:13px;font-weight:700;color:var(--pl-tinta-2)}
+.barra-demo select{font:inherit;font-size:13px;font-weight:700;color:var(--pl-tinta);
+  background:var(--pl-superficie);border:1px solid var(--pl-borda);border-radius:10px;
+  padding:0 12px;min-height:44px;cursor:pointer}
+.barra-demo select:focus-visible{outline:3px solid var(--pl-foco);outline-offset:2px}
+.sim-btn{font:inherit;font-size:13px;font-weight:700;color:var(--pl-tinta);
+  background:var(--pl-aviso-bg);border:1px solid var(--pl-aviso);border-radius:10px;
+  padding:0 14px;min-height:44px;cursor:pointer}
+.sim-btn:disabled{cursor:default;opacity:.75}
+.sim-btn:focus-visible{outline:3px solid var(--pl-foco);outline-offset:2px}
+.mock{display:inline-block;background:var(--pl-aviso-bg);color:var(--pl-aviso);
+  border-radius:999px;padding:5px 12px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.12em}
+
+i,em{font-style:italic}
+
+@media (max-width:1279px){ .agora h2{font-size:24px} }
+@media (max-width:767px){
+  .wrap{padding:0 14px 60px}
+  .agora{grid-template-columns:1fr;gap:18px;padding:20px}
+  .agora h2{font-size:20px}
+  .agora .lado{align-items:stretch}
+  .acao,.fantasma{width:100%}
+  .corpo{padding:0 14px 18px}
+  .lombada{flex:0 0 34px}
+  .lomb-linha{left:15px}
+  .lomb-tick{width:24px;height:24px;font-size:11px}
+  .item{border-radius:14px}
+  .ir{margin-left:0;width:100%}
+  /* item já riscado não grita: o botão de rever volta a ser pílula */
+  .item.fim .ir{width:auto;margin-left:auto;padding:0 14px;min-height:40px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .item,.acao,.ir{transition:box-shadow .18s ease,background-color .18s ease}
+  .pulso{animation:pl 2.8s ease-out infinite}
+  @keyframes pl{0%{r:26;opacity:.5}70%{r:40;opacity:0}100%{r:40;opacity:0}}
+}
+</style>
+
+<div class="chrome">
+  <span class="marca">FISK</span>
+  <span class="sec">Portal do Aluno · Planner</span>
+  <span class="dir">
+    <button class="tema" id="visao" type="button">Ver como professor</button>
+    <button class="tema" id="tema" type="button">Ver no escuro</button>
+    <span class="av">AB</span>
+  </span>
+</div>
+
+<div class="wrap planner">
+
+  <p class="barra-demo">
+    <span class="mock">dados simulados</span>
+    <label for="cenario">Ver o próximo passo em:</label>
+    <select id="cenario"></select>
+    <button type="button" id="simular" class="sim-btn">▶ Simular: terminei o Video Book 2 no portal</button>
+  </p>
+
+  <!-- 1 · PRÓXIMO PASSO -->
+  <details class="bloco" open>
+  <summary class="secao-rot"><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>O próximo passo<span class="dica-abre"></span></summary>
+  <section class="agora" aria-labelledby="ag-t">
+    <div>
+      <div class="kicker">Agora · <i lang="en">Lesson</i> 4 · 5ª aula</div>
+      <h2 id="ag-t">Continue nos exercícios da <i lang="en">Lesson</i> 4, na página 39.</h2>
+      <p class="apoio">Esta lição está na 5ª aula. Você já fechou <b>9 itens</b> nela.</p>
+      <div class="pedido-prof" id="pedidoProf" hidden></div>
+      <div class="pedido-prof" id="bilheteAluno" hidden></div>
+    </div>
+    <div class="lado">
+      <button class="acao" type="button" id="btAgora">Abrir os itens de hoje</button>
+      <button class="elo" type="button" id="btLicao">Ver a <i lang="en">Lesson</i> 4 inteira</button>
+    </div>
+  </section>
+</details>
+
+  <!-- 2 · A ESTRADA -->
+  <details class="bloco" open>
+  <summary class="secao-rot"><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>A trajetória do estágio<span class="dica-abre"></span></summary>
+  <section class="estrada" aria-labelledby="es-t">
+    <div class="estrada-cab">
+      <h3 id="es-t">Essentials 1</h3>
+      <span class="meta" id="esMeta"></span>
+      <span class="conta" id="esConta"></span>
+    </div>
+    <div class="pista" id="pista"></div>
+    <div class="estrada-pe" id="esPe"></div>
+  </section>
+</details>
+
+  <!-- 3 · A FICHA -->
+  <details class="bloco estreito" open id="blocoLicao">
+  <summary class="secao-rot"><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>A lição aberta<span class="dica-abre"></span></summary>
+  <section class="ficha" aria-labelledby="fi-t">
+    <div class="ficha-cab">
+      <div>
+        <h3 id="fi-t"><i lang="en">Lesson</i> 4</h3>
+        <div class="sub">Do / Does – Long Answers · The Time</div>
+      </div>
+      <div class="regua">
+        <b id="rgN">–</b>
+        <span>itens desta lição</span>
+        <span class="rg-extra" id="rgExtra"></span>
+      </div>
+    </div>
+    <div class="corpo">
+      <div class="lombada" id="lombada"><div class="lomb-linha"></div></div>
+      <div class="aulas" id="aulas"></div>
+    </div>
+  </section>
+
+  <!-- a próxima lição espera atrás do cadeado: ver sempre, fazer com a nota -->
+  <div class="prox-licao" id="proxLicao" role="img"
+       aria-label="Lesson 5: fazer abre quando esta lição terminar; ver, você sempre pode.">
+    <span class="pl-linha"></span>
+    <span class="pl-cadeado"><span class="pl-anel"></span>
+      <svg viewBox="0 0 24 24" aria-hidden="true" id="plIcone">
+        <path d="M8,11 V8 a4,4 0 0 1 8,0 v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <rect x="5.5" y="11" width="13" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      </svg>
+    </span>
+    <span class="pl-linha"></span>
+  </div>
+  <p class="prox-licao-txt" id="proxLicaoTxt"><i lang="en">Lesson</i> 5 · fazer abre quando esta lição terminar — ver, você sempre pode</p>
+</details>
+
+  <details class="bloco estreito" open>
+    <summary class="secao-rot"><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Registro<span class="dica-abre"></span></summary>
+    <div class="registro"><div id="reg"></div></div>
+  </details>
+
+  <p class="aud">
+    <b>Auditoria do lima, que o spec exige ser contável.</b> Ele aparece em três papéis e só
+    neles: o <b>único botão cheio da tela</b> (faça isto), o <b>clipe</b> e a chama do foguete (você está aqui),
+    e o quadro do <i lang="en">Checking</i>, que já é lima no papel. As marcas falam outra língua:
+    <b>azul</b> é exercício do aluno, <b>rosa</b> é tarefa, <b>verde</b> é o professor, sempre a
+    metade direita, ou a forma inteira no que é só dele. A estrada
+    percorrida <b>não</b> usa lima, usa azul cheio, senão o botão perderia a força.
+    Vermelho Fisk dentro do Planner tem <b>uma</b> exceção deliberada, pedida pelo diretor: as aletas do foguete, que são a marca da escola voando. Aviso continua âmbar, nunca vermelho.
+  </p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ═══ A TRAJETÓRIA FALA A LÍNGUA DO LIVRO ═══
+     Decisão do Pedro em 13/08/2026: o percurso do estágio é imersão, então
+     nada dele aparece em português. O livro é que manda: inglês nos estágios
+     de inglês, espanhol nos de espanhol. A moldura do Portal em volta (o
+     rótulo do bloco, o menu) continua na língua do aluno, porque é navegação,
+     não conteúdo do curso. */
+  var IDIOMA_DO_LIVRO = function (book) {
+    return /inmediato|con[ée]ctate|espa[nñ]ol|chiquiteens/i.test(book) ? 'es' : 'en';
+  };
+  var T = {
+    en:{ steps:'steps', items:'items', of:'of', classes:'classes', done:'done',
+         lesson:'Lesson', test:'Test', checkpoint:'Checkpoint', intro:'Intro',
+         youAreHere:'You are here',
+         plan:'This line is your <b>plan</b>, not a deadline. It has no downside.' },
+    es:{ steps:'etapas', items:'ítems', of:'de', classes:'clases', done:'hecho',
+         lesson:'Lección', test:'Examen', checkpoint:'Checkpoint', intro:'Intro',
+         youAreHere:'Estás aquí',
+         plan:'Esta línea es tu <b>plan</b>, no un plazo. No tiene lado de abajo.' }
+  };
+  /* ícones por tipo de atividade (traço, herdam a cor do acento).
+     A pipoca é do movie, pedida pelo Pedro; fica pronta para as lições
+     que têm filme. */
+  var IC_ITEM={
+    balao:'<path d="M4.5,5.5h15v9.5h-9l-4,3.5v-3.5h-2z"/><path d="M8.5,10.5h.01M12,10.5h.01M15.5,10.5h.01"/>',
+    caderno:'<path d="M6,4.5h12v15H6z M9.5,4.5v15 M12.5,9h3 M12.5,12.5h3"/>',
+    casa:'<path d="M4.5,11.5 12,5l7.5,6.5 M6.5,10v9h11v-9 M10.5,19v-5h3v5"/>',
+    check:'<path d="M5,5h14v14H5z M8.5,12.3 11,14.8l4.5,-5.3"/>',
+    lapis:'<path d="M4.5,19.5 5.6,15.9 16,5.4a1.9,1.9 0 0 1 2.7,2.7L8.1,18.4 4.5,19.5z M14.2,7.2l2.7,2.7"/>',
+    nota:'<path d="M9.5,17V6.3L17.5,4.8V15"/><circle cx="7.3" cy="17" r="2.2"/><circle cx="15.3" cy="15" r="2.2"/>',
+    clap:'<path d="M4.5,9.5h15V19h-15z M4.5,9.5 6.5,5.5h13l-2,4 M9,9.2 10.8,5.5 M13.5,9.2 15.3,5.5"/>',
+    qr:'<path d="M5,5h5v5H5z M14,5h5v5h-5z M5,14h5v5H5z M14,14h2.5v2.5h-2.5z M16.5,16.5H19V19h-2.5z"/>',
+    pipoca:'<circle cx="8" cy="7.5" r="2.4"/><circle cx="12" cy="6.3" r="2.6"/><circle cx="16" cy="7.5" r="2.4"/><path d="M6.8,10.5 6,19.5h12l-.8,-9 M10.2,11l-.4,8.5 M13.8,11l.4,8.5"/>'
+  };
+
+
+  /* ⇙ PLANO GERADO (node build-plano-maquete.js reescreve este bloco) ⇘ */
+  /* GERADO por build-plano-maquete.js a partir de gabarito-essentials-1.csv — NÃO editar à mão. 112 itens + 14 extras em 15 lições / 41 aulas. */
+var PLANO_E1={"book": "Essentials 1","licoes": [{"id": "INTRO","base": "INTRO","tema": "Before you start","aulas": [{"a": 1,"papel": "Introdução · parte 1","itens": [{"nm": "Book introduction","tipo": "intro","ic": "balao","modo": "prof","id": "INTRO-1"},{"nm": "Planner Introduction","tipo": "intro","ic": "balao","modo": "prof","id": "INTRO-2"}],"extras": []},{"a": 2,"papel": "Introdução · parte 2","itens": [{"nm": "Exploration Before You Start","tipo": "exploration","ic": "balao","modo": "duplo","soProva": 1,"ir": "Vídeos","id": "INTRO-3"},{"nm": "Exercises Before You Start","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 6 / 7 / 8","id": "INTRO-4"}],"extras": []}],"nItens": 4,"nExtras": 0,"nAulas": 2},{"id": "L1","base": "L1","tema": "All about you","aulas": [{"a": 3,"papel": "Explanation","itens": [{"nm": "QR Code Introduction","tipo": "qr","ic": "qr","modo": "duplo","id": "L1-1"},{"nm": "Exploration L1","tipo": "exploration","ic": "balao","modo": "duplo","soProva": 1,"ir": "Vídeos","id": "L1-2"},{"nm": "Exercises L1 A","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 09 / 10 / 11/ 12","id": "L1-3"},{"nm": "Homework L1 A","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 99/100","id": "L1-4"}],"extras": []},{"a": 4,"papel": "Exercises","itens": [{"nm": "Exercises L1 B","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 13/14/15/16","id": "L1-5"},{"nm": "Homework L1 B","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 100/101","id": "L1-6"},{"nm": "Writing Task","tipo": "writing","ic": "lapis","modo": "duplo","f": "tri","pg": "p. 15","id": "L1-7"}],"extras": []},{"a": 5,"papel": "Checking","itens": [{"nm": "Homework Correction","tipo": "correcao","ic": "check","modo": "duplo","id": "L1-8"},{"nm": "QR Code Exercises","tipo": "qr","ic": "qr","modo": "duplo","pg": "p. 16","id": "L1-9"}],"extras": [{"nm": "Movie Introduction","tipo": "movie","ic": "pipoca","modo": "extra","extra": 1,"ir": "Movie Program","id": "L1-x10"},{"nm": "Movie 1","tipo": "movie","ic": "pipoca","modo": "extra","extra": 1,"ir": "Movie Program","id": "L1-x11"}],"check": true}],"nItens": 9,"nExtras": 2,"nAulas": 3},{"id": "L2","base": "L2","tema": "Food","aulas": [{"a": 6,"papel": "Explanation","itens": [{"nm": "Exploration L2","tipo": "exploration","ic": "balao","modo": "duplo","soProva": 1,"ir": "Vídeos","id": "L2-1"},{"nm": "Exercises L2 A","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 17/18/19/20","id": "L2-2"},{"nm": "Homework L2 A","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 102/103","id": "L2-3"}],"extras": [{"nm": "Songs Introduction","tipo": "song","ic": "nota","modo": "extra","extra": 1,"ir": "Song Program","id": "L2-x4"},{"nm": "Song 1 ___","tipo": "song","ic": "nota","modo": "extra","extra": 1,"ir": "Song Program","id": "L2-x5"}]},{"a": 7,"papel": "Exercises","itens": [{"nm": "Video Ac. Introduction","tipo": "video","ic": "clap","modo": "duplo","ir": "Video Book","capa": 1,"id": "L2-6"},{"nm": "Exercises L2 B","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 21/22/23/24","id": "L2-7"},{"nm": "Homework L2 B","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 103/104","id": "L2-8"},{"nm": "Writing Task","tipo": "writing","ic": "lapis","modo": "duplo","f": "tri","pg": "p. 23","id": "L2-9"}],"extras": []},{"a": 8,"papel": "Checking","itens": [{"nm": "Homework Correction","tipo": "correcao","ic": "check","modo": "duplo","id": "L2-10"},{"nm": "Video Activity 1","tipo": "video","ic": "clap","modo": "duplo","ir": "Video Book","capa": 1,"id": "L2-11"},{"nm": "QR Code Exercises","tipo": "qr","ic": "qr","modo": "duplo","pg": "p. 24","id": "L2-12"}],"extras": [],"check": true}],"nItens": 10,"nExtras": 2,"nAulas": 3},{"id": "L3","base": "L3","tema": "Everyday life","aulas": [{"a": 9,"papel": "Explanation","itens": [{"nm": "Exploration L3","tipo": "exploration","ic": "balao","modo": "duplo","soProva": 1,"ir": "Vídeos","id": "L3-1"},{"nm": "Exercises L3 A","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 25/26/27/28","id": "L3-2"},{"nm": "Homework L3 A","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 105/106","id": "L3-3"}],"extras": [{"nm": "Extra Exercises Intro","tipo": "extra","ic": "nota","modo": "extra","extra": 1,"ir": "Quick Practice","id": "L3-x4"}]},{"a": 10,"papel": "Exercises","itens": [{"nm": "Exercises L3 B","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 29/30/31/32","id": "L3-5"},{"nm": "Homework L3 B","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 106/107","id": "L3-6"},{"nm": "Writing Task","tipo": "writing","ic": "lapis","modo": "duplo","f": "tri","pg": "p. 31","id": "L3-7"}],"extras": []},{"a": 11,"papel": "Checking","itens": [{"nm": "Homework Correction","tipo": "correcao","ic": "check","modo": "duplo","id": "L3-8"},{"nm": "QR Code Exercises","tipo": "qr","ic": "qr","modo": "duplo","pg": "p. 32","id": "L3-9"}],"extras": [{"nm": "Movie 2","tipo": "movie","ic": "pipoca","modo": "extra","extra": 1,"ir": "Movie Program","id": "L3-x10"}],"check": true}],"nItens": 8,"nExtras": 2,"nAulas": 3},{"id": "L4","base": "L4","tema": "People we know","aulas": [{"a": 12,"papel": "Explanation","itens": [{"nm": "Exploration L4","tipo": "exploration","ic": "balao","modo": "duplo","soProva": 1,"ir": "Vídeos","id": "L4-1"},{"nm": "Exercises L4 A","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 33/34/35/36","id": "L4-2"},{"nm": "Homework L4 A","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 108/109","id": "L4-3"}],"extras": [{"nm": "Song 2 ___","tipo": "song","ic": "nota","modo": "extra","extra": 1,"ir": "Song Program","id": "L4-x4"}]},{"a": 13,"papel": "Exercises","itens": [{"nm": "Exercises L4 B","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 37/38/39/40","id": "L4-5"},{"nm": "Homework L4 B","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 109/110","id": "L4-6"},{"nm": "Writing Task","tipo": "writing","ic": "lapis","modo": "duplo","f": "tri","pg": "p. 39","id": "L4-7"}],"extras": []},{"a": 14,"papel": "Checking","itens": [{"nm": "Homework Correction","tipo": "correcao","ic": "check","modo": "duplo","id": "L4-8"},{"nm": "Video Activity 2","tipo": "video","ic": "clap","modo": "duplo","ir": "Video Book","capa": 1,"id": "L4-9"},{"nm": "QR Code Exercises","tipo": "qr","ic": "qr","modo": "duplo","pg": "p. 40","id": "L4-10"}],"extras": [],"check": true}],"nItens": 9,"nExtras": 1,"nAulas": 3},{"id": "L5","base": "L5","tema": "Fashion","aulas": [{"a": 15,"papel": "Explanation","itens": [{"nm": "Exploration L5","tipo": "exploration","ic": "balao","modo": "duplo","soProva": 1,"ir": "Vídeos","id": "L5-1"},{"nm": "Exercises L5 A","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 41/42/43/44","id": "L5-2"},{"nm": "Homework L5 A","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 111/112","id": "L5-3"}],"extras": [{"nm": "Movie 3","tipo": "movie","ic": "pipoca","modo": "extra","extra": 1,"ir": "Movie Program","id": "L5-x4"}]},{"a": 16,"papel": "Exercises","itens": [{"nm": "Exercises L5 B","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 45/46/47/48","id": "L5-5"},{"nm": "Homework L5 B","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 112/113","id": "L5-6"},{"nm": "Writing Task","tipo": "writing","ic": "lapis","modo": "duplo","f": "tri","pg": "p. 47","id": "L5-7"}],"extras": []},{"a": 17,"papel": "Checking","itens": [{"nm": "Homework Correction","tipo": "correcao","ic": "check","modo": "duplo","id": "L5-8"},{"nm": "QR Code Exercises","tipo": "qr","ic": "qr","modo": "duplo","pg": "p. 48","id": "L5-9"}],"extras": [{"nm": "Song 3 ___","tipo": "song","ic": "nota","modo": "extra","extra": 1,"ir": "Song Program","id": "L5-x10"}],"check": true}],"nItens": 8,"nExtras": 2,"nAulas": 3},{"id": "CHP1","base": "CHP","tema": "Review · Lessons 1–5","aulas": [{"a": 18,"papel": "Checkpoint · parte 1","itens": [{"nm": "Checkpoint Exercises","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 49/50/51/52","id": "CHP1-1"},{"nm": "Prepare Speech For Your Oral Presentation","tipo": "oral","ic": "balao","modo": "prof","ir": "Conversation Maker","id": "CHP1-2"},{"nm": "QR Code Exercises","tipo": "qr","ic": "qr","modo": "duplo","pg": "p. 52","id": "CHP1-3"}],"extras": []},{"a": 19,"papel": "Checkpoint · parte 2","itens": [{"nm": "Checkpoint Correction","tipo": "correcao","ic": "check","modo": "prof","id": "CHP1-4"},{"nm": "Review Plan","tipo": "review","ic": "caderno","modo": "prof","pg": "p. 52","id": "CHP1-5"},{"nm": "Review Plan Exercises","tipo": "review","ic": "caderno","modo": "prof","id": "CHP1-6"},{"nm": "Oral Presentation","tipo": "oral","ic": "balao","modo": "prof","ir": "Conversation Maker","id": "CHP1-7"}],"extras": [{"nm": "Extra Review Exercises Intro","tipo": "extra","ic": "nota","modo": "extra","extra": 1,"ir": "Quick Practice","id": "CHP1-x8"}]}],"nItens": 7,"nExtras": 1,"nAulas": 2},{"id": "TEST1","base": "TEST","tema": "Lessons 1–5","aulas": [{"a": 20,"papel": "Provas · parte 1","itens": [{"nm": "Written Test","tipo": "prova","ic": "lapis","modo": "prof","id": "TEST1-1"},{"nm": "Listening Test 1","tipo": "prova","ic": "lapis","modo": "prof","id": "TEST1-2"}],"extras": []},{"a": 21,"papel": "Provas · parte 2","itens": [{"nm": "Comments - Test 1","tipo": "reportcard","ic": "check","modo": "prof","id": "TEST1-3"},{"nm": "Book Review Part I — Choose A Book To Read","tipo": "bookreview","ic": "caderno","modo": "prof","id": "TEST1-4"}],"extras": []}],"nItens": 4,"nExtras": 0,"nAulas": 2},{"id": "L6","base": "L6","tema": "Working out","aulas": [{"a": 22,"papel": "Explanation","itens": [{"nm": "Exploration L6","tipo": "exploration","ic": "balao","modo": "duplo","soProva": 1,"ir": "Vídeos","id": "L6-1"},{"nm": "Exercises L6 A","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 53/54/55/56","id": "L6-2"},{"nm": "Homework L6 A","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 114/115","id": "L6-3"}],"extras": []},{"a": 23,"papel": "Exercises","itens": [{"nm": "Exercises L6 B","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 57/58/59/60","id": "L6-4"},{"nm": "Homework L6 B","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 115/116","id": "L6-5"},{"nm": "Writing Task","tipo": "writing","ic": "lapis","modo": "duplo","f": "tri","pg": "p. 59","id": "L6-6"}],"extras": []},{"a": 24,"papel": "Checking","itens": [{"nm": "Homework Correction","tipo": "correcao","ic": "check","modo": "duplo","id": "L6-7"},{"nm": "Video Activity 3","tipo": "video","ic": "clap","modo": "duplo","ir": "Video Book","capa": 1,"id": "L6-8"},{"nm": "QR Code Exercises","tipo": "qr","ic": "qr","modo": "duplo","pg": "p. 60","id": "L6-9"}],"extras": [],"check": true}],"nItens": 9,"nExtras": 0,"nAulas": 3},{"id": "L7","base": "L7","tema": "Around town","aulas": [{"a": 25,"papel": "Explanation","itens": [{"nm": "Exploration L7","tipo": "exploration","ic": "balao","modo": "duplo","soProva": 1,"ir": "Vídeos","id": "L7-1"},{"nm": "Exercises L7 A","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 61/62/63/64","id": "L7-2"},{"nm": "Homework L7 A","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 117/118","id": "L7-3"}],"extras": []},{"a": 26,"papel": "Exercises","itens": [{"nm": "Exercises L7 B","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 65/66/67/68","id": "L7-4"},{"nm": "Homework L7 B","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 118/119","id": "L7-5"},{"nm": "Writing Task","tipo": "writing","ic": "lapis","modo": "duplo","f": "tri","pg": "p. 67","id": "L7-6"}],"extras": []},{"a": 27,"papel": "Checking","itens": [{"nm": "Homework Correction","tipo": "correcao","ic": "check","modo": "duplo","id": "L7-7"},{"nm": "QR Code Exercises","tipo": "qr","ic": "qr","modo": "duplo","pg": "p. 68","id": "L7-8"}],"extras": [{"nm": "Movie 4","tipo": "movie","ic": "pipoca","modo": "extra","extra": 1,"ir": "Movie Program","id": "L7-x9"}],"check": true}],"nItens": 8,"nExtras": 1,"nAulas": 3},{"id": "L8","base": "L8","tema": "Going places","aulas": [{"a": 28,"papel": "Explanation","itens": [{"nm": "Exploration L8","tipo": "exploration","ic": "balao","modo": "duplo","soProva": 1,"ir": "Vídeos","id": "L8-1"},{"nm": "Exercises L8 A","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 69/70/71/72","id": "L8-2"}],"extras": [{"nm": "Song 4 ___","tipo": "song","ic": "nota","modo": "extra","extra": 1,"ir": "Song Program","id": "L8-x3"}]},{"a": 29,"papel": "Exercises","itens": [{"nm": "Homework L8 A","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 120/121","id": "L8-4"},{"nm": "Exercises L8 B","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 73/74/75/76","id": "L8-5"}],"extras": []},{"a": 30,"papel": "Checking","itens": [{"nm": "Homework L8 B","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 121/122","id": "L8-6"},{"nm": "Writing Task","tipo": "writing","ic": "lapis","modo": "duplo","f": "tri","pg": "p. 75","id": "L8-7"},{"nm": "Homework Correction","tipo": "correcao","ic": "check","modo": "duplo","id": "L8-8"}],"extras": []},{"a": 31,"papel": "Extra","itens": [{"nm": "Video Activity 4","tipo": "video","ic": "clap","modo": "duplo","ir": "Video Book","capa": 1,"id": "L8-9"},{"nm": "QR Code Exercises","tipo": "qr","ic": "qr","modo": "duplo","pg": "p. 76","id": "L8-10"}],"extras": [],"check": true}],"nItens": 9,"nExtras": 1,"nAulas": 4},{"id": "L9","base": "L9","tema": "Entertain me","aulas": [{"a": 32,"papel": "Explanation","itens": [{"nm": "Exploration L9","tipo": "exploration","ic": "balao","modo": "duplo","soProva": 1,"ir": "Vídeos","id": "L9-1"},{"nm": "Exercises L9 A","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 77/78/79/80","id": "L9-2"},{"nm": "Homework L9 A","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 123/124","id": "L9-3"}],"extras": [{"nm": "Song 5 ___","tipo": "song","ic": "nota","modo": "extra","extra": 1,"ir": "Song Program","id": "L9-x4"}]},{"a": 33,"papel": "Exercises","itens": [{"nm": "Exercises L9 B","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 81/82/83/84","id": "L9-5"},{"nm": "Homework L9 B","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 124/125","id": "L9-6"},{"nm": "Writing Task","tipo": "writing","ic": "lapis","modo": "duplo","f": "tri","pg": "p. 83","id": "L9-7"}],"extras": []},{"a": 34,"papel": "Checking","itens": [{"nm": "Homework Correction","tipo": "correcao","ic": "check","modo": "duplo","id": "L9-8"},{"nm": "QR Code Exercises","tipo": "qr","ic": "qr","modo": "duplo","pg": "p. 84","id": "L9-9"}],"extras": [{"nm": "Movie 5","tipo": "movie","ic": "pipoca","modo": "extra","extra": 1,"ir": "Movie Program","id": "L9-x10"}],"check": true}],"nItens": 8,"nExtras": 2,"nAulas": 3},{"id": "L10","base": "L10","tema": "Last weekend","aulas": [{"a": 35,"papel": "Explanation","itens": [{"nm": "Exploration L10","tipo": "exploration","ic": "balao","modo": "duplo","soProva": 1,"ir": "Vídeos","id": "L10-1"},{"nm": "Exercises L10 A","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 85/86/87/88","id": "L10-2"},{"nm": "Homework L10 A","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 126/127","id": "L10-3"}],"extras": []},{"a": 36,"papel": "Exercises","itens": [{"nm": "Exercises L10 B","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 89/90/91/92","id": "L10-4"},{"nm": "Homework L10 B","tipo": "homework","ic": "casa","modo": "aluno","f": "tri","pg": "p. 127/128","id": "L10-5"},{"nm": "Writing Task","tipo": "writing","ic": "lapis","modo": "duplo","f": "tri","pg": "p. 91","id": "L10-6"}],"extras": []},{"a": 37,"papel": "Checking","itens": [{"nm": "Homework Correction","tipo": "correcao","ic": "check","modo": "duplo","id": "L10-7"},{"nm": "Video Activity 5","tipo": "video","ic": "clap","modo": "duplo","ir": "Video Book","capa": 1,"id": "L10-8"},{"nm": "QR Code Exercises","tipo": "qr","ic": "qr","modo": "duplo","pg": "p. 92","id": "L10-9"}],"extras": [],"check": true}],"nItens": 9,"nExtras": 0,"nAulas": 3},{"id": "CHP2","base": "CHP","tema": "Review · Lessons 6–10","aulas": [{"a": 38,"papel": "Checkpoint · parte 1","itens": [{"nm": "Prepare Speech For Your Oral Presentation","tipo": "oral","ic": "balao","modo": "prof","ir": "Conversation Maker","id": "CHP2-1"},{"nm": "Checkpoint Exercises","tipo": "exercicios","ic": "caderno","modo": "duplo","pg": "p. 93/94/95/96","id": "CHP2-2"},{"nm": "QR Code Exercises","tipo": "qr","ic": "qr","modo": "duplo","pg": "p. 96","id": "CHP2-3"}],"extras": []},{"a": 39,"papel": "Checkpoint · parte 2","itens": [{"nm": "Checkpoint Correction","tipo": "correcao","ic": "check","modo": "prof","id": "CHP2-4"},{"nm": "Review Plan","tipo": "review","ic": "caderno","modo": "prof","pg": "p. 96","id": "CHP2-5"},{"nm": "Review Plan Exercises","tipo": "review","ic": "caderno","modo": "prof","id": "CHP2-6"},{"nm": "Oral Presentation","tipo": "oral","ic": "balao","modo": "prof","ir": "Conversation Maker","id": "CHP2-7"}],"extras": []}],"nItens": 7,"nExtras": 0,"nAulas": 2},{"id": "TEST2","base": "TEST","tema": "Lessons 6–10","aulas": [{"a": 40,"papel": "Provas · parte 1","itens": [{"nm": "Written Test 2","tipo": "prova","ic": "lapis","modo": "prof","id": "TEST2-1"},{"nm": "Listening Test","tipo": "prova","ic": "lapis","modo": "prof","id": "TEST2-2"}],"extras": []},{"a": 41,"papel": "Provas · parte 2","itens": [{"nm": "Comments - Test 2","tipo": "reportcard","ic": "check","modo": "prof","id": "TEST2-3"}],"extras": []}],"nItens": 3,"nExtras": 0,"nAulas": 2}]};
+  /* ⇗ FIM DO PLANO GERADO ⇖ */
+
+  var BOOK = 'Essentials 1';
+  var L10N = T[IDIOMA_DO_LIVRO(BOOK)];
+
+  /* ---- a SIMULAÇÃO da Ana: só o que estaria no servidor ---- */
+  var SIM={
+    atual:'L4', feitosNaAtual:5,
+    fechadas:{INTRO:'19 jun',L1:'03 jul',L2:'17 jul',L3:'02 ago'},
+    datas:{INTRO:['09/06','12/06'],L1:['16/06','23/06','30/06'],
+           L2:['02/07','07/07','14/07'],L3:['21/07','28/07','30/07'],
+           L4:['04/08','06/08','11/08']}
+  };
+  /* as 15 etapas saem do PLANO GERADO; o estado sai da simulação */
+  var ETAPAS=PLANO_E1.licoes.map(function(l){
+    var rot = l.id==='INTRO' ? L10N.intro
+            : l.id.indexOf('CHP')===0 ? L10N.checkpoint+' '+l.id.slice(3)
+            : l.id.indexOf('TEST')===0 ? L10N.test+' '+l.id.slice(4)
+            : 'Lesson '+l.id.slice(1);
+    return {id:l.id, rot:rot, itens:l.nItens, aulas:l.nAulas,
+      estado:SIM.fechadas[l.id]?'feita':(l.id===SIM.atual?'atual':'futura'),
+      fim:SIM.fechadas[l.id], tipo:/^(CHP|TEST)/.test(l.id)?'marco':undefined};
+  });
+
+  /* itens fechados: a régua conta ITENS, nunca aulas */
+  var feitos=ETAPAS.filter(function(e){return e.estado==='feita';})
+                   .reduce(function(s,e){return s+e.itens;},0)+SIM.feitosNaAtual;
+  var total=ETAPAS.reduce(function(s,e){return s+e.itens;},0);
+  document.getElementById('esConta').textContent=feitos+' '+L10N.of+' '+total+' '+L10N.items;
+
+  /* ---------- a estrada ---------- */
+  var NS='http://www.w3.org/2000/svg';
+  function el(n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  function curva(p){
+    var d='M'+p[0].x+','+p[0].y;
+    for(var i=0;i<p.length-1;i++){
+      var a=p[i-1]||p[i],b=p[i],c=p[i+1],e2=p[i+2]||c;
+      d+='C'+(b.x+(c.x-a.x)/6)+','+(b.y+(c.y-a.y)/6)+' '+(c.x-(e2.x-b.x)/6)+','+(c.y-(e2.y-b.y)/6)+' '+c.x+','+c.y;
+    }
+    return d;
+  }
+
+  document.getElementById('esMeta').textContent =
+    ETAPAS.length+' '+L10N.steps+' · '+total+' '+L10N.items;
+  document.getElementById('esPe').innerHTML = L10N.plan
+    + ' <span style="opacity:.85">Each solar system holds one kind of extra — songs, movies, the Video Book. A painted planet is done. Extras never block the road.</span>';
+
+  var pista=document.getElementById('pista');
+  var PASSO=168, AMP=44, BASE=176, MARG=104, ALT=352, VIA=30, R=27;
+  var pts=ETAPAS.map(function(e,i){return {x:MARG+i*PASSO, y:BASE+Math.sin(i*0.8+0.4)*AMP};});
+  var L=MARG*2+(ETAPAS.length-1)*PASSO;
+  /* o universo continua depois do Test 2: o caminho apagado até a borda é o
+     Essentials 2 dizendo que a trajetória não termina aqui */
+  var SEGUE=420, LTOT=L+SEGUE;
+  var svg=el('svg',{viewBox:'0 0 '+LTOT+' '+ALT,width:LTOT,height:ALT,role:'img',
+    'aria-label':'Trajetória do Essentials 1. Quatro etapas concluídas, você está na Lesson 4.'});
+
+  /* --- céu: poeira de estrelas, nebulosas e ícones de estudo ---
+     Desenhados, não emoji: emoji muda de forma em cada sistema, não aceita cor
+     e o leitor de tela lê cada um em voz alta.
+     Nada é aleatório: a posição sai do índice, para o desenho ser o mesmo
+     em toda visita (e para o Math.random continuar em zero no projeto). */
+  var ICONES={
+    lapis:'M3 21l1.2-4.2L15.6 5.4l3 3L7.2 19.8 3 21z M14.4 6.6l3 3',
+    fone:'M4 14v-2a8 8 0 0116 0v2 M4 14h3v6H5a1 1 0 01-1-1v-5z M20 14h-3v6h2a1 1 0 001-1v-5z',
+    caderno:'M6 3h12a1 1 0 011 1v16a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z M9 3v18 M12 8h4 M12 12h4',
+    mochila:'M6 9a6 6 0 0112 0v10a2 2 0 01-2 2H8a2 2 0 01-2-2V9z M9 9V7a3 3 0 016 0v2 M9 14h6',
+    relogio:'M12 3a9 9 0 100 18 9 9 0 000-18z M12 7v5l3 2',
+    nota:'M9 18V5l10-2v13 M9 18a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z M19 16a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z',
+    livro:'M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2V5z M19 19H6',
+    balao:'M4 5h16v11H9l-5 4V5z M8 10h1 M12 10h1 M16 10h1',
+    globo:'M12 3a9 9 0 100 18 9 9 0 000-18z M3 12h18 M12 3a14 14 0 000 18 14 14 0 000-18z',
+    lampada:'M9 18h6 M10 21h4 M12 3a6 6 0 00-3.5 10.9V16h7v-2.1A6 6 0 0012 3z',
+    regua:'M3 8h18v8H3z M7 8v4 M11 8v4 M15 8v4 M19 8v4',
+    foguete:'M12 3s4 2.5 4 8c0 3-1.5 5-4 7-2.5-2-4-4-4-7 0-5.5 4-8 4-8z M12 10a1.5 1.5 0 100-3 1.5 1.5 0 000 3z M8 15l-3 4 4-1.5 M16 15l3 4-4-1.5'
+  };
+  var NOMES=Object.keys(ICONES);
+  var fundo=el('g',{'aria-hidden':'true'});
+
+  /* onde passa a estrada, para nada de fundo encostar nela */
+  function yDaVia(x){ return BASE + Math.sin(((x-MARG)/PASSO)*0.8+0.4)*AMP; }
+
+  /* nebulosas e colinas: manchas grandes e fracas, para profundidade.
+     DESFOCADAS de propósito (crítica de 15/08/2026): o disco chapado lia
+     como moeda semitransparente; a bruma precisa de borda esmaecida. */
+  var fNevoa=el('filter',{id:'nevoa',x:'-60%',y:'-60%',width:'220%',height:'220%'});
+  fNevoa.appendChild(el('feGaussianBlur',{stdDeviation:34}));
+  fundo.appendChild(fNevoa);
+  var nevoas=el('g',{filter:'url(#nevoa)'});
+  [[0.12,0.30,'#3b4fa8'],[0.34,0.74,'#6b3fa8'],[0.58,0.22,'#2b5fa8'],
+   [0.78,0.68,'#8a3f8f'],[0.94,0.34,'#3b4fa8']].forEach(function(n){
+    nevoas.appendChild(el('circle',{cx:L*n[0], cy:ALT*n[1], r:ALT*0.42, fill:n[2], opacity:.13}));
+  });
+  for(var ic=0;ic<ETAPAS.length;ic+=2){
+    nevoas.appendChild(el('circle',{cx:MARG+ic*PASSO+PASSO*0.5, cy:BASE+AMP*2.6,
+      r:PASSO*1.05, fill:'var(--pl-asfalto)', opacity:.20}));
+  }
+  fundo.appendChild(nevoas);
+
+  /* planetas decorativos: voltaram a pedido do Pedro (14/08/2026), porque
+     eram bonitos. A distinção com os planetas DOS SISTEMAS fica clara pelo
+     desenho: os dos sistemas vivem numa órbita tracejada em volta de um sol
+     com ícone; estes vagam soltos, com anel e meia-lua de sombra. */
+  [[0.07,0.24,26,'#5b73d8',1],[0.27,0.80,19,'#8a4fb0',0],[0.46,0.16,15,'#3f8fb0',0],
+   [0.63,0.84,23,'#b06a3f',1],[0.85,0.20,17,'#4f6fd0',0],[0.97,0.78,21,'#7a4fa8',1]
+  ].forEach(function(pl){
+    var px=L*pl[0], py=ALT*pl[1];
+    if(Math.abs(py-yDaVia(px))<70) return;
+    if(px>L-60) return;                                /* idem: sem entulho na floresta */
+    var gp=el('g',{opacity:.5});
+    gp.appendChild(el('circle',{cx:px,cy:py,r:pl[2],fill:pl[3]}));
+    gp.appendChild(el('path',{d:'M'+px+','+(py-pl[2])+' A'+pl[2]+','+pl[2]+' 0 0 1 '+px+','+(py+pl[2])+' Z',
+      fill:'#0b1338',opacity:.28}));
+    if(pl[4]){
+      gp.appendChild(el('ellipse',{cx:px,cy:py,rx:pl[2]*1.85,ry:pl[2]*0.42,fill:'none',
+        stroke:'#cfe0ff','stroke-width':2,opacity:.55,transform:'rotate(-18 '+px+' '+py+')'}));
+    }
+    fundo.appendChild(gp);
+  });
+
+  /* poeira de estrelas, bem mais densa */
+  for(var sd=0;sd<190;sd++){
+    var sx=(sd*137.5)%L, sy=(sd*79.3)%ALT;
+    if(Math.abs(sy-yDaVia(sx))<38) continue;          // não invade a via
+    var brilho=sd%9===0;
+    fundo.appendChild(el('circle',{cx:sx, cy:sy, r:brilho?2.4:(sd%3?1:1.6),
+      fill:brilho?'#eaf1ff':'#8fa8e8', opacity:brilho?.85:(sd%3?.34:.55)}));
+    if(brilho){                                        // um brilho em cruz
+      fundo.appendChild(el('path',{d:'M'+(sx-7)+','+sy+'h14 M'+sx+','+(sy-7)+'v14',
+        stroke:'#eaf1ff','stroke-width':.9,opacity:.5}));
+    }
+  }
+
+  /* os ícones de estudo, agora em grade densa e variada */
+  var col=0;
+  for(var k=0;k<96;k++){
+    var nome=NOMES[k%NOMES.length];
+    var ix=((k*97)%Math.round(L/34))*34 + (k%5)*11 + 14;
+    var iy=((k*53)%Math.round(ALT/26))*26 + (k%4)*7 + 8;
+    if(Math.abs(iy-yDaVia(ix))<52) continue;           // fora do corredor da via
+    if(ix>L-60) continue;                              // a prévia do E2 fica limpa
+    var esc=0.72+((k%5)*0.16);
+    var g2=el('g',{transform:'translate('+ix+','+iy+') scale('+esc+') rotate('+((k%7)*9-27)+')',
+      opacity:(k%4===0)?.30:.19});
+    g2.appendChild(el('path',{d:ICONES[nome],fill:'none',stroke:'#cfe0ff',
+      'stroke-width':1.5,'stroke-linecap':'round','stroke-linejoin':'round'}));
+    fundo.appendChild(g2); col++;
+  }
+  svg.appendChild(fundo);
+
+  var d=curva(pts);
+  svg.appendChild(el('path',{d:d,fill:'none',stroke:'var(--pl-asfalto)','stroke-width':VIA+10,'stroke-linecap':'round'}));
+  svg.appendChild(el('path',{d:d,fill:'none',stroke:'var(--pl-futuro)','stroke-width':VIA,'stroke-linecap':'round',opacity:'.45'}));
+  var andado=el('path',{d:d,fill:'none',stroke:'var(--pl-andado)','stroke-width':VIA,'stroke-linecap':'round'});
+  svg.appendChild(andado);
+  svg.appendChild(el('path',{d:d,fill:'none',stroke:'rgba(255,255,255,.30)','stroke-width':3,
+    'stroke-dasharray':'12 18','stroke-linecap':'round'}));
+
+  /* ═══ O CAMINHO QUE SEGUE (pedido do Pedro, 14/08/2026) ═══
+     Depois do Test 2, um traçado noutra cor, esmaecendo até a borda do céu:
+     o Essentials 2. Não é etapa clicável, é promessa de continuidade. */
+  (function(){
+    var fim=pts[pts.length-1];
+    var defs2=el('defs');
+    var gr=el('linearGradient',{id:'gSegue',x1:'0',y1:'0',x2:'1',y2:'0'});
+    gr.appendChild(el('stop',{offset:'0','stop-color':'#58c9b0','stop-opacity':'.75'}));
+    gr.appendChild(el('stop',{offset:'1','stop-color':'#58c9b0','stop-opacity':'0'}));
+    defs2.appendChild(gr); svg.appendChild(defs2);
+    var dSeg='M'+fim.x+','+fim.y
+      +' C'+(fim.x+90)+','+(fim.y-6)+' '+(fim.x+150)+','+(fim.y-26)+' '+(LTOT-8)+','+(fim.y-34);
+    /* colar de pérolas (crítica de 15/08/2026): traço fino com vão maior
+       que a espessura — o antigo 24px com vão 14 fundia tudo em grumos */
+    svg.appendChild(el('path',{d:dSeg,fill:'none',stroke:'url(#gSegue)',
+      'stroke-width':14,'stroke-linecap':'round','stroke-dasharray':'2 26'}));
+    /* a prévia do MUNDO do próximo livro (pedido do Pedro, 14/08/2026):
+       o universo esmaece numa floresta ainda no escuro. Silhuetas quase
+       pretas e três vagalumes: curiosidade, não revelação. */
+    var gf=el('linearGradient',{id:'gFloresta',x1:'0',y1:'0',x2:'1',y2:'0'});
+    gf.appendChild(el('stop',{offset:'0','stop-color':'#0b2318','stop-opacity':'0'}));
+    gf.appendChild(el('stop',{offset:'1','stop-color':'#0b2318','stop-opacity':'.92'}));
+    defs2.appendChild(gf);
+    svg.appendChild(el('rect',{x:L-40,y:0,width:LTOT-(L-40),height:ALT,fill:'url(#gFloresta)'}));
+    function pinheiro(px,h,cor,op){
+      var w=h*0.42, y0=ALT-6;
+      svg.appendChild(el('path',{d:'M'+px+','+(y0-h)
+        +' L'+(px+w*0.5)+','+(y0-h*0.55)+' L'+(px+w*0.28)+','+(y0-h*0.55)
+        +' L'+(px+w*0.62)+','+(y0-h*0.22)+' L'+(px+w*0.4)+','+(y0-h*0.22)
+        +' L'+(px+w*0.72)+','+y0+' L'+(px-w*0.72)+','+y0
+        +' L'+(px-w*0.4)+','+(y0-h*0.22)+' L'+(px-w*0.62)+','+(y0-h*0.22)
+        +' L'+(px-w*0.28)+','+(y0-h*0.55)+' L'+(px-w*0.5)+','+(y0-h*0.55)+' Z',
+        fill:cor||'#0d2f1e',opacity:op||.95}));
+    }
+    svg.appendChild(el('ellipse',{cx:LTOT-110,cy:ALT+30,rx:330,ry:62,fill:'#0d2a1b',opacity:.9}));
+    /* duas camadas de mata (crítica de 15/08/2026): o fundo quase preto dá
+       profundidade e a frente desenha a silhueta. A clareira em volta do
+       selo E2 é proposital: a estação fantasma respira. */
+    var gxSelo=fim.x+SEGUE*0.62;
+    for(var pf=L+24; pf<LTOT-8; pf+=34){
+      pinheiro(pf+((pf*7)%13), 26+((pf*3)%20), '#0a2013', .85);
+    }
+    for(var pf2=L+52; pf2<LTOT-6; pf2+=54){
+      if(Math.abs(pf2-gxSelo)<70) continue;
+      pinheiro(pf2+((pf2*5)%17), 46+((pf2*11)%52), '#0d2f1e', .95);
+    }
+    pinheiro(LTOT-26,112); pinheiro(LTOT-66,78);
+    /* vagalumes com halo: seis, visíveis em 1x, respirando devagar */
+    [[L+66,ALT-118],[L+134,ALT-64],[L+206,ALT-146],[L+268,ALT-84],
+     [L+332,ALT-56],[L+388,ALT-128]].forEach(function(v,iv){
+      var gv=el('g',{class:'vagalume',style:'--dv:'+(iv*0.7)+'s'});
+      gv.appendChild(el('circle',{cx:v[0],cy:v[1],r:6,fill:'#9fe8b8',opacity:.15}));
+      gv.appendChild(el('circle',{cx:v[0],cy:v[1],r:2.2,fill:'#b8f4cc',opacity:.85}));
+      svg.appendChild(gv);
+    });
+
+    /* a estação fantasma do próximo livro */
+    var gx=fim.x+SEGUE*0.62, gy=fim.y-26;
+    var gg=el('g',{role:'img','aria-label':'The road goes on: Essentials 2 comes after Test 2.'});
+    gg.appendChild(el('circle',{cx:gx,cy:gy,r:24,fill:'var(--pl-ceu)',stroke:'#58c9b0',
+      'stroke-width':2.5,'stroke-dasharray':'5 7',opacity:.8}));
+    var t2=el('text',{x:gx,y:gy+6,'text-anchor':'middle','font-size':15,
+      'font-family':'Poppins,sans-serif','font-weight':'600',fill:'#58c9b0',opacity:.9});
+    t2.textContent='E2'; gg.appendChild(t2);
+    var n2=el('text',{class:'est-nome off',x:gx,y:gy+46,'text-anchor':'middle','font-size':15});
+    n2.textContent='Essentials 2'; gg.appendChild(n2);
+    var n3=el('text',{class:'est-meta',x:gx,y:gy+63,'text-anchor':'middle','font-size':12});
+    n3.textContent='the road goes on'; gg.appendChild(n3);
+    svg.appendChild(gg);
+  })();
+
+  /* ═══ OS ASTROS DO DESERTO (crítica de 15/08/2026) ═══
+     Entre o Test 1 e o Checkpoint 2 havia ~840px sem nenhum marco visual.
+     Três set pieces determinísticos, ancorados nos nós reais (pts), fora do
+     corredor da via e com opacidade contida: os nós continuam mandando. */
+  (function(){
+    /* cometa cruzando o vale entre a Lesson 7 e a Lesson 8 (pts 9 e 10) */
+    var cx1=(pts[9].x+pts[10].x)/2, cy1=Math.min(pts[9].y,pts[10].y)-150;
+    var gc=el('linearGradient',{id:'gCometa',x1:'0',y1:'0',x2:'1',y2:'0'});
+    gc.appendChild(el('stop',{offset:'0','stop-color':'#cfe0ff','stop-opacity':'0'}));
+    gc.appendChild(el('stop',{offset:'1','stop-color':'#e8f1ff','stop-opacity':'.75'}));
+    svg.appendChild(gc);
+    var gco=el('g',{transform:'translate('+cx1+','+cy1+') rotate(-24)',opacity:.5});
+    gco.appendChild(el('path',{d:'M-118,0 L0,-3.4 L0,3.4 Z',fill:'url(#gCometa)'}));
+    gco.appendChild(el('circle',{cx:0,cy:0,r:5,fill:'#eef4ff'}));
+    gco.appendChild(el('circle',{cx:-2,cy:0,r:8,fill:'#cfe0ff',opacity:.28}));
+    svg.appendChild(gco);
+    /* galáxia espiral pequena no alto, perto da Lesson 9 (pts 11) */
+    var gx2=pts[11].x+PASSO*0.35, gy2=64;
+    var gg2=el('g',{transform:'translate('+gx2+','+gy2+')',opacity:.42});
+    gg2.appendChild(el('path',{d:'M0,0 C14,-4 22,6 12,14 C2,22 -14,16 -16,2 C-18,-14 -2,-24 12,-20',
+      fill:'none',stroke:'#8fa8e8','stroke-width':2,'stroke-linecap':'round'}));
+    gg2.appendChild(el('path',{d:'M0,0 C-14,4 -22,-6 -12,-14 C-2,-22 14,-16 16,-2',
+      fill:'none',stroke:'#8fa8e8','stroke-width':1.6,'stroke-linecap':'round',opacity:.7}));
+    gg2.appendChild(el('circle',{cx:0,cy:0,r:3,fill:'#dfe8ff'}));
+    svg.appendChild(gg2);
+    /* buraco negro discreto no vale entre a Lesson 6 e a Lesson 7 — o vão
+       antes do Checkpoint 2 já pertence ao sistema do Video Book */
+    var bx=(pts[8].x+pts[9].x)/2, by=ALT-70;
+    if(Math.abs(by-yDaVia(bx))<70) by=ALT-40;
+    var gb=el('g',{opacity:.5});
+    gb.appendChild(el('circle',{cx:bx,cy:by,r:13,fill:'#05081f'}));
+    gb.appendChild(el('path',{d:'M'+(bx-22)+','+by+' A22,9 0 0 0 '+(bx+22)+','+by,
+      fill:'none',stroke:'#9fb4ea','stroke-width':2,opacity:.8}));
+    gb.appendChild(el('circle',{cx:bx,cy:by,r:13.5,fill:'none',stroke:'#3b4fa8','stroke-width':1,opacity:.6}));
+    svg.appendChild(gb);
+  })();
+
+  var iAtual=ETAPAS.findIndex(function(e){return e.estado==='atual';});
+  var FOGUETE={};
+
+  ETAPAS.forEach(function(e,i){
+    var p=pts[i];
+    var g=el('g',{class:'no',tabindex:'0',role:'button','aria-label':
+      e.rot+', '+e.itens+' '+L10N.items+', '+(e.estado==='feita'? L10N.done
+        : e.estado==='atual'? L10N.youAreHere
+        : /^TEST/.test(e.id) ? 'finishing this test earns you its badge' : '')});
+    g.appendChild(el('circle',{class:'anel-foco',cx:p.x,cy:p.y,r:R+11,fill:'none',stroke:'#fff','stroke-width':3,opacity:0}));
+
+    var feita=e.estado==='feita', atual=e.estado==='atual';
+    var fundo = feita ? 'var(--pl-andado)' : atual ? '#ffffff' : 'var(--pl-asfalto)';
+
+    if(e.tipo==='marco'){
+      var r=R*1.05, dd='M'+p.x+','+(p.y-r)+'L'+(p.x+r)+','+p.y+'L'+p.x+','+(p.y+r)+'L'+(p.x-r)+','+p.y+'Z';
+      g.appendChild(el('path',{d:dd,fill:feita?'var(--pl-andado)':'var(--pl-prova)',
+        stroke:'#05081f','stroke-width':3}));
+    }else{
+      g.appendChild(el('circle',{cx:p.x,cy:p.y,r:R,fill:fundo,stroke:'#05081f','stroke-width':3}));
+    }
+
+    /* Test que ainda vem carrega um TROFÉU no losango: terminar a prova
+       rende o selo de conclusão. Recompensa fixa e anunciada ANTES, que é a
+       única gamificação que os vetos permitem. O selo em si nasce na fatia
+       das medalhas; aqui é a promessa visível. */
+    if(/^TEST/.test(e.id) && !feita){
+      var tg=el('g',{transform:'translate('+p.x+','+(p.y+1)+') scale(1.05)'});
+      tg.appendChild(el('path',{d:'M-6.5,-9 L6.5,-9 L6.5,-5 A6.5,6.5 0 0 1 -6.5,-5 Z',
+        fill:'#e9c05a',stroke:'#05081f','stroke-width':1.6,'stroke-linejoin':'round'}));
+      tg.appendChild(el('path',{d:'M-6.5,-8 C-10.5,-8 -10.5,-2.8 -5.2,-3.2 M6.5,-8 C10.5,-8 10.5,-2.8 5.2,-3.2',
+        fill:'none',stroke:'#e9c05a','stroke-width':1.8,'stroke-linecap':'round'}));
+      tg.appendChild(el('path',{d:'M-1.7,1.6 L1.7,1.6 L2.5,4.6 L-2.5,4.6 Z M-4.6,4.6 L4.6,4.6 L4.6,7.2 L-4.6,7.2 Z',
+        fill:'#e9c05a',stroke:'#05081f','stroke-width':1.4,'stroke-linejoin':'round'}));
+      g.appendChild(tg);
+    } else {
+      var txt = feita ? '✓' : (e.id==='INTRO' ? '★' : (e.id.charAt(0)==='L' ? e.id.slice(1) : e.id.replace(/[^0-9]/g,'')));
+      var t=el('text',{x:p.x,y:p.y+(R*0.33),'text-anchor':'middle','font-size':R*0.8,
+        'font-family':'Poppins,sans-serif','font-weight':'600',
+        fill: atual?'#12244f':(feita?'#ffffff':'#9aa9d4')});
+      t.textContent=txt; g.appendChild(t);
+    }
+
+    /* O FOGUETE diz "você está aqui". Grupo de fora posiciona, grupo de
+       dentro anima. Silhueta: cone, corpo, faixa, janela, aletas e escapamento. */
+    if(atual){
+      g.appendChild(el('circle',{class:'pulso',cx:p.x,cy:p.y,r:R+5,fill:'none',
+        stroke:'var(--pl-lima)','stroke-width':4,opacity:.5}));
+      /* deitado: o caminho é da esquerda para a direita, e o nariz aponta o rumo.
+         rotate(90) leva o nariz local (0,-30) para (+30,0). O hover que empurra
+         em -Y local vira empuxo para FRENTE na tela, de graça. */
+      var pos=el('g',{transform:'translate('+(p.x+6)+','+(p.y-R-30)+') scale(1.25) rotate(90)'});
+      FOGUETE={pos:pos,px:p.x+6,py:p.y-R-30};
+      var fg=el('g',{class:'foguete'});
+
+      var fogo=el('g',{class:'fogo'});
+      fogo.appendChild(el('path',{d:'M0,17 C-7,25 -6,36 0,44 C6,36 7,25 0,17 Z',fill:'#ff9d2e'}));
+      fogo.appendChild(el('path',{d:'M0,18 C-4,25 -3.4,33 0,38 C3.4,33 4,25 0,18 Z',fill:'var(--pl-lima)'}));
+      fogo.appendChild(el('path',{d:'M0,19 C-1.8,24 -1.5,29 0,32 C1.5,29 1.8,24 0,19 Z',fill:'#fff',opacity:.9}));
+      fg.appendChild(fogo);
+
+      /* aletas atrás do corpo */
+      fg.appendChild(el('path',{d:'M-11,2 C-19,7 -22,13 -21,18 L-11,14 Z M11,2 C19,7 22,13 21,18 L11,14 Z',
+        fill:'#d81f26',stroke:'#05081f','stroke-width':2,'stroke-linejoin':'round'}));
+      /* corpo e cone, numa silhueta só */
+      fg.appendChild(el('path',{d:'M0,-30 C7,-21 11,-9 11,3 L11,14 L-11,14 L-11,3 C-11,-9 -7,-21 0,-30 Z',
+        fill:'#f2f6fd',stroke:'#05081f','stroke-width':2.2,'stroke-linejoin':'round'}));
+      /* faixa e escapamento */
+      fg.appendChild(el('path',{d:'M-11,6 L11,6',stroke:'#05081f','stroke-width':2}));
+      fg.appendChild(el('path',{d:'M-7.5,14 L7.5,14 L5.5,19 L-5.5,19 Z',
+        fill:'#c3cee5',stroke:'#05081f','stroke-width':2,'stroke-linejoin':'round'}));
+      /* janela */
+      fg.appendChild(el('circle',{cx:0,cy:-9,r:5.4,fill:'#3f63d9',stroke:'#05081f','stroke-width':2.2}));
+      fg.appendChild(el('path',{d:'M-2.4,-11.4 A3.4,3.4 0 0 1 1.4,-12.6',stroke:'#cfe0ff',
+        'stroke-width':1.6,fill:'none','stroke-linecap':'round'}));
+
+      pos.appendChild(fg);
+      g.appendChild(pos);
+    }
+
+    var acima = p.y < BASE;
+    /* na estação atual o rótulo desce: em cima quem manda é o foguete */
+    if(atual) acima = false;
+    var ly = acima ? p.y-R-20 : p.y+R+28;
+    var n1=el('text',{class:'est-nome'+(e.estado==='futura'?' off':''),x:p.x,y:ly,
+      'text-anchor':'middle','font-size':16.5});
+    n1.textContent=e.rot; g.appendChild(n1);
+    var n2=el('text',{class:'est-meta',x:p.x,y:ly+18,'text-anchor':'middle','font-size':13});
+    n2.textContent = feita ? (e.itens+' '+L10N.items+' · '+e.aulas+' '+L10N.classes)
+                           : (e.itens+' '+L10N.items);
+    g.appendChild(n2);
+
+    /* ── clicar na estação abre a lição (pedido do Pedro, 14/08/2026).
+       Na estação ATUAL o foguete decola numa curva para baixo, apontando
+       para onde o aluno deve olhar, com o ronco de ignição sintetizado
+       (WebAudio: nada de arquivo externo, o CSP não deixa). Nas demais,
+       só rola até a ficha. Nesta maquete a ficha é sempre a Lesson 4. */
+    (function(est){
+      function vai(){
+        var det=document.getElementById('blocoLicao'); if(det) det.open=true;
+        montaLicao(est.id);
+        var fx=document.querySelector('.ficha');
+        function rola(){
+          if(!fx) return;
+          fx.scrollIntoView({behavior:'smooth',block:'start'});
+          fx.classList.add('flash');
+          setTimeout(function(){ fx.classList.remove('flash'); },1700);
+        }
+        if(est.estado==='atual' && FOGUETE.pos){ somFoguete(); decolar(rola); }
+        else rola();
+      }
+      g.addEventListener('click',vai);
+      g.addEventListener('keydown',function(ev){
+        if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); vai(); }
+      });
+    })(e);
+
+    svg.appendChild(g);
+  });
+
+  /* a decolagem: anima o ATRIBUTO transform do grupo de posição, nunca CSS,
+     que foi a lição do bug do foguete maluco. Gira o nariz para baixo e
+     mergulha; o rolar da página dispara no meio do mergulho. */
+  function decolar(cb){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches || !FOGUETE.pos){
+      if(cb) cb(); return;
+    }
+    var ini=null, dur=850, rolou=false;
+    function passo(ts){
+      if(ini===null) ini=ts;
+      var t=Math.min(1,(ts-ini)/dur);
+      var rot=90+90*Math.min(1,t/0.35);
+      var dy = t<0.3 ? -16*(t/0.3) : -16+230*Math.pow((t-0.3)/0.7,1.5);
+      var op = t>0.85 ? 1-(t-0.85)/0.15 : 1;
+      FOGUETE.pos.setAttribute('transform',
+        'translate('+FOGUETE.px+','+(FOGUETE.py+dy)+') scale(1.25) rotate('+rot+')');
+      FOGUETE.pos.setAttribute('opacity',op);
+      if(t>0.4 && !rolou){ rolou=true; if(cb) cb(); }
+      if(t<1) requestAnimationFrame(passo);
+      else setTimeout(function(){
+        FOGUETE.pos.setAttribute('transform',
+          'translate('+FOGUETE.px+','+FOGUETE.py+') scale(1.25) rotate(90)');
+        FOGUETE.pos.setAttribute('opacity',1);
+      },600);
+    }
+    requestAnimationFrame(passo);
+  }
+
+  /* o ronco: ruído branco afunilado num passa-baixa que despenca, ~0,9s.
+     Só toca em resposta ao clique, que é o que a política de áudio exige. */
+  function somFoguete(){
+    try{
+      var Ctx=window.AudioContext||window.webkitAudioContext; if(!Ctx) return;
+      var ctx=new Ctx(), dur=0.9, sr=ctx.sampleRate;
+      var buf=ctx.createBuffer(1,Math.floor(sr*dur),sr), d=buf.getChannelData(0);
+      for(var i=0;i<d.length;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,0.6); }
+      var src=ctx.createBufferSource(); src.buffer=buf;
+      var f=ctx.createBiquadFilter(); f.type='lowpass';
+      f.frequency.setValueAtTime(950,ctx.currentTime);
+      f.frequency.exponentialRampToValueAtTime(170,ctx.currentTime+dur);
+      var gn=ctx.createGain();
+      gn.gain.setValueAtTime(0.001,ctx.currentTime);
+      gn.gain.exponentialRampToValueAtTime(0.22,ctx.currentTime+0.06);
+      gn.gain.exponentialRampToValueAtTime(0.002,ctx.currentTime+dur);
+      src.connect(f); f.connect(gn); gn.connect(ctx.destination);
+      src.start(); src.stop(ctx.currentTime+dur);
+      src.onended=function(){ try{ctx.close();}catch(e){} };
+    }catch(e){}
+  }
+
+  /* ═══ OS SISTEMAS SOLARES DOS EXTRAS (ideia do Pedro, 14/08/2026) ═══
+     Um sistema por TIPO de atividade. O SOL é ilustrado e é o BOTÃO: leva o
+     aluno à área daquela temática (Song Program, Movie Program, Video Book).
+     Os planetas não são clicáveis: são o registro, pintados automaticamente
+     quando o aluno faz a atividade. Nomes reais dos catálogos. */
+  var SIS_SONGS=[{n:'Mercy',ok:1},{n:'Hello',ok:1},{n:'Castle on the Hill'},
+                 {n:'Hard Times'},{n:'Heathens'}];
+  var SIS_MOVIES=[{n:'Frozen I',ok:1},{n:'Frozen II',ok:1},{n:'How I Met Your Mother'},
+                  {n:'Friends'},{n:'Jurassic Park'}];
+  var SIS_VIDEOS=[{n:'Meet Adam and Holly',ok:1},{n:'How I Met Holly',ev:'vbk2'},
+                  {n:"I'm Not a Fitness Freak at All"},{n:'Studying Abroad'},
+                  {n:'We Always Have Fun'}];
+
+  /* os sóis, desenhados com o mesmo capricho do foguete: preenchimento,
+     contorno escuro e brilho, nunca traço solto */
+  function solNota(g2){
+    g2.appendChild(el('path',{d:'M-7,-11 L11,-14.5 L11,-8.5 L-7,-5 Z',
+      fill:'#16265e',stroke:'#05081f','stroke-width':1.4,'stroke-linejoin':'round'}));
+    g2.appendChild(el('path',{d:'M-7,-11 L-4.2,-11 L-4.2,7 L-7,7 Z',fill:'#16265e'}));
+    g2.appendChild(el('path',{d:'M8.2,-14.5 L11,-14.5 L11,4 L8.2,4 Z',fill:'#16265e'}));
+    g2.appendChild(el('ellipse',{cx:-7.6,cy:8,rx:4.6,ry:3.4,fill:'#16265e',
+      stroke:'#05081f','stroke-width':1.3,transform:'rotate(-18 -7.6 8)'}));
+    g2.appendChild(el('ellipse',{cx:7.6,cy:5,rx:4.6,ry:3.4,fill:'#16265e',
+      stroke:'#05081f','stroke-width':1.3,transform:'rotate(-18 7.6 5)'}));
+    g2.appendChild(el('path',{d:'M-6,-9.6 L9.5,-12.8',stroke:'#8fa8e8','stroke-width':1,
+      'stroke-linecap':'round',fill:'none',opacity:.9}));
+  }
+  function solPipoca(g2){
+    /* as pipocas estouradas */
+    [[-7.5,-8.5,4.6],[0,-11,5.2],[7.5,-8.5,4.6],[-3.6,-6.5,4],[3.6,-6.5,4]].forEach(function(c){
+      g2.appendChild(el('circle',{cx:c[0],cy:c[1],r:c[2],fill:'#fff7ea',
+        stroke:'#05081f','stroke-width':1.4}));
+    });
+    g2.appendChild(el('circle',{cx:-1.5,cy:-12.5,r:1.4,fill:'#ffd76a'}));
+    /* o balde listrado */
+    g2.appendChild(el('path',{d:'M-9.5,-3.5 L9.5,-3.5 L7.2,12.5 L-7.2,12.5 Z',
+      fill:'#fff',stroke:'#05081f','stroke-width':1.6,'stroke-linejoin':'round'}));
+    g2.appendChild(el('path',{d:'M-8.6,-3.5 L-5.6,-3.5 L-4.6,12.5 L-6.9,12.5 Z',fill:'#d81f26'}));
+    g2.appendChild(el('path',{d:'M-1.5,-3.5 L1.5,-3.5 L1.2,12.5 L-1.2,12.5 Z',fill:'#d81f26'}));
+    g2.appendChild(el('path',{d:'M5.6,-3.5 L8.6,-3.5 L6.9,12.5 L4.6,12.5 Z',fill:'#d81f26'}));
+    g2.appendChild(el('path',{d:'M-10.2,-5.2 L10.2,-5.2 L9.5,-3.5 L-9.5,-3.5 Z',
+      fill:'#d81f26',stroke:'#05081f','stroke-width':1.4,'stroke-linejoin':'round'}));
+  }
+  function solClap(g2){
+    g2.appendChild(el('path',{d:'M-11,-1 L11,-1 L11,12 L-11,12 Z',
+      fill:'#16265e',stroke:'#05081f','stroke-width':1.6,'stroke-linejoin':'round'}));
+    /* a tampa e as listras vivem no MESMO grupo girado: alinhadas por
+       construção, não por coincidência (as antigas giravam separadas) */
+    var tampa=el('g',{transform:'rotate(-8 -11 -3.5)'});
+    tampa.appendChild(el('path',{d:'M-11,-9.5 L11,-9.5 L11,-3.5 L-11,-3.5 Z',
+      fill:'#16265e',stroke:'#05081f','stroke-width':1.6,'stroke-linejoin':'round'}));
+    [-9,-3,3].forEach(function(x0){
+      tampa.appendChild(el('path',{d:'M'+x0+',-9.5 L'+(x0+3.4)+',-9.5 L'
+        +(x0+1.4)+',-3.5 L'+(x0-2)+',-3.5 Z',fill:'#fff'}));
+    });
+    g2.appendChild(tampa);
+    g2.appendChild(el('path',{d:'M-3.2,2.2 L4.8,5.5 L-3.2,8.8 Z',fill:'#9fd8ff',
+      stroke:'#05081f','stroke-width':1.2,'stroke-linejoin':'round'}));
+  }
+
+  var SOLES={nota:solNota,pipoca:solPipoca,clap:solClap};
+
+  function sistemaSolar(cx0, itens, icone, nome, cor, destino, idConta){
+    var cy0 = yDaVia(cx0) > ALT*0.5 ? 92 : ALT-98;
+    var RO=56, RS=27;
+    var gs=el('g',{});
+    gs.appendChild(el('circle',{cx:cx0,cy:cy0,r:RO,fill:'none',
+      stroke:'rgba(207,224,255,.28)','stroke-width':1,'stroke-dasharray':'3 6'}));
+    /* os planetas: registro, não botão */
+    var orb=el('g',{class:'orbita',role:'img',
+      'aria-label': nome+': '+itens.filter(function(x){return x.ok;}).length+' of '
+        +itens.length+' done — '+itens.map(function(x){return x.n+(x.ok?' (done)':'');}).join(', ')});
+    orb.setAttribute('style','transform-origin:'+cx0+'px '+cy0+'px');
+    itens.forEach(function(x,k){
+      var ang=(-90+k*(360/itens.length))*Math.PI/180;
+      var px=cx0+RO*Math.cos(ang), py=cy0+RO*Math.sin(ang);
+      var gp=el('g',{});
+      gp.appendChild(el('circle',{cx:px,cy:py,r:12,fill:cor,opacity:x.ok?.22:0,class:'halo'}));
+      var c=el('circle',{cx:px,cy:py,r:7,
+        fill:x.ok?cor:'none', stroke:x.ok?'#05081f':'#8fa8e8',
+        'stroke-width':x.ok?1.6:1.3});
+      if(x.ev) c.setAttribute('data-ev-pl',x.ev);
+      gp.appendChild(c);
+      orb.appendChild(gp);
+    });
+    gs.appendChild(orb);
+    /* o sol é o botão: leva à área da temática */
+    var sol=el('g',{class:'sol no',tabindex:'0',role:'button',
+      'aria-label':'Open '+destino});
+    sol.appendChild(el('circle',{class:'sol-halo',cx:cx0,cy:cy0,r:RS+9,fill:'#ffd76a',opacity:.18}));
+    sol.appendChild(el('circle',{cx:cx0,cy:cy0,r:RS,fill:'#ffd76a',stroke:'#05081f','stroke-width':2.2}));
+    sol.appendChild(el('path',{d:'M'+(cx0-RS*0.5)+','+(cy0-RS*0.72)
+      +' A'+RS*0.86+','+RS*0.86+' 0 0 1 '+(cx0+RS*0.62)+','+(cy0-RS*0.6),
+      fill:'none',stroke:'#fff3d0','stroke-width':2.4,'stroke-linecap':'round',opacity:.9}));
+    var g2=el('g',{transform:'translate('+cx0+','+cy0+')','aria-hidden':'true'});
+    SOLES[icone](g2);
+    sol.appendChild(g2);
+    gs.appendChild(sol);
+    var t=el('text',{x:cx0,y:cy0+RO+22,'text-anchor':'middle',class:'est-meta','font-size':13});
+    if(idConta) t.setAttribute('id',idConta);
+    t.textContent=nome+' · '+itens.filter(function(x){return x.ok;}).length+'/'+itens.length;
+    gs.appendChild(t);
+    svg.appendChild(gs);
+  }
+
+  sistemaSolar(L*0.20, SIS_SONGS,  'nota',   'Songs',      '#58c9b0', 'the Song Program');
+  /* no vão vazio abaixo da estrada, entre a Lesson 5 e o Checkpoint 1 */
+  sistemaSolar(L*0.402, SIS_MOVIES, 'pipoca', 'Movies',     '#ff8a5c', 'the Movie Program');
+  sistemaSolar(L*0.84, SIS_VIDEOS, 'clap',   'Video Book', '#9fd8ff', 'the Video Book', 'sisVideoConta');
+
+  pista.appendChild(svg);
+  var tot=andado.getTotalLength();
+  andado.style.strokeDasharray=tot;
+  andado.style.strokeDashoffset=tot*(1-(iAtual/(ETAPAS.length-1)));
+  /* o scroll inicial encosta a borda no MEIO do vão entre dois nós, para
+     nenhum rótulo nascer cortado no número (crítica de 15/08/2026) */
+  var alvoScroll=Math.max(0,pts[iAtual].x-pista.clientWidth*0.45);
+  var relScroll=(alvoScroll-MARG)%PASSO;
+  alvoScroll=Math.max(0,alvoScroll-relScroll+PASSO/2);
+  pista.scrollLeft=alvoScroll;
+
+  /* ---------- a ficha: QUALQUER lição do plano ---------- */
+  /* A ficha nasce do PLANO_E1 + a simulação da Ana por cima; montaLicao(id)
+     redesenha tudo para a lição pedida, e o clique no mapa usa esse mesmo
+     caminho. Estados: fechada = tudo preenchido e checking feito (a nota
+     nunca aparece); atual = o meio da história; futura = VER sempre, FAZER
+     só com a nota — marcas desligadas. */
+  /* modo = quem preenche a bolinha:
+       prof       -> inteira, marinho (checking: o aluno não marca)
+       soProva    -> dupla, mas a esquerda é SÓ da evidência (Exploration:
+                     vídeos assistidos à esquerda, explicação ao vivo à direita)
+       aluno      -> inteira, ROSA (homework: só o aluno marca, e o giro é
+                     completo; o professor não precisa conferir)
+       plataforma -> inteira, lima cheia, o servidor marcou sozinho
+       ambos      -> duas metades, quando os dois têm o que dizer            */
+  var IDXLIC={}; PLANO_E1.licoes.forEach(function(l,i){ IDXLIC[l.id]=i; });
+  function estadoSim(licId){ var e=ETAPAS[IDXLIC[licId]]; return e?e.estado:'futura'; }
+
+  /* a história da Ana DENTRO da lição atual, por aula e tipo:
+     1ª aula toda feita (Exploration provada pelos vídeos e explicada ao
+     vivo), 2ª com a parte do aluno feita e o Writing em aberto, 3ª só com a
+     correção começada. Reproduz o 5/9 aprovado. */
+  function simAtual(iAula,it){
+    if(iAula===0){
+      if(it.modo==='prof')  return {p:1};
+      if(it.soProva)        return {a:1,p:1,plat:1};
+      if(it.modo==='aluno') return {a:1};
+      if(it.modo==='extra') return {};
+      return {a:1,p:1};
+    }
+    if(iAula===1){
+      if(it.tipo==='exercicios') return {a:1,p:1};
+      if(it.modo==='aluno')      return {a:1};
+      return {};
+    }
+    if(it.tipo==='correcao') return {a:1};
+    return {};
+  }
+  function marcasDe(licId,iAula,it){
+    var e=estadoSim(licId);
+    if(e==='feita'){
+      if(it.modo==='prof')  return {p:1};
+      if(it.modo==='aluno') return {a:1};
+      if(it.modo==='extra') return {a:1};
+      return {a:1,p:1,plat:it.soProva?1:0};
+    }
+    if(e==='atual') return simAtual(iAula,it);
+    return {};
+  }
+  /* converte a lição do plano no formato que o desenhador consome */
+  function aulasDe(lic){
+    var e=estadoSim(lic.id), datas=SIM.datas[lic.id]||[];
+    return lic.aulas.map(function(a,i){
+      var ultima=(i===lic.aulas.length-1);
+      return { n:i+1, papel:a.papel, dt:datas[i]||'',
+        prevista:(e==='futura'||(e==='atual'&&ultima))?1:0,
+        atual:(e==='atual'&&ultima)?1:0,
+        check:!!a.check,
+        itens:a.itens.map(function(it){ return Object.assign({},it,marcasDe(lic.id,i,it)); }),
+        extras:a.extras&&a.extras.length?a.extras.map(function(it){ return Object.assign({},it,marcasDe(lic.id,i,it)); }):null };
+    });
+  }
+
+  function svgMk(f){
+    if(f==='tri'){
+      var t='M15 3 28 26 2 26 Z';
+      return '<svg viewBox="0 0 30 30" aria-hidden="true">'
+        +'<path class="bg" d="'+t+'"/><path class="toda" d="'+t+'"/>'
+        +'<path class="ha" d="M15 3 15 26 2 26 Z"/><path class="hp" d="M15 3 28 26 15 26 Z"/>'
+        +'<path class="ring" d="'+t+'" fill="none"/></svg>';
+    }
+    return '<svg viewBox="0 0 30 30" aria-hidden="true">'
+      +'<circle class="bg" cx="15" cy="15" r="12"/><circle class="toda" cx="15" cy="15" r="12"/>'
+      +'<path class="ha" d="M15 3 A12 12 0 0 0 15 27 Z"/><path class="hp" d="M15 3 A12 12 0 0 1 15 27 Z"/>'
+      +'<circle class="ring" cx="15" cy="15" r="12"/></svg>';
+  }
+
+  var elA=document.getElementById('aulas'), elL=document.getElementById('lombada');
+  var LIC_ABERTA=null;
+
+  function montaLicao(idLic){
+    LIC_ABERTA=idLic;
+    var lic=PLANO_E1.licoes[IDXLIC[idLic]], e=estadoSim(idLic);
+    var et=ETAPAS[IDXLIC[idLic]], etRot=et.rot;
+    var proxEt=ETAPAS[IDXLIC[idLic]+1]||null;
+    document.getElementById('fi-t').innerHTML='<i lang="en">'+etRot+'</i>';
+    var elSub=document.querySelector('.ficha-cab .sub');
+    if(elSub) elSub.innerHTML=lic.tema?'<i lang="en">'+lic.tema+'</i>':'';
+    elA.innerHTML='';
+    elL.innerHTML='<div class="lomb-linha"></div>';
+    var fx=document.querySelector('.ficha');
+    fx.classList.toggle('so-leitura', e==='futura');
+    var avV=document.getElementById('travaFutura'); if(avV) avV.remove();
+    if(e==='futura'){
+      var av=document.createElement('p');
+      av.id='travaFutura'; av.className='trava-futura';
+      av.innerHTML='🔒 Ver, você sempre pode. Fazer abre quando o professor der a nota do <i lang="en">checking</i> da lição anterior.';
+      fx.insertBefore(av, fx.querySelector('.corpo'));
+    }
+
+    aulasDe(lic).forEach(function(A){
+    var bloco=document.createElement('div');
+    bloco.className='aula-box';
+    var desenhaItem=function(it){
+      var fim=fechado(it)?' fim':'';
+      return '<div class="it-w item'+fim+'" data-id="'+it.id+'">'
+        +'<button class="mk" data-modo="'+it.modo+'" data-f="'+(it.f||'cir')+'" '
+        +'data-a="'+(it.a||'')+'" data-p="'+(it.p?1:'')+'" data-plat="'+(it.plat?1:'')+'" '
+        +'data-soprova="'+(it.soProva?1:'')+'" data-tipo="'+(it.tipo||'')+'" '
+        +'aria-label="'+rotuloMarca(it)+'">'
+        +svgMk(it.f)+'</button>'
+        +(it.ic?'<svg class="it-ic" viewBox="0 0 24 24" aria-hidden="true">'+IC_ITEM[it.ic]+'</svg>':'')
+        +'<span class="nm">'+it.nm+(it.pg?' <span class="pg">'+it.pg+'</span>':'')+'</span>'
+        +(it.capa?'<img class="capa-vbk" alt="Capa do Smart Pack" src="data:image/jpeg;base64,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"/>':'')
+        +(it.ir?'<button class="ir" type="button">'+it.ir+' →</button>':'')
+        +'</div>';
+    };
+    var itens=A.itens.map(desenhaItem).join('');
+    /* o extra mora dentro da aula, na tira tracejada, fora da régua */
+    var extras=A.extras?'<div class="extra-strip">'
+      +'<div class="ex-rot">✦ Extra</div>'
+      +'<div class="itens">'+A.extras.map(desenhaItem).join('')+'</div></div>':'';
+    var dd=A.dt?A.dt.split('/'):null, MES=['','JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+    bloco.innerHTML='<div class="aula-tit">'
+      +'<span class="seta" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
+      +'<span class="data-aula"'+(A.prevista?' data-prevista="1"':'')+'>'
+      +(dd?'<b>'+dd[0]+'</b><span>'+MES[+dd[1]]+'</span>':'<b>—</b><span>a marcar</span>')+'</span>'
+      +'<span class="papel">'+(A.extra?'Continuação':'<i lang="en">'+A.papel+'</i>')+'</span>'
+      +'<span class="resumo-feito"><span class="rf-alu">✓ sua parte feita</span><span class="rf-prof">✓ parte do aluno feita</span></span>'
+      +(A.prevista?'<span class="prevista">prevista</span>':'')+'</div>'
+      +(A.itens.length?'<div class="itens">'+itens+'</div>':'')
+      +extras
+      +(A.check?'<div class="checking">'
+        +'<div class="chk-prep"><button class="prep" type="button">Treinar antes no <i lang="en">Quick Practice</i> →</button></div>'
+        +'<div class="chk-cab">'
+        +'<button class="mk chk-mk" data-modo="prof" data-f="cir" data-a="" data-p="'+(e==='feita'?1:'')+'" aria-label="Checking da '+etRot+': marca do professor"></button>'
+        +'<span class="t"><i lang="en">Checking</i> da <i lang="en">'+etRot+'</i></span>'
+        +'</div>'
+        +'<div class="chk-prof">'
+        +'<div class="chk-sub">O que o aluno deve treinar depois:</div>'
+        +'<div class="chk-chips">'
+        +['Rever os vídeos de explicação','Quick Practice da lição','Ouvir os áudios de novo','Refazer os exercícios do livro']
+          .map(function(c){return '<button type="button" class="chk-chip" aria-pressed="false">'+c+'</button>';}).join('')
+        +'</div>'
+        +'<div class="chk-bilhete">'
+        +'<label for="bilheteProf">Bilhete para o aluno (aparece na home dele)</label>'
+        +'<textarea id="bilheteProf" rows="2" placeholder="ex.: Reveja o vídeo do Do / Does e me traga duas frases na próxima aula."></textarea>'
+        +'</div>'
+        +'<div class="chk-nota">'
+        +'<label for="notaChk">Nota do <i lang="en">checking</i>, de 0 a 10 (só o professor vê)</label>'
+        +'<span class="chk-nota-linha"><input id="notaChk" type="number" min="0" max="10" step="1" inputmode="numeric"/>'
+        +'<button class="ir" id="salvarNota" type="button">Salvar</button></span>'
+        +'<span class="chk-lock" id="chkLock">🔒 Fazer a <i lang="en">'+(proxEt?proxEt.rot:'próxima lição')+'</i> abre com a nota salva. Ver, o aluno sempre pode.</span>'
+        +'</div></div></div>':'')
+      +(A.extra?'<p style="margin:0;font-size:13px;font-weight:600;color:#b9c6e8">Você continuou nos mesmos itens. A lição cresceu em aulas, não em tarefa.</p>':'');
+    elA.appendChild(bloco);
+
+    var lin=document.createElement('div');
+    lin.className='lomb-aula';
+    if(A.extra) lin.dataset.extra='1';
+    if(A.atual) lin.dataset.atual='1';
+    lin.innerHTML='<span class="lomb-tick">'+A.n+'</span>';
+    elL.appendChild(lin);
+
+    /* A régua é A PARTE DO ALUNO (Pedro, 15/08/2026): o que compete a ele
+       são as marcas duplas; Exploration e checking são do professor e não
+       entram, extra não conta. Feita a parte dele, a aula nasce fechada e
+       ganha o cheque — mesmo que o professor ainda não tenha confirmado.
+       A 3ª aula nunca nasce fechada: o checking dela começa em aberto. */
+    var minhas = A.itens.filter(function(it){ return it.modo!=='prof'; });
+    var feita = minhas.length>0 && minhas.every(function(it){ return !!it.a; });
+    bloco.classList.toggle('sua-parte', feita);
+    if(feita && A.check) feita=false;
+    if(feita) bloco.classList.add('colapsada');
+    var tit=bloco.querySelector('.aula-tit');
+    tit.setAttribute('role','button');
+    tit.setAttribute('tabindex','0');
+    tit.setAttribute('aria-expanded', feita?'false':'true');
+    var alterna=function(){
+      var fechada=bloco.classList.toggle('colapsada');
+      tit.setAttribute('aria-expanded', fechada?'false':'true');
+      /* a lombada acompanha a altura nova do bloco */
+      requestAnimationFrame(function(){ lin.style.setProperty('--h', bloco.offsetHeight+18+'px'); });
+    };
+    tit.addEventListener('click', alterna);
+    tit.addEventListener('keydown', function(ev){
+      if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); alterna(); }
+    });
+
+    requestAnimationFrame(function(){ lin.style.setProperty('--h', bloco.offsetHeight+18+'px'); });
+    });
+
+    /* o cadeado da próxima lição só faz sentido embaixo da lição ATUAL */
+    var prox=document.getElementById('proxLicao'), proxT=document.getElementById('proxLicaoTxt');
+    var mostraCad=(e==='atual') && proxEt;
+    if(prox) prox.style.display=mostraCad?'':'none';
+    if(proxT){
+      proxT.style.display=mostraCad?'':'none';
+      if(mostraCad) proxT.innerHTML='<i lang="en">'+proxEt.rot+'</i> · fazer abre quando esta lição terminar — ver, você sempre pode';
+    }
+    if(mostraCad) prox.setAttribute('aria-label', proxEt.rot+': fazer abre quando esta lição terminar; ver, você sempre pode.');
+
+    recontar();
+    cruzaEvidencia();
+  }
+
+  /* ═══════════ FATIA 3: A METADE DA PLATAFORMA SE PREENCHE SOZINHA ═══════════
+     O mapa de evidência é GERADO de dados reais (planner-fisk/evidencia-
+     essentials-1.json): cada id abaixo existe, conferido caractere por
+     caractere contra o Gabarito.js do servidor. A lista FEITOS simula o que a
+     rota alunoPassivoFeitos + _atividades devolveriam para esta aluna. */
+  var EVIDENCIA = {
+    song:  ['sp:essentials-1:hello'],                     /* Song da L4 corrigida */
+    video: ['vbk:essentials-1/1esN2jMgS7ZOohNt6D5lF9SSsiBj3g_Y0']   /* Video Book ep. 2 */
+  };
+  var FEITOS = { 'sp:essentials-1:hello': 1 };            /* a Ana já fez a Song 2 */
+
+  function cruzaEvidencia(){
+    if(LIC_ABERTA!=='L4'){ recontar(); return; }  /* a evidência simulada é da L4 */
+    Object.keys(EVIDENCIA).forEach(function(tipo){
+      var b=document.querySelector('#aulas .mk[data-tipo="'+tipo+'"]');
+      if(!b) return;
+      var id=tipo;
+      var prova = EVIDENCIA[id].every(function(k){ return FEITOS[k]; });
+      if(prova && b.dataset.a!=='1'){
+        b.dataset.plat='1';                 /* marca de prova: o aluno não desfaz */
+        b.dataset.a='1';                    /* a metade do aluno, provada */
+        b.parentElement.classList.toggle('fim',
+          !!fechado({modo:b.dataset.modo,a:1,p:b.dataset.p==='1'?1:0}));
+        b.parentElement.classList.add('alvo');
+        setTimeout(function(){ b.parentElement.classList.remove('alvo'); }, 2000);
+      }
+    });
+    recontar();
+  }
+
+  function fechado(it){
+    if(it.modo==='prof')  return !!it.p;      /* verde inteiro, um clique */
+    if(it.modo==='aluno') return !!it.a;      /* triângulo inteiro do aluno */
+    if(it.modo==='extra') return !!it.a;      /* a atividade em si; o verde é opcional */
+    return !!it.a && !!it.p;                  /* duplo: as duas metades */
+  }
+  function rotuloMarca(it){
+    var quem = it.modo==='prof' ? 'só o professor'
+             : it.modo==='extra' ? 'extra: a plataforma ou você à esquerda, o professor à direita'
+             : it.modo==='aluno' ? 'sua, inteira: você marca e o triângulo gira completo, sem conferência do professor'
+             : it.soProva ? 'os vídeos de explicação preenchem a esquerda sozinhos; a direita é do professor, ao vivo'
+             : 'você à esquerda, o professor à direita';
+    return it.nm+'. Marca de '+quem+', '+(fechado(it)?'preenchida':'aberta')+'.';
+  }
+
+  /* ── clique, nas duas visões ──
+     ALUNO: alterna só a própria metade (esquerda). Não toca no que é do
+     professor, e não desfaz o que a plataforma provou.
+     PROFESSOR: sobrescreve qualquer marca, no ciclo que o Pedro pediu:
+     vazio → meio → cheio → vazio. No que é só dele, liga e desliga. */
+  var VISAO='aluno';
+  document.addEventListener('click',function(ev){
+    var b=ev.target.closest('.mk'); if(!b) return;
+    var modo=b.dataset.modo;
+    if(modo==='extra') return;   /* extra preenche sozinho, ninguém clica */
+    if(VISAO==='aluno'){
+      if(modo==='prof') return;
+      if(b.dataset.soprova==='1') return;  /* só a evidência preenche a esquerda */
+      if(b.dataset.plat==='1' && b.dataset.a==='1') return;  /* prova não se desfaz */
+      b.dataset.a = b.dataset.a==='1' ? '' : '1';
+    } else {
+      if(modo==='prof'){ b.dataset.p = b.dataset.p==='1' ? '' : '1'; }
+      else if(modo==='aluno'){ b.dataset.a = b.dataset.a==='1' ? '' : '1'; }
+      else {
+        var a=b.dataset.a==='1', p=b.dataset.p==='1';
+        if(!a && !p)      { b.dataset.a='1'; }            /* vazio → meio  */
+        else if(a && !p)  { b.dataset.p='1'; }            /* meio  → cheio */
+        else              { b.dataset.a=''; b.dataset.p=''; } /* cheio → vazio */
+      }
+    }
+    var it={modo:modo,a:b.dataset.a==='1'?1:0,p:b.dataset.p==='1'?1:0};
+    b.parentElement.classList.toggle('fim', !!fechado(it));
+    recontar();
+  });
+  function recontar(){
+    var n=0,t=0,en=0,et=0;
+    document.querySelectorAll('.item').forEach(function(el){
+      var fim=el.classList.contains('fim');
+      if(el.closest('.extra-strip')){ et++; if(fim)en++; }
+      else { t++; if(fim)n++; }
+    });
+    document.getElementById('rgN').textContent=n+' / '+t;
+    var re=document.getElementById('rgExtra');
+    if(re) re.textContent='✦ '+en+' / '+et+' extras';
+    atualizaSuaParte();
+  }
+  /* o cheque do título segue o DOM, porque é lá que o clique escreve */
+  function atualizaSuaParte(){
+    document.querySelectorAll('.aula-box').forEach(function(bloco){
+      var mks=[].slice.call(bloco.querySelectorAll('.mk[data-modo="duplo"],.mk[data-modo="aluno"]'))
+        .filter(function(m){ return !m.closest('.extra-strip'); });
+      bloco.classList.toggle('sua-parte',
+        mks.length>0 && mks.every(function(m){ return m.dataset.a==='1'; }));
+    });
+  }
+
+  /* ---------- registro, no lugar de medalha ---------- */
+  var reg=document.getElementById('reg');
+  ETAPAS.filter(function(e){return e.estado==='feita';}).reverse().forEach(function(e){
+    var d=document.createElement('div');
+    d.className='reg-linha';
+    d.innerHTML='<b><i lang="en">'+e.rot+'</i></b><span>encerrada em '+e.fim+'</span>'
+      +'<span class="qd">'+e.itens+' itens · '+e.aulas+' aulas</span>';
+    reg.appendChild(d);
+  });
+
+  /* ═══════════════ O PRÓXIMO PASSO, DERIVADO DO DADO ═══════════════
+     Entra o `situacao` que o backend passou a devolver em 13/08/2026
+     (versão 166): `ultimaLicao`, `aulaNaLicao`, `aulasPrevistasNaLicao`,
+     `posConfiavel`. Sai a mensagem. Nenhuma frase é escolhida à mão.
+
+     TRAVA DO MVP: o Planner só vale para quem está em Essentials 1, que é o
+     único estágio com gabarito de itens. Qualquer outro livro cai no estado
+     "ainda não está no ar" — tela honesta, não tela vazia. */
+  var LIVRO_NO_AR = 'Essentials 1';
+
+  function proximoPasso(st){
+    if(st.book !== LIVRO_NO_AR){
+      return {k:'Planner', h:'Seu planner ainda não está no ar.',
+        a:'Por enquanto ele vale para quem está no <i lang="en">Essentials</i> 1. '
+          +'O resto do Portal continua igual para você.', fantasma:'Ver meu progresso'};
+    }
+    if(!st.ultimaLicao && !st.aulaNaLicao){
+      return {k:'Seu primeiro passo', h:'Sua primeira aula é a <i lang="en">Intro</i> do <i lang="en">Essentials</i> 1.',
+        a:'Nada para fazer em casa ainda. Seu planner está aberto e nada marcado, '
+          +'e é assim que começa.', fantasma:'Ver o plano do <i lang="en">Essentials</i> 1'};
+    }
+    if(st.fim){
+      return {k:'<i lang="en">Essentials</i> 1 encerrado', h:'Você fechou o <i lang="en">Essentials</i> 1.',
+        a:total+' itens, 15 etapas. O registro fica aqui.', btn:'Ver o registro completo'};
+    }
+    /* (c) posição incerta: texto livre no card, ou aula que não casa com o
+       gabarito. Melhor não dizer nada do que dizer errado. */
+    if(!st.posConfiavel){
+      return {k:'Agora', h:'Sua última aula foi uma atividade especial.',
+        a:'O próximo passo aparece quando a <i lang="en">Lesson</i> '+(st.licaoNum||'')+' continuar. '
+          +'Enquanto isso, você pode rever o que já está marcado.',
+        fantasma:'Ver a lição inteira'};
+    }
+    var L=st.licaoNum, n=st.aulaNaLicao, prev=st.aulasPrevistasNaLicao;
+    var lic='<i lang="en">Lesson</i> '+L;
+    if(st.tipo==='CHP'){
+      return {k:'Agora · <i lang="en">Checkpoint</i> '+L,
+        h:'O <i lang="en">Checkpoint</i> '+L+' revisa a <i lang="en">Intro</i> e as <i lang="en">Lessons</i> 1 a 5.',
+        a:'São '+prev+' aulas. Você pode praticar antes com o que já marcou aqui.',
+        btn:'Praticar as 5 lições'};
+    }
+    if(st.tipo==='TEST'){
+      return {k:'Próxima aula · Prova '+L, h:'A Prova '+L+' é na próxima aula.',
+        a:'Ela cobre da <i lang="en">Intro</i> à <i lang="en">Lesson</i> 5, o mesmo conteúdo que já está marcado aqui.',
+        btn:'Praticar para a Prova '+L};
+    }
+    /* lição estendida: passou do previsto. Nenhum número previsto aparece,
+       nenhuma cor muda, e o tempo gasto vira acúmulo visível. */
+    if(n>prev){
+      return {k:'Agora · '+lic+' · '+n+'ª aula',
+        h:'Continue nos exercícios da '+lic+', na página 39.',
+        a:'Esta lição está na '+n+'ª aula. Você já fechou <b>'+st.itensFeitos+' itens</b> nela.',
+        btn:'Abrir os itens de hoje'};
+    }
+    if(n===1){
+      return {k:'Agora · '+lic+' · 1ª aula',
+        h:'Você acabou de começar a '+lic+'. Ouça os 9 áudios das páginas 33 a 36.',
+        a:'São 9 áudios, uns 5 minutos. Ao terminar, seu lado de 1 item fica marcado.',
+        btn:'Abrir os áudios'};
+    }
+    if(n===2){
+      return {k:'Agora · '+lic+' · 2ª aula',
+        h:'Termine os exercícios das páginas 37 a 40 antes da próxima aula.',
+        a:'Faltam '+(st.itensAbertos)+' itens. Marque seu lado quando terminar cada um.',
+        btn:'Ver os '+(st.itensAbertos)+' itens'};
+    }
+    return {k:'Agora · '+lic+' · '+n+'ª aula',
+      h:'Na próxima aula tem o <i lang="en">Checking</i> da '+lic+' com seu professor.',
+      a:'Revise os '+st.itensTotal+' itens desta lição. Você já marcou '+st.itensFeitos+'.',
+      btn:'Treinar no <i lang="en">Quick Practice</i>'};
+  }
+
+  /* os cenários que o backend pode produzir. O rótulo à esquerda é só do demo. */
+  var CENARIOS=[
+    ['5ª aula: lição estendida', {book:'Essentials 1',ultimaLicao:'L4',licaoNum:4,aulaNaLicao:5,aulasPrevistasNaLicao:3,posConfiavel:true,itensFeitos:7,itensAbertos:2,itensTotal:9}],
+    ['1ª aula da lição',         {book:'Essentials 1',ultimaLicao:'L4',licaoNum:4,aulaNaLicao:1,aulasPrevistasNaLicao:3,posConfiavel:true,itensFeitos:0,itensAbertos:9,itensTotal:9}],
+    ['2ª aula da lição',         {book:'Essentials 1',ultimaLicao:'L4',licaoNum:4,aulaNaLicao:2,aulasPrevistasNaLicao:3,posConfiavel:true,itensFeitos:4,itensAbertos:5,itensTotal:9}],
+    ['3ª aula: vem o checking',  {book:'Essentials 1',ultimaLicao:'L4',licaoNum:4,aulaNaLicao:3,aulasPrevistasNaLicao:3,posConfiavel:true,itensFeitos:5,itensAbertos:4,itensTotal:9}],
+    ['Checkpoint',               {book:'Essentials 1',ultimaLicao:'CHP1',licaoNum:1,tipo:'CHP',aulaNaLicao:1,aulasPrevistasNaLicao:2,posConfiavel:true}],
+    ['Prova',                    {book:'Essentials 1',ultimaLicao:'TEST1',licaoNum:1,tipo:'TEST',aulaNaLicao:1,aulasPrevistasNaLicao:2,posConfiavel:true}],
+    ['Sem dado confiável (FPA)', {book:'Essentials 1',ultimaLicao:'L4',licaoNum:4,posConfiavel:false}],
+    ['Aluno novo',               {book:'Essentials 1',posConfiavel:false,ultimaLicao:null,aulaNaLicao:null}],
+    ['Estágio encerrado',        {book:'Essentials 1',fim:true,posConfiavel:true,ultimaLicao:'L10',licaoNum:10}],
+    ['Aluno fora do MVP',        {book:'Transitions 2',ultimaLicao:'L2',licaoNum:2,aulaNaLicao:1,aulasPrevistasNaLicao:3,posConfiavel:true}]
+  ];
+
+  function pintaPasso(st){
+    var p=proximoPasso(st);
+    document.querySelector('.agora .kicker').innerHTML=p.k;
+    document.getElementById('ag-t').innerHTML=p.h;
+    document.querySelector('.agora .apoio').innerHTML=p.a;
+    var lado=document.querySelector('.agora .lado');
+    lado.innerHTML = p.btn
+      ? '<button class="acao" type="button" id="btAgora">'+p.btn+'</button>'
+        +'<button class="elo" type="button" id="btLicao">Ver a <i lang="en">Lesson</i> 4 inteira</button>'
+      : '<button class="fantasma" type="button" id="btLicao">'+p.fantasma+'</button>';
+    ligaBotoes();
+  }
+
+  var sel=document.getElementById('cenario');
+  CENARIOS.forEach(function(c,i){
+    var o=document.createElement('option'); o.value=i; o.textContent=c[0]; sel.appendChild(o);
+  });
+  sel.addEventListener('change',function(){ pintaPasso(CENARIOS[+sel.value][1]); });
+
+  /* ---------- botões do próximo passo ---------- */
+  function ligaBotoes(){
+  var bA=document.getElementById('btAgora');
+  if(bA) bA.addEventListener('click',function(){
+    var alvos=['i8','i11'];
+    alvos.forEach(function(id){
+      var n=document.querySelector('[data-id="'+id+'"]');
+      if(n){ n.classList.add('alvo'); setTimeout(function(){n.classList.remove('alvo');},1800); }
+    });
+    var alvo=document.querySelector('[data-id="i8"]');
+    if(alvo) alvo.scrollIntoView({block:'center',behavior:'smooth'});
+  });
+  var bL=document.getElementById('btLicao');
+  if(bL) bL.addEventListener('click',function(){
+    document.querySelector('.ficha').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  }
+  ligaBotoes();
+  sel.value=3;
+  pintaPasso(CENARIOS[3][1]);
+
+  /* ---------- tema ---------- */
+  document.body.dataset.visao=VISAO;
+  var bv=document.getElementById('visao');
+  bv.addEventListener('click',function(){
+    VISAO = VISAO==='aluno' ? 'professor' : 'aluno';
+    document.body.dataset.visao=VISAO;
+    bv.textContent = VISAO==='aluno' ? 'Ver como professor' : 'Ver como aluno';
+  });
+  var bt=document.getElementById('tema');
+  bt.addEventListener('click',function(){
+    var escuro=document.documentElement.getAttribute('data-theme')==='dark';
+    document.documentElement.setAttribute('data-theme', escuro?'light':'dark');
+    bt.textContent = escuro ? 'Ver no escuro' : 'Ver no claro';
+  });
+
+  /* a marca do checking (o desenho entra aqui porque o innerHTML do bloco
+     foi montado por string) */
+  var chkMk=document.querySelector('.chk-mk');
+  if(chkMk) chkMk.innerHTML=svgMk('cir');
+
+  /* o checklist do professor vira o pedido que o aluno vê na home */
+  function atualizaPedidos(){
+    var on=[].map.call(document.querySelectorAll('.chk-chip[aria-pressed="true"]'),
+      function(b){ return b.textContent; });
+    var d=document.getElementById('pedidoProf');
+    if(!d) return;
+    if(!on.length){ d.hidden=true; return; }
+    d.hidden=false;
+    d.innerHTML='<b>Seu professor pediu:</b> '+on.join(' · ');
+  }
+  document.querySelectorAll('.chk-chip').forEach(function(b){
+    b.addEventListener('click',function(){
+      b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')==='true'?'false':'true');
+      atualizaPedidos();
+    });
+  });
+
+  /* a nota destrava a próxima lição. Interno do professor: o aluno não vê. */
+  /* o bilhete do professor aparece na home do aluno enquanto ele digita */
+  var taBilhete=document.getElementById('bilheteProf');
+  if(taBilhete) taBilhete.addEventListener('input',function(){
+    var d=document.getElementById('bilheteAluno');
+    var txt=taBilhete.value.trim();
+    if(!txt){ d.hidden=true; return; }
+    d.hidden=false;
+    d.innerHTML='<b>💬 Bilhete do professor:</b> ';
+    d.appendChild(document.createTextNode('\u201C'+txt+'\u201D'));
+  });
+
+  var bSalvar=document.getElementById('salvarNota');
+  if(bSalvar) bSalvar.addEventListener('click',function(){
+    var v=parseInt(document.getElementById('notaChk').value,10);
+    var lk=document.getElementById('chkLock');
+    if(isNaN(v)||v<0||v>10){ lk.textContent='A nota precisa ser um número de 0 a 10.'; return; }
+    lk.innerHTML='✓ Nota salva · fazer a <i lang="en">Lesson</i> 5 está aberto para o aluno';
+    document.getElementById('notaChk').disabled=true; bSalvar.disabled=true;
+    /* o cadeado da divisória abre e o pulso vira lima */
+    var px=document.getElementById('proxLicao');
+    if(px){
+      px.classList.add('aberta');
+      px.setAttribute('aria-label','Lesson 5 desbloqueada.');
+      document.getElementById('plIcone').innerHTML=
+        '<path d="M10,11 V7.2 a4,4 0 0 1 7.6,-1.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'
+        +'<rect x="5.5" y="11" width="13" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/>';
+      document.getElementById('proxLicaoTxt').innerHTML=
+        '✓ <i lang="en">Lesson</i> 5 desbloqueada — bora';
+    }
+  });
+
+  recontar();
+  montaLicao(SIM.atual);
+
+  /* demonstração: o aluno termina o Video Book 2 no portal, e a metade acende */
+  var bSim=document.getElementById('simular');
+  if(bSim) bSim.addEventListener('click',function(){
+    FEITOS['vbk:essentials-1/1esN2jMgS7ZOohNt6D5lF9SSsiBj3g_Y0']=1;
+    if(LIC_ABERTA!=='L4') montaLicao('L4'); else cruzaEvidencia();
+    var pl=document.querySelector('[data-ev-pl="vbk2"]');
+    if(pl){ pl.setAttribute('fill','#9fd8ff'); pl.setAttribute('stroke','#05081f');
+      pl.setAttribute('stroke-width','1.6');
+      var halo=pl.parentElement.querySelector('.halo'); if(halo) halo.setAttribute('opacity','.22'); }
+    var ct=document.getElementById('sisVideoConta'); if(ct) ct.textContent='Video Book · 2/5';
+    bSim.disabled=true;
+    bSim.textContent='O portal registrou. Veja o Video Activity 2 na 3ª aula ↓';
+  });
+})();
+</script>
