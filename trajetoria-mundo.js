@@ -20,6 +20,13 @@
             'foco'     só o passo atual mostra pílula, e ela é
                        contra-escalada para ficar legível por menor que a
                        arte esteja. Os outros aparecem no toque.
+
+   A sombra que destaca o caminho NÃO se desenha aqui: ela vem assada na
+   própria arte, pelo `assar-sombra.py`. Chegou a existir como máscara SVG
+   com feGaussianBlur e funcionava, mas rasterizar um borrão grande sobre
+   2080×756 é caro, e qualquer coisa que invalide a camada (a pulsação do
+   "você está aqui", o arrasto horizontal num aparelho fraco) manda
+   rasterizar de novo. Assada custa zero e ainda deixou o WebP menor.
    ═══════════════════════════════════════════════════════════════════════ */
 var TrajetoriaMundo = (function(){
   var NS='http://www.w3.org/2000/svg';
@@ -56,6 +63,7 @@ var TrajetoriaMundo = (function(){
     img.setAttributeNS('http://www.w3.org/1999/xlink','href',mundo.arte);
     img.setAttribute('href',mundo.arte);
     svg.appendChild(img);
+
 
     /* ── o tamanho ───────────────────────────────────────────────────────
        'altura' mede o recipiente e encolhe a arte até ela caber de cima a

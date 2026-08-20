@@ -47,6 +47,9 @@
      a arte não chega */
   .pista{overflow-x:auto;overflow-y:hidden;background:#20351c;
     scrollbar-width:thin;scrollbar-color:#6f9a4a transparent}
+  /* no celular a pista precisa de uma altura própria: é ela que o
+     ajuste 'altura' mede para saber quanto encolher a arte */
+  @media (max-width:700px){ .pista{height:58vh;min-height:300px} }
   .pista::-webkit-scrollbar{height:9px}
   .pista::-webkit-scrollbar-thumb{background:#6f9a4a;border-radius:6px}
   .pista svg{display:block}
@@ -106,6 +109,29 @@ document.getElementById('livro').textContent=MUNDO_E2.livro;
 document.getElementById('meta').textContent=MUNDO_E2.meta;
 document.getElementById('conta').textContent=ESTADO.iAtual+' of '+MUNDO_E2.etapas.length+' steps';
 
-TrajetoriaMundo.desenhar(document.getElementById('pista'), MUNDO_E2, ESTADO,
-  {ajuste:'natural', rotulos:'todos'});
+/* ── a escolha do Pedro, 20/08/2026: no celular vale a variante 3 ────────
+   No telefone a arte encolhe até o mundo caber de cima a baixo, e só o passo
+   atual mostra pílula, contra-escalada para chegar ao olho no tamanho de
+   projeto. Os outros aparecem no toque. Em tela larga não há aperto, então
+   a arte vai no tamanho real com as 15 pílulas à mostra.
+
+   O corte em 700px não é redondo por acaso: abaixo disso as 15 pílulas não
+   cabem sem colidir por mais que se empurre. Comparação em
+   `maquete-tamanho-celular.html`. */
+function pintar(){
+  var estreito = window.matchMedia('(max-width: 700px)').matches;
+  TrajetoriaMundo.desenhar(document.getElementById('pista'), MUNDO_E2, ESTADO,
+    estreito ? {ajuste:'altura', rotulos:'foco'}
+             : {ajuste:'natural', rotulos:'todos'});
+}
+pintar();
+
+/* redesenha ao virar o telefone: o 'altura' mede o recipiente, e o
+   recipiente muda de altura na rotação */
+var ultimo=window.innerWidth, t;
+addEventListener('resize',function(){
+  if(window.innerWidth===ultimo) return;      /* barra de endereço subindo não conta */
+  ultimo=window.innerWidth;
+  clearTimeout(t); t=setTimeout(pintar,180);
+});
 </script>

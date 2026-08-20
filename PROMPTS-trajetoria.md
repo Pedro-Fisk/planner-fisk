@@ -29,7 +29,7 @@ Contagem errada é o que mais sai errado do gerador e é justamente o que quebra
 o encaixe. Conferir **antes** de gastar tempo detectando coordenada:
 
 - [ ] 15 marcos na trilha, da esquerda para a direita
-- [ ] a ponte sobre o rio/canyon **não** entrou na conta dos 15
+- [ ] a ponte sobre o rio/canyon **entra** na conta dos 15 (mudou em 20/08/2026)
 - [ ] 4 deles de material diferente, e nas posições 7, 8, 14 e 15
 - [ ] 5 pratos em cada uma das 3 clareiras (15 no total)
 - [ ] nenhum texto
@@ -57,8 +57,8 @@ numerados por cima. Nunca estimar coordenada a olho.
 > those four are the 7th, 8th, 14th and 15th marks counting from the left.
 >
 > A clear blue stream crosses the trail on the left third, with a small
-> railed wooden footbridge over it. The footbridge is scenery and is **not**
-> one of the 15 stepping marks.
+> wooden footbridge over it. The footbridge **is one of the 15 stepping
+> marks** — count it as one.
 >
 > Three round grass clearings open off the trail, joined to it by short
 > sandy side paths: one below the trail with a campfire and floating music
@@ -73,16 +73,34 @@ numerados por cima. Nunca estimar coordenada a olho.
 > Keep the band of forest just above and just below the trail calm and
 > uncluttered. No text, no letters, no numbers anywhere in the image.
 
-**O que a arte entregou:** 5+5+5 pratos ✅. Mas só **2** plataformas de
-madeira, nas posições **11 e 14** (o pedido eram 4, em 7, 8, 14 e 15).
-Enquanto isso não for repintado, quem marca checkpoint e teste é a placa
-desenhada pelo código.
+### O que a arte entregou
 
-E a contagem dos marcos tem uma pegadinha: **a ponte do rio não é passo.**
-São 13 pedras + 3 madeiras = 16 travessias, mas a de x≈660 é uma ponte com
-guarda-corpo sobre o rio, objeto diferente das outras duas, que são
-plataformas rasas assentadas na areia. Contando a ponte dá 16 e o encaixe
-quebra. No próximo prompt, dizer que a travessia do rio **não** é um dos 15.
+Foram três rodadas. A **v3 é a oficial**, aprovada em 20/08/2026.
+
+| | v2 | **v3 (oficial)** |
+|---|---|---|
+| tamanho | 2080×756 (2,75:1) | **1800×873 (2,06:1)** |
+| marcos | 13 pedras + 2 plataformas | **14 pedras + a ponte** |
+| a ponte | cenário, fora da conta | **é o passo 5** |
+| pratos | 5+5+5 ✅ | 5+5+5 ✅ |
+| material diferente nas posições 7, 8, 14 e 15 | ❌ (2, em 11 e 14) | ❌ (nenhum) |
+| sombra destacando o caminho | não tinha | **já vem pintada** |
+
+**A ponte virou passo** (decisão do Pedro, 20/08/2026), e é a mudança que mais
+pega quem chega depois: na v2 contar a ponte dava 16 e quebrava o encaixe, na
+v3 **não** contar dá 14 e quebra igual. A v3 foi desenhada para isso, não sobrou
+nenhuma plataforma solta no caminho.
+
+**O material diferente nunca veio.** Nas três rodadas o gerador ignorou o pedido
+das 4 plataformas nas posições 7, 8, 14 e 15. Enquanto isso, quem marca
+checkpoint e teste é a placa desenhada pelo código, e funciona. Se a próxima
+rodada insistir, vale tentar amarrar ao que já obedeceu: a ponte veio certa
+quando foi descrita como travessia de um rio, ou seja, o gerador entende
+**motivo** melhor do que **posição**. Talvez "a small wooden platform where the
+trail widens into a resting spot" funcione melhor do que "the 7th mark".
+
+**A sombra a v3 já traz pintada** (trilha a 211 de luminância, mata funda a 16).
+Não passar o `assar-sombra.py` nela. O script fica para arte que vier lavada.
 
 ---
 
@@ -138,9 +156,9 @@ ser refeito em cima desta arte.
 > boardwalk platforms, and those four are the 7th, 8th, 14th and 15th marks
 > counting from the left.
 >
-> A narrow dry canyon crosses the trail on the left third, with a small rope
-> bridge over it. The rope bridge is scenery and is **not** one of the 15
-> stepping marks.
+> A narrow dry canyon crosses the trail on the left third, with a small
+> plank bridge over it. The plank bridge **is one of the 15 stepping marks** —
+> count it as one.
 >
 > Three round oasis clearings open off the trail, joined to it by short
 > sandy side paths: one below the trail with a campfire and floating music
