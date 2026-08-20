@@ -1,0 +1,285 @@
+{
+ "livro": "essentials-1",
+ "geradoEm": "dev",
+ "regraGeral": {
+  "audio": "60% da faixa (PASSIVO_META, desde 12/08/2026); 60% das faixas da seção",
+  "video": "90s com a aba visível"
+ },
+ "comProva": [
+  {
+   "box": "Box 17",
+   "item": "Movie 1",
+   "licao": "L1",
+   "aula": 5,
+   "ids": [
+    "mp:essentials-1:frozen-1"
+   ],
+   "regra": "atividade corrigida",
+   "fonte": "mp"
+  },
+  {
+   "box": "Box 20",
+   "item": "Song 1 ___",
+   "licao": "L2",
+   "aula": 6,
+   "ids": [
+    "sp:essentials-1:mercy"
+   ],
+   "regra": "atividade corrigida",
+   "fonte": "sp"
+  },
+  {
+   "box": "Box 26",
+   "item": "Video Activity 1",
+   "licao": "L2",
+   "aula": 8,
+   "ids": [
+    "vbk:essentials-1/1y4O0m_ngn27E0V1ESWID1-oC-CFpKQVO"
+   ],
+   "regra": "90s com a aba visível",
+   "fonte": "vbk"
+  },
+  {
+   "box": "Box 38",
+   "item": "Movie 2",
+   "licao": "L3",
+   "aula": 11,
+   "ids": [
+    "mp:essentials-1:frozen-2"
+   ],
+   "regra": "atividade corrigida",
+   "fonte": "mp"
+  },
+  {
+   "box": "Box 45",
+   "item": "Song 2 ___",
+   "licao": "L4",
+   "aula": 12,
+   "ids": [
+    "sp:essentials-1:hello"
+   ],
+   "regra": "atividade corrigida",
+   "fonte": "sp"
+  },
+  {
+   "box": "Box 52",
+   "item": "Video Activity 2",
+   "licao": "L4",
+   "aula": 14,
+   "ids": [
+    "vbk:essentials-1/1esN2jMgS7ZOohNt6D5lF9SSsiBj3g_Y0"
+   ],
+   "regra": "90s com a aba visível",
+   "fonte": "vbk"
+  },
+  {
+   "box": "Box 56",
+   "item": "Movie 3",
+   "licao": "L5",
+   "aula": 15,
+   "ids": [
+    "mp:essentials-1:himym"
+   ],
+   "regra": "atividade corrigida",
+   "fonte": "mp"
+  },
+  {
+   "box": "Box 64",
+   "item": "Song 3 ___",
+   "licao": "L5",
+   "aula": 17,
+   "ids": [
+    "sp:essentials-1:castle-on-the-hill"
+   ],
+   "regra": "atividade corrigida",
+   "fonte": "sp"
+  },
+  {
+   "box": "Box 90",
+   "item": "Video Activity 3",
+   "licao": "L6",
+   "aula": 24,
+   "ids": [
+    "vbk:essentials-1/1HNVmS6qYV47omIvayw-uQrQgh42VweGL"
+   ],
+   "regra": "90s com a aba visível",
+   "fonte": "vbk"
+  },
+  {
+   "box": "Box 101",
+   "item": "Movie 4",
+   "licao": "L7",
+   "aula": 27,
+   "ids": [
+    "mp:essentials-1:friends"
+   ],
+   "regra": "atividade corrigida",
+   "fonte": "mp"
+  },
+  {
+   "box": "Box 105",
+   "item": "Song 4 ___",
+   "licao": "L8",
+   "aula": 28,
+   "ids": [
+    "sp:essentials-1:hard-times"
+   ],
+   "regra": "atividade corrigida",
+   "fonte": "sp"
+  },
+  {
+   "box": "Box 112",
+   "item": "Video Activity 4",
+   "licao": "L8",
+   "aula": 31,
+   "ids": [
+    "vbk:essentials-1/1IxWB2_quel0Jgo3kPBIMmpo5VVe2W41v"
+   ],
+   "regra": "90s com a aba visível",
+   "fonte": "vbk"
+  },
+  {
+   "box": "Box 116",
+   "item": "Song 5 ___",
+   "licao": "L9",
+   "aula": 32,
+   "ids": [
+    "sp:essentials-1:heathens"
+   ],
+   "regra": "atividade corrigida",
+   "fonte": "sp"
+  },
+  {
+   "box": "Box 123",
+   "item": "Movie 5",
+   "licao": "L9",
+   "aula": 34,
+   "ids": [
+    "mp:essentials-1:jurassic"
+   ],
+   "regra": "atividade corrigida",
+   "fonte": "mp"
+  },
+  {
+   "box": "Box 131",
+   "item": "Video Activity 5",
+   "licao": "L10",
+   "aula": 37,
+   "ids": [
+    "vbk:essentials-1/1_GeY9LXo55osH6WGb9QQiorizwOD_rQo"
+   ],
+   "regra": "90s com a aba visível",
+   "fonte": "vbk"
+  }
+ ],
+ "semProva": [
+  {
+   "box": "Box 06",
+   "item": "QR Code Introduction",
+   "licao": "L1",
+   "tipo": "qr"
+  },
+  {
+   "box": "Box 16",
+   "item": "Movie Introduction",
+   "licao": "L1",
+   "tipo": "movie"
+  },
+  {
+   "box": "Box 18",
+   "item": "QR Code Exercises - p. 16",
+   "licao": "L1",
+   "tipo": "qr"
+  },
+  {
+   "box": "Box 40",
+   "item": "Songs Introduction",
+   "licao": "L2",
+   "tipo": "song"
+  },
+  {
+   "box": "Box 41",
+   "item": "Video Ac. Introduction",
+   "licao": "L2",
+   "tipo": "video"
+  },
+  {
+   "box": "Box 27",
+   "item": "QR Code Exercises - p. 24",
+   "licao": "L2",
+   "tipo": "qr"
+  },
+  {
+   "box": "Box 42",
+   "item": "Extra Exercises Intro",
+   "licao": "L3",
+   "tipo": "extra"
+  },
+  {
+   "box": "Box 39",
+   "item": "QR Code Exercises - p. 32",
+   "licao": "L3",
+   "tipo": "qr"
+  },
+  {
+   "box": "Box 53",
+   "item": "QR Code Exercises - p. 40",
+   "licao": "L4",
+   "tipo": "qr"
+  },
+  {
+   "box": "Box 63",
+   "item": "QR Code Exercises - p. 48",
+   "licao": "L5",
+   "tipo": "qr"
+  },
+  {
+   "box": "Box 67",
+   "item": "QR Code Exercises - p. 52",
+   "licao": "CHP",
+   "tipo": "qr"
+  },
+  {
+   "box": "Box 81",
+   "item": "Extra Review Exercises Intro",
+   "licao": "CHP",
+   "tipo": "extra"
+  },
+  {
+   "box": "Box 91",
+   "item": "QR Code Exercises - P. 60",
+   "licao": "L6",
+   "tipo": "qr"
+  },
+  {
+   "box": "Box 102",
+   "item": "QR Code Exercises - p. 68",
+   "licao": "L7",
+   "tipo": "qr"
+  },
+  {
+   "box": "Box 113",
+   "item": "QR Code Exercises - p. 76",
+   "licao": "L8",
+   "tipo": "qr"
+  },
+  {
+   "box": "Box 143",
+   "item": "QR Code Exercises - p. 84",
+   "licao": "L9",
+   "tipo": "qr"
+  },
+  {
+   "box": "Box 132",
+   "item": "QR Code Exercises - p. 92",
+   "licao": "L10",
+   "tipo": "qr"
+  },
+  {
+   "box": "Box 124",
+   "item": "QR Code Exercises - p. 96",
+   "licao": "CHP",
+   "tipo": "qr"
+  }
+ ]
+}

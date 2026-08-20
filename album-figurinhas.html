@@ -1,0 +1,818 @@
+<title>Álbum de figurinhas</title>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     ÁLBUM DE FIGURINHAS · maquete com dados simulados
+     Pedido do Pedro (13/08, retomado em 15/08/2026): uma página onde o aluno
+     vê todas as figurinhas que pode ter e já tem, espalhadas como álbum de
+     colecionáveis, com uma parcela trancada a cadeado.
+
+     Três coleções, três fontes de verdade:
+     · As figurinhas do LIVRO: uma por lição, acendem com a nota do professor
+       no checking do Planner (fatia 6 já grava isso no servidor). Recomeçam
+       a cada livro; as páginas antigas ficam guardadas.
+     · As conquistas DO ESTÁGIO (15/08, pedido do Pedro: "queria ter mais
+       conquistas dentro de cada estágio"): nascem do conteúdo real do livro
+       no portal — 8 filmes, 5 músicas, 14 blocos de áudio, 5 vídeos de
+       Videobook — e do próprio álbum. Recomeçam a cada livro também.
+     · As conquistas DO PORTAL: as 39 reais do FD_NIVEIS, vitalícias, com a
+       regra de produção: nível travado nem revela o nome — silhueta e cadeado.
+
+     Estética (15/08): papel de caderno fraco e translúcido; figurinha de
+     lição = adesivo redondo numerado; medalha = recorte que segue a silhueta
+     do próprio emoji, com borda branca e sombra; tudo ginga no hover.
+
+     Ética do brief: tudo fixo e anunciado (o slot vazio DIZ como ganhar),
+     sem prazo, sem ranking, sem sorteio.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style>
+:root{
+  --alb-fundo:#e9eef8;        /* a mesa onde a caderneta está apoiada */
+  --alb-capa:#16265e;         /* a capa: o mesmo marinho-2 do Planner */
+  --alb-capa-tinta:#fff;
+  --alb-papel:#f6f8fd;        /* papel frio, azulado — caderno, não pergaminho */
+  --alb-grade:#dbe4f4;        /* cinza de apoio (silhuetas, bordas) */
+  --alb-linha:rgba(96,126,186,.13); /* o quadriculado: lembrete de caderno, não gaiola */
+  --alb-margem:#f0b7c8;       /* a linha de margem rosada do caderno */
+  --alb-tinta:#22304d;        /* caneta azul-escura */
+  --alb-lapis:#66779c;        /* anotações a lápis */
+  --alb-slot:#8fa2c6;         /* contorno do slot vazio */
+  --alb-lima:#c6d900;         /* o lima do Planner: só no brilho do novo */
+  --alb-sombra:0 10px 30px rgba(34,48,77,.14);
+  --alb-pop:#fff;
+  --disp:Poppins,'Trebuchet MS','Segoe UI',system-ui,sans-serif;
+  --corpo:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --alb-fundo:#0b1128; --alb-capa:#101b47; --alb-capa-tinta:#eef2ff;
+    --alb-papel:#151d38; --alb-grade:#25304f; --alb-linha:rgba(190,210,255,.07);
+    --alb-margem:#5d3a52;
+    --alb-tinta:#dde5f7; --alb-lapis:#8d9cc0; --alb-slot:#5b6c94;
+    --alb-lima:#d4e909; --alb-sombra:0 10px 30px rgba(0,0,0,.45);
+    --alb-pop:#1b2547;
+  }
+}
+:root[data-theme="dark"]{
+  --alb-fundo:#0b1128; --alb-capa:#101b47; --alb-capa-tinta:#eef2ff;
+  --alb-papel:#151d38; --alb-grade:#25304f; --alb-linha:rgba(190,210,255,.07);
+  --alb-margem:#5d3a52;
+  --alb-tinta:#dde5f7; --alb-lapis:#8d9cc0; --alb-slot:#5b6c94;
+  --alb-lima:#d4e909; --alb-sombra:0 10px 30px rgba(0,0,0,.45);
+  --alb-pop:#1b2547;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--alb-fundo);color:var(--alb-tinta);
+  font-family:var(--corpo);font-size:16px;line-height:1.5}
+.pagina{max-width:1060px;margin:0 auto;padding:26px 18px 60px}
+
+.selo-sim{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:#8a6d00;background:#ffe9a8;border:1px solid #e8c95a;
+  border-radius:999px;padding:4px 12px;margin-bottom:14px}
+
+/* ── a capa da caderneta ── */
+.capa{background:var(--alb-capa);color:var(--alb-capa-tinta);border-radius:18px 18px 6px 6px;
+  padding:26px 28px 22px;box-shadow:var(--alb-sombra);position:relative;overflow:hidden}
+.capa::after{content:'';position:absolute;inset:10px;border:1.5px dashed rgba(255,255,255,.22);
+  border-radius:12px;pointer-events:none}
+.capa h1{font-family:var(--disp);font-weight:700;font-size:clamp(26px,4.5vw,36px);
+  margin:0;text-wrap:balance}
+.capa .dona{font-size:14px;font-weight:600;color:#b9c6e8;margin-top:6px}
+.capa .conta{position:absolute;right:28px;top:26px;text-align:right;
+  font-variant-numeric:tabular-nums}
+.capa .conta b{font-family:var(--disp);font-weight:600;font-size:30px;display:block}
+.capa .conta span{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#b9c6e8}
+@media (max-width:560px){ .capa .conta{position:static;text-align:left;margin-top:10px} }
+
+/* ── as páginas de papel ── */
+.folha{background:var(--alb-papel);border-radius:6px;box-shadow:var(--alb-sombra);
+  margin-top:14px;padding:24px 26px 30px;position:relative;
+  /* o quadriculado é lembrete de caderno, não gaiola: linha translúcida e fina */
+  background-image:
+    linear-gradient(var(--alb-linha) 1px,transparent 1px),
+    linear-gradient(90deg,var(--alb-linha) 1px,transparent 1px);
+  background-size:30px 30px;background-position:0 0}
+.folha::before{content:'';position:absolute;top:0;bottom:0;left:44px;width:1.5px;
+  background:var(--alb-margem);opacity:.34;pointer-events:none}
+.folha h2{font-family:var(--disp);font-weight:600;font-size:22px;margin:0 0 2px;
+  padding-left:24px;text-wrap:balance}
+.folha .sub{font-size:13.5px;font-weight:600;color:var(--alb-lapis);
+  padding-left:24px;max-width:64ch}
+.folha .sub b{color:var(--alb-tinta)}
+
+/* ── cada folha fecha ─────────────────────────────────────────────────
+   <details>/<summary> nativo: abre e fecha sem script, com teclado, e o
+   navegador acha o texto de dentro mesmo fechado. O placar fica no
+   cabeçalho para a folha fechada ainda dizer alguma coisa.               */
+.folha > summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;
+  gap:12px;padding-left:24px}
+.folha > summary::-webkit-details-marker{display:none}
+.folha > summary:focus-visible{outline:3px solid var(--alb-lima);outline-offset:4px;
+  border-radius:10px}
+.folha > summary h2{padding-left:0;flex:1 1 auto}
+.folha .qt-folha{font-size:13px;font-weight:700;color:var(--alb-lapis);
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.folha .chev{width:11px;height:11px;flex:0 0 auto;align-self:center;
+  border-right:2.4px solid var(--alb-lapis);border-bottom:2.4px solid var(--alb-lapis);
+  rotate:45deg;translate:0 -2px;transition:rotate .2s ease,translate .2s ease}
+.folha[open] > summary .chev{rotate:225deg;translate:0 2px}
+
+/* ── página 1: as figurinhas do livro ──────────────────────────────────
+   Mesma distribuição e mesma proporção das outras duas folhas (pedido dele
+   em 15/08): fileira que quebra sozinha, adesivo de 78px. O que sobrou da
+   ideia de constelação é a bagunça das rotações — sem ela vira planilha.  */
+.mural{display:flex;flex-wrap:wrap;gap:20px 14px;margin-top:18px;padding-left:24px}
+.fig{width:108px;display:flex;flex-direction:column;align-items:center;
+  gap:9px;background:none;border:0;padding:0;cursor:pointer;font-family:inherit;
+  transform:rotate(var(--rot,0deg));text-align:center}
+.fig:focus-visible{outline:3px solid var(--alb-lima);outline-offset:4px;border-radius:14px}
+.fig .adesivo{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;
+  position:relative;background:var(--ades,#1d3685);border:4.5px solid #fff;
+  box-shadow:0 4px 12px rgba(20,28,58,.28)}
+/* o desenho ocupa a bolacha inteira; o número fica na quina */
+.fig .adesivo svg{position:absolute;inset:0;margin:auto;width:64px;height:64px}
+/* brilho de adesivo plastificado: só em quem já foi colada */
+.fig:not(.vazio) .adesivo::before{content:'';position:absolute;left:11%;top:7%;
+  width:48%;height:30%;border-radius:50%;background:rgba(255,255,255,.26);
+  pointer-events:none}
+/* a numeração da coleção — é ela que faz o álbum parecer álbum */
+.fig .num{position:absolute;right:-3px;bottom:-3px;width:22px;height:22px;
+  border-radius:50%;background:#fff;color:#22304d;border:2px solid #fff;
+  font-family:var(--disp);font-weight:700;font-size:11px;line-height:18px;
+  text-align:center;font-style:normal;font-variant-numeric:tabular-nums;
+  box-shadow:0 2px 6px rgba(20,28,58,.28)}
+.fig .nm{font-family:var(--disp);font-weight:600;font-size:13px;color:var(--alb-tinta);
+  line-height:1.15}
+/* o subtítulo é o tema da unidade, em inglês como está impresso no livro */
+.fig .tema{font-size:11px;font-style:italic;line-height:1.15;color:var(--alb-tinta);
+  opacity:.72;margin-top:-4px}
+.fig.vazio .tema{color:var(--alb-lapis);opacity:1}
+.fig .quando{font-size:11px;color:var(--alb-lapis);margin-top:1px}
+/* o slot vazio anuncia o que ele pede — fixo e anunciado, nada de surpresa.
+   Fica a sombra do desenho e, grande no meio, o número da casa: dá para
+   apontar "me falta a 7" sem que a figurinha precise ser segredo. */
+/* O slot vazio é a PRÉVIA impressa do adesivo, como em álbum de banca: um véu
+   da cor da figurinha atrás, para o desenho branco ainda ter o que contrastar.
+   Sem esse véu a arte branca simplesmente some no papel. */
+.fig.vazio .adesivo{background:var(--ades-fraco,transparent);
+  border:2.5px dashed var(--alb-slot);box-shadow:none}
+.fig.vazio .adesivo svg{opacity:.55}
+/* o número fica SEMPRE na quina: no meio ele briga com a prévia do desenho */
+.fig.vazio .num{background:var(--alb-papel);color:var(--alb-slot);
+  border:2px solid var(--alb-papel);box-shadow:0 1px 3px rgba(20,28,58,.14)}
+.fig.vazio .nm{color:var(--alb-lapis)}
+/* a figurinha recém-colada ganha o brilho lima UMA vez */
+@media (prefers-reduced-motion:no-preference){
+  .fig.nova{animation:cola .55s cubic-bezier(.2,.8,.3,1.2)}
+  .fig.nova .adesivo{animation:brilho 1.6s ease .5s}
+  @keyframes cola{from{transform:scale(1.7) rotate(14deg);opacity:0}
+    to{transform:scale(1) rotate(var(--rot,0deg));opacity:1}}
+  @keyframes brilho{0%,100%{box-shadow:0 4px 12px rgba(20,28,58,.28)}
+    35%{box-shadow:0 0 0 6px var(--alb-lima),0 4px 18px rgba(20,28,58,.3)}}
+}
+
+/* ── página 2: as conquistas do estágio (recomeçam a cada livro) ── */
+.trilha{display:flex;flex-wrap:wrap;gap:20px 14px;margin-top:18px;padding-left:24px}
+.est{width:108px;display:flex;flex-direction:column;align-items:center;gap:9px;
+  background:none;border:0;padding:0;cursor:pointer;font-family:inherit;text-align:center;
+  transform:rotate(var(--rot,0deg))}
+.est:focus-visible{outline:3px solid var(--alb-lima);outline-offset:4px;border-radius:14px}
+.est .adesivo{width:78px;height:78px;border-radius:50%;position:relative;display:grid;
+  place-items:center;background:var(--ades,#1d3685);border:4.5px solid #fff;
+  box-shadow:0 4px 12px rgba(20,28,58,.28)}
+.est .adesivo svg{position:absolute;inset:0;margin:auto;width:64px;height:64px}
+.est:not(.vazio) .adesivo::before{content:'';position:absolute;left:11%;top:7%;
+  width:48%;height:30%;border-radius:50%;background:rgba(255,255,255,.26);pointer-events:none}
+.est.vazio .adesivo{background:var(--ades-fraco,transparent);
+  border:2.5px dashed var(--alb-slot);box-shadow:none}
+.est.vazio .adesivo svg{opacity:.55}
+.est .nm{font-family:var(--disp);font-weight:600;font-size:12.5px;line-height:1.15;
+  color:var(--alb-tinta)}
+.est.vazio .nm{color:var(--alb-lapis)}
+.est .prog{font-size:11px;color:var(--alb-lapis);font-variant-numeric:tabular-nums}
+/* a barrinha do quanto falta: o convite é ver o vão diminuir */
+.est .barra{width:64px;height:5px;border-radius:99px;background:var(--alb-grade);
+  overflow:hidden}
+.est .barra i{display:block;height:100%;border-radius:99px;background:var(--ades,#1d3685)}
+
+/* ── página 3: as conquistas por nível ── */
+.nivel{margin-top:20px;padding-left:24px}
+.nivel-cab{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.nivel-cab h3{font-family:var(--disp);font-weight:600;font-size:18px;margin:0}
+.nivel-cab .qt{font-size:13px;font-weight:700;color:var(--alb-lapis);
+  font-variant-numeric:tabular-nums}
+.nuvem{display:flex;flex-wrap:wrap;gap:20px 14px;margin-top:14px}
+.cq{display:flex;flex-direction:column;align-items:center;gap:12px;width:108px;
+  background:none;border:0;padding:0;cursor:pointer;font-family:inherit;text-align:center;
+  rotate:var(--rot,0deg)}
+.cq:focus-visible{outline:3px solid var(--alb-lima);outline-offset:3px;border-radius:12px}
+/* MEDALHA RECORTADA: sem moldura redonda. A borda branca segue a silhueta do
+   próprio emoji — quatro drop-shadow brancos encadeados engordam o contorno,
+   e o último, escuro, descola a medalha da folha. É o corte de adesivo.
+   A caixa é mais alta do que o glifo de propósito: emoji transborda a própria
+   linha e, apertado, encosta no nome. */
+.cq .moldura{width:78px;height:78px;display:grid;place-items:center;
+  font-size:46px;line-height:1;
+  filter:drop-shadow(1.7px 0 0 #fff) drop-shadow(-1.7px 0 0 #fff)
+         drop-shadow(0 1.7px 0 #fff) drop-shadow(0 -1.7px 0 #fff)
+         drop-shadow(0 4px 5px rgba(20,28,58,.38))}
+/* a que falta é o fantasma da medalha: mesma silhueta, sem recorte nem sombra */
+.cq.falta .moldura{filter:grayscale(1) opacity(.34)}
+.cq .nm{font-family:var(--disp);font-weight:600;font-size:12px;line-height:1.15;
+  color:var(--alb-tinta)}
+.cq.falta .nm{color:var(--alb-lapis)}
+
+/* ── a gingada do mouse ────────────────────────────────────────────────
+   SÓ no que já é do aluno (pedido dele em 15/08): o que ainda não foi
+   conquistado fica quieto. Adesivo colado ginga; slot vazio não.          */
+@keyframes gingar{
+  0%{rotate:0deg;scale:1} 25%{rotate:-7deg;scale:1.09}
+  55%{rotate:5deg;scale:1.07} 80%{rotate:-2deg;scale:1.03}
+  100%{rotate:0deg;scale:1}
+}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .cq:not(.falta):hover .moldura,
+  .fig:not(.vazio):hover .adesivo,
+  .est:not(.vazio):hover .adesivo{animation:gingar .62s ease}
+}
+@media (hover:hover){
+  .cq:not(.falta) .moldura,.fig:not(.vazio) .adesivo,.est:not(.vazio) .adesivo{
+    transition:filter .18s ease,box-shadow .18s ease}
+  .cq:not(.falta):hover .moldura{filter:drop-shadow(1.7px 0 0 #fff) drop-shadow(-1.7px 0 0 #fff)
+    drop-shadow(0 1.7px 0 #fff) drop-shadow(0 -1.7px 0 #fff)
+    drop-shadow(0 8px 9px rgba(20,28,58,.4))}
+  .fig:not(.vazio):hover .adesivo,.est:not(.vazio):hover .adesivo{
+    box-shadow:0 10px 20px rgba(20,28,58,.34)}
+}
+/* nível travado: silhuetas — o nome NUNCA aparece, como em produção */
+.trancado{margin-top:12px;border:2px dashed var(--alb-slot);border-radius:14px;
+  padding:14px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.trancado .cad{width:44px;height:44px;border-radius:50%;background:var(--alb-pop);
+  display:grid;place-items:center;box-shadow:0 3px 9px rgba(20,28,58,.22);flex:0 0 auto}
+.trancado .cad svg{width:22px;height:22px;color:var(--alb-lapis)}
+.trancado .txt{flex:1;min-width:220px;font-size:13.5px;color:var(--alb-lapis);font-weight:600}
+.trancado .txt b{color:var(--alb-tinta)}
+.silhuetas{display:flex;gap:6px;flex-wrap:wrap}
+.silhuetas span{width:30px;height:30px;border-radius:50%;background:var(--alb-grade);
+  display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--alb-lapis)}
+
+/* ── popover de detalhe ── */
+.detalhe{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9;
+  background:var(--alb-pop);color:var(--alb-tinta);border-radius:16px;
+  box-shadow:0 14px 40px rgba(10,16,40,.35);padding:16px 20px;max-width:min(440px,92vw);
+  display:none;border:1px solid var(--alb-grade)}
+.detalhe.aberto{display:block}
+.detalhe .d-nm{font-family:var(--disp);font-weight:600;font-size:17px}
+.detalhe .d-tx{font-size:14px;margin-top:4px;color:var(--alb-lapis)}
+.detalhe .d-tx b{color:var(--alb-tinta)}
+.detalhe .fechar{position:absolute;top:8px;right:10px;background:none;border:0;
+  font-size:18px;cursor:pointer;color:var(--alb-lapis);padding:4px}
+
+/* ── rodapé: as regras da casa, anunciadas ── */
+.regras{margin-top:16px;font-size:13.5px;color:var(--alb-lapis);max-width:74ch;
+  padding-left:24px}
+.regras b{color:var(--alb-tinta)}
+
+.simular{margin:18px 0 0 24px;background:var(--alb-lima);color:#161414;border:0;
+  border-radius:999px;min-height:46px;padding:0 22px;font-family:var(--disp);
+  font-weight:600;font-size:14.5px;cursor:pointer}
+.simular:disabled{opacity:.55;cursor:default}
+</style>
+
+<div class="pagina">
+  <span class="selo-sim">Dados simulados · maquete</span>
+
+  <header class="capa">
+    <h1>Álbum de figurinhas</h1>
+    <div class="dona">Ana · <i lang="en">Essentials 1</i> · Fisk Caçapava</div>
+    <div class="conta"><b id="conta">–</b><span>figurinhas no álbum</span></div>
+  </header>
+
+  <!-- ═══ página 1: as figurinhas do livro ═══ -->
+  <details class="folha" open>
+    <summary>
+      <h2>As figurinhas do <i lang="en">Essentials 1</i></h2>
+      <span class="qt-folha" id="qf1">–</span>
+      <span class="chev" aria-hidden="true"></span>
+    </summary>
+    <p class="sub">Cada lição fechada no <i lang="en">checking</i> com o professor vira uma
+      figurinha. <b>O slot vazio já diz o que ele pede</b> — nada aqui é surpresa nem sorteio.</p>
+    <div class="mural" id="mural"></div>
+    <button class="simular" id="btnSim" type="button">▶ Simular: o professor fechou a <i lang="en">Lesson</i> 4</button>
+    <p class="regras">O álbum é do livro: quando você avançar para o
+      <i lang="en">Essentials 2</i>, uma página nova começa em branco e
+      <b>esta fica guardada no seu Registro</b>, completa do jeito que terminou.</p>
+  </details>
+
+  <!-- ═══ página 2: as conquistas do próprio estágio ═══ -->
+  <details class="folha" open>
+    <summary>
+      <h2>As conquistas do <i lang="en">Essentials 1</i></h2>
+      <span class="qt-folha" id="qf2">–</span>
+      <span class="chev" aria-hidden="true"></span>
+    </summary>
+    <p class="sub">O livro inteiro é colecionável, não só as lições: os filmes, as músicas,
+      os áudios, os vídeos. <b>Estas também recomeçam no próximo livro</b> — cada estágio
+      tem o seu jogo, do tamanho do que ele oferece.</p>
+    <div class="trilha" id="trilha"></div>
+    <p class="regras">Os números são os do seu estágio: o <i lang="en">Essentials 1</i> tem
+      <b>8 filmes, 5 músicas, 14 blocos de áudio e 5 vídeos do <i lang="en">Videobook</i></b>.
+      Um estágio maior pede mais; um menor, menos. Nada aqui depende de outro aluno.</p>
+  </details>
+
+  <!-- ═══ página 3: as conquistas do portal, para a vida toda ═══ -->
+  <details class="folha" open>
+    <summary>
+      <h2>As conquistas do portal</h2>
+      <span class="qt-folha" id="qf3">–</span>
+      <span class="chev" aria-hidden="true"></span>
+    </summary>
+    <p class="sub">As mesmas da sua prateleira, agora com espaço para respirar. Estas
+      <b>não recomeçam</b>: são suas para sempre, livro após livro.
+      <b>Nível fechado não mostra nem o nome</b>: complete o anterior para revelar.</p>
+    <div id="niveis"></div>
+    <p class="regras">A regra do cadeado é uma só: <b>termine todas as conquistas de um
+      nível e o seguinte se revela</b>. Sem prazo, sem ranking, sem contagem regressiva —
+      o álbum espera por você.</p>
+  </details>
+</div>
+
+<div class="detalhe" id="detalhe" role="dialog" aria-modal="false" aria-labelledby="dNm">
+  <button class="fechar" id="dFechar" type="button" aria-label="Fechar">✕</button>
+  <div class="d-nm" id="dNm"></div>
+  <div class="d-tx" id="dTx"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+window.__e=window.__e||[]; window.addEventListener('error',function(e){__e.push(String(e.message));});
+
+/* ── a arte das figurinhas ──────────────────────────────────────────────
+   Cada figurinha é um desenho cheio, não um ícone de traço: fundo de cor
+   sólida, corpo branco, um tom claro da própria cor como detalhe (%A%) e
+   fogo/ouro em #ffd15c quando a cena pede. É o que separa "ícone de menu"
+   de "figurinha que dá vontade de colar". viewBox 48×48 para caber cena.  */
+var ART={
+  escotilha:
+    '<circle cx="24" cy="24" r="15.5" fill="#fff" opacity=".2"/>'
+   +'<circle cx="24" cy="24" r="13" fill="%A%"/>'
+   +'<path d="M24 11a13 13 0 0 1 0 26z" fill="#000" opacity=".12"/>'
+   +'<circle cx="24" cy="24" r="13" fill="none" stroke="#fff" stroke-width="3.4"/>'
+   +'<circle cx="19.5" cy="19.5" r="2.6" fill="#fff" opacity=".9"/>'
+   +'<circle cx="24" cy="7.6" r="2" fill="#fff"/><circle cx="24" cy="40.4" r="2" fill="#fff"/>'
+   +'<circle cx="7.6" cy="24" r="2" fill="#fff"/><circle cx="40.4" cy="24" r="2" fill="#fff"/>',
+  /* ── Lesson 1 · All about you: o capacete é quem ele é, com o crachá ── */
+  astronauta:
+    '<path d="M13 34.5h22v4a2.5 2.5 0 0 1-2.5 2.5h-17A2.5 2.5 0 0 1 13 38.5z" fill="%A%"/>'
+   +'<rect x="16.5" y="36.5" width="8" height="3" rx="1.5" fill="#fff" opacity=".85"/>'
+   +'<circle cx="24" cy="20.5" r="13.5" fill="#fff"/>'
+   +'<ellipse cx="24" cy="21.5" rx="9" ry="7.5" fill="%A%"/>'
+   +'<path d="M18.8 19a6 6 0 0 1 5.6-2.6" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/>'
+   +'<circle cx="39" cy="10" r="1.5" fill="#fff" opacity=".65"/>',
+  /* ── Lesson 2 · Food: o lanche flutuando, com a sombra solta embaixo ── */
+  lanche:
+    '<path d="M10 20.5c0-6.2 6.3-10.5 14-10.5s14 4.3 14 10.5z" fill="#fff"/>'
+   +'<rect x="8.5" y="21" width="31" height="4.6" rx="2.3" fill="%A%"/>'
+   +'<path d="M9.5 27h29c0 4.6-6.1 7.6-14.5 7.6S9.5 31.6 9.5 27z" fill="#fff"/>'
+   +'<circle cx="18" cy="16.5" r="1.3" fill="%A%"/><circle cx="24" cy="15" r="1.3" fill="%A%"/>'
+   +'<circle cx="30" cy="16.5" r="1.3" fill="%A%"/>'
+   +'<path d="M9 40c4 1.8 9.5 2.7 15 2.7S35 41.8 39 40" stroke="#fff" stroke-width="2.2"'
+   +' fill="none" opacity=".42" stroke-linecap="round"/>',
+  /* ── Lesson 3 · Everyday life: o relógio partido em dia e noite ── */
+  rotina:
+    '<circle cx="24" cy="24" r="15.5" fill="#fff"/>'
+   +'<path d="M24 8.5a15.5 15.5 0 0 1 0 31z" fill="%A%" opacity=".5"/>'
+   +'<circle cx="31" cy="17" r="1.6" fill="#fff" opacity=".9"/>'
+   +'<circle cx="24" cy="24" r="15.5" fill="none" stroke="#fff" stroke-width="3"/>'
+   +'<path d="M24 14.5V24l6.5 4" stroke="%A%" stroke-width="3.2" fill="none"'
+   +' stroke-linecap="round" stroke-linejoin="round"/>'
+   +'<circle cx="24" cy="24" r="2" fill="%A%"/>',
+  /* ── Lesson 4 · People we know: o planeta e as luas que giram com ele ── */
+  familia:
+    '<circle cx="24" cy="24" r="18.5" fill="none" stroke="#fff" stroke-width="1.6" opacity=".38"/>'
+   +'<circle cx="24" cy="24" r="10" fill="#fff"/>'
+   +'<circle cx="20.5" cy="21" r="2.2" fill="%A%" opacity=".55"/>'
+   +'<circle cx="27" cy="27" r="2.8" fill="%A%" opacity=".45"/>'
+   +'<circle cx="24" cy="5.5" r="3.4" fill="%A%"/>'
+   +'<circle cx="40" cy="33.2" r="2.9" fill="%A%"/>'
+   +'<circle cx="8" cy="33.2" r="2.4" fill="%A%"/>',
+  /* ── Lesson 5 · Fashion: o traje no cabide ── */
+  traje:
+    '<path d="M24 8a2.6 2.6 0 0 1 2.6 2.6c0 1.3-.9 2-1.9 2.5" stroke="#fff" stroke-width="2.2"'
+   +' fill="none" stroke-linecap="round"/>'
+   +'<path d="M11.5 21.5 24 13.8l12.5 7.7" stroke="#fff" stroke-width="2.4" fill="none"'
+   +' stroke-linecap="round" stroke-linejoin="round"/>'
+   +'<path d="M18.5 21.5h11l6 4.2-3 4.2-3-1.6V40a1.6 1.6 0 0 1-1.6 1.6h-7.8A1.6 1.6 0 0 1 18.5 40'
+   +'V28.3l-3 1.6-3-4.2z" fill="#fff"/>'
+   +'<rect x="21" y="29.5" width="6" height="5.5" rx="1.6" fill="%A%"/>'
+   +'<circle cx="24" cy="24" r="2.3" fill="%A%"/>',
+  /* ── Checkpoint 1: a bandeira fincada, com o solo embaixo ── */
+  bandeiralua:
+    '<path d="M5 42c1.6-6.4 8.6-10.6 19-10.6S41.4 35.6 43 42z" fill="#fff" opacity=".92"/>'
+   +'<circle cx="13.5" cy="38" r="2.6" fill="%A%" opacity=".45"/>'
+   +'<circle cx="32" cy="39" r="2" fill="%A%" opacity=".4"/>'
+   +'<path d="M17.5 34V7.5" stroke="#fff" stroke-width="3.2" stroke-linecap="round" fill="none"/>'
+   +'<path d="M20 9h18l-4.5 6 4.5 6H20z" fill="#fff"/>'
+   +'<path d="M23.4 14.8l2.8 2.8 5.6-5.6" stroke="%A%" stroke-width="2.6" fill="none"'
+   +' stroke-linecap="round" stroke-linejoin="round"/>',
+  /* ── Checkpoint 2: a segunda bandeira, e o planeta já mais longe ── */
+  bandeiralua2:
+    '<circle cx="37" cy="10" r="4.4" fill="%A%"/>'
+   +'<path d="M5 42c1.6-6.4 8.6-10.6 19-10.6S41.4 35.6 43 42z" fill="#fff" opacity=".92"/>'
+   +'<circle cx="13.5" cy="38" r="2.6" fill="%A%" opacity=".45"/>'
+   +'<path d="M15.5 34V6.5" stroke="#fff" stroke-width="3.2" stroke-linecap="round" fill="none"/>'
+   +'<path d="M18 8h15l-3.8 5 3.8 5H18z" fill="#fff"/>'
+   +'<path d="M20.8 12.8l2.4 2.4 4.8-4.8" stroke="%A%" stroke-width="2.4" fill="none"'
+   +' stroke-linecap="round" stroke-linejoin="round"/>'
+   +'<path d="M18 21h12l-3.2 4.4 3.2 4.4H18z" fill="%A%"/>',
+  /* ── Lesson 6 · Working out: o halter, e a sombra que diz que ele flutua ── */
+  halter:
+    '<rect x="18.5" y="21.5" width="11" height="5" rx="2.5" fill="#fff"/>'
+   +'<rect x="10" y="16" width="7.5" height="16" rx="2.8" fill="#fff"/>'
+   +'<rect x="30.5" y="16" width="7.5" height="16" rx="2.8" fill="#fff"/>'
+   +'<rect x="5" y="19.5" width="5" height="9" rx="2.4" fill="%A%"/>'
+   +'<rect x="38" y="19.5" width="5" height="9" rx="2.4" fill="%A%"/>'
+   +'<path d="M11 39c4 1.8 9 2.6 13 2.6s9-.8 13-2.6" stroke="#fff" stroke-width="2.2"'
+   +' fill="none" opacity=".4" stroke-linecap="round"/>',
+  /* ── Lesson 7 · Around town: a cidade sob a cúpula, com o alfinete ── */
+  cidade:
+    '<path d="M8 34.5a16 16 0 0 1 32 0z" fill="%A%" opacity=".4"/>'
+   +'<path d="M14.5 34.5V24h5.5v10.5zM21.5 34.5V18.5H27v16zM28.5 34.5V26H34v8.5z" fill="#fff"/>'
+   +'<path d="M8 34.5a16 16 0 0 1 32 0" fill="none" stroke="#fff" stroke-width="2.6"'
+   +' stroke-linecap="round"/>'
+   +'<rect x="6.5" y="34.5" width="35" height="4" rx="2" fill="#fff"/>'
+   +'<path d="M11 9.5a4.4 4.4 0 0 1 4.4 4.4c0 2.6-4.4 7.1-4.4 7.1s-4.4-4.5-4.4-7.1A4.4 4.4 0 0 1 11 9.5z" fill="#fff"/>'
+   +'<circle cx="11" cy="13.9" r="1.8" fill="%A%"/>',
+  /* ── Lesson 8 · Going places: a mala já com carimbo de outro planeta ── */
+  mala:
+    '<path d="M18 17.5v-3.2a3.2 3.2 0 0 1 3.2-3.2h5.6a3.2 3.2 0 0 1 3.2 3.2v3.2"'
+   +' fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>'
+   +'<rect x="7.5" y="17.5" width="33" height="21.5" rx="4" fill="#fff"/>'
+   +'<rect x="7.5" y="24.5" width="33" height="4.8" fill="%A%"/>'
+   +'<circle cx="24" cy="26.9" r="3" fill="#fff"/>'
+   +'<circle cx="14" cy="34" r="2.6" fill="%A%" opacity=".45"/>'
+   +'<circle cx="42" cy="11" r="1.6" fill="#fff" opacity=".7"/>'
+   +'<circle cx="6" cy="12" r="1.2" fill="#fff" opacity=".55"/>',
+  /* ── Lesson 9 · Entertain me: o disco voador puxando a música no facho ── */
+  ovni:
+    '<path d="M24 31.5 12.5 44h23z" fill="%A%" opacity=".38"/>'
+   +'<path d="M26 41.5v-6.2l5.5-1.6v6.2" fill="none" stroke="#fff" stroke-width="2"'
+   +' stroke-linecap="round"/>'
+   +'<circle cx="24.6" cy="41.6" r="2.1" fill="#fff"/>'
+   +'<circle cx="30.1" cy="39.9" r="2.1" fill="#fff"/>'
+   +'<ellipse cx="24" cy="27" rx="17" ry="5.4" fill="#fff"/>'
+   +'<path d="M15 25.5a9 8 0 0 1 18 0z" fill="%A%"/>'
+   +'<circle cx="15.5" cy="27.6" r="1.5" fill="%A%"/><circle cx="24" cy="28.4" r="1.5" fill="%A%"/>'
+   +'<circle cx="32.5" cy="27.6" r="1.5" fill="%A%"/>',
+  lua:
+    '<path d="M22 8a16 16 0 1 0 16 16 12.5 12.5 0 0 1-16-16z" fill="#fff"/>'
+   +'<circle cx="19.5" cy="26" r="3.2" fill="%A%" opacity=".55"/>'
+   +'<circle cx="26" cy="32" r="2" fill="%A%" opacity=".6"/>'
+   +'<circle cx="15.5" cy="19.5" r="1.8" fill="%A%" opacity=".5"/>'
+   +'<circle cx="12" cy="36" r="1.6" fill="#fff" opacity=".75"/>'
+   +'<circle cx="37" cy="12" r="1.3" fill="#fff" opacity=".6"/>'
+   +'<circle cx="41" cy="26" r="1.1" fill="#fff" opacity=".5"/>',
+  medalha:
+    '<path d="M16.5 5.5L23.5 19l-6.2 3L10.5 9z" fill="%A%"/>'
+   +'<path d="M31.5 5.5L24.5 19l6.2 3L37.5 9z" fill="%A%"/>'
+   +'<circle cx="24" cy="30.5" r="12.5" fill="#fff"/>'
+   +'<circle cx="24" cy="30.5" r="9" fill="none" stroke="%A%" stroke-width="2.2" opacity=".8"/>'
+   +'<path d="M24 25l1.9 3.9 4.3.6-3.1 3 .7 4.3-3.8-2-3.8 2 .7-4.3-3.1-3 4.3-.6z" fill="%A%"/>',
+  /* ── APOSENTADAS ───────────────────────────────────────────────────────
+     O universo genérico da primeira rodada (15/08). Saíram quando o Pedro
+     escolheu a opção C — cada figurinha referindo o tema da lição, mas ainda
+     dentro do universo. Ficam aqui porque voltar é só remapear o `ic` no
+     LICOES; apagar tornaria a volta um redesenho.                          */
+  satelite:
+    '<rect x="4" y="19.5" width="12" height="9" rx="1.8" fill="%A%"/>'
+   +'<rect x="32" y="19.5" width="12" height="9" rx="1.8" fill="%A%"/>'
+   +'<path d="M10 19.5v9M38 19.5v9" stroke="#fff" stroke-width="1.4" opacity=".5"/>'
+   +'<path d="M16 24h3M29 24h3M24 19v-4.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>'
+   +'<rect x="19" y="19" width="10" height="10" rx="2.6" fill="#fff"/>'
+   +'<circle cx="24" cy="11.5" r="2.8" fill="#fff"/>'
+   +'<path d="M29.5 33.5c4.2 0 7.5-3.3 7.5-7.5" fill="none" stroke="#fff" stroke-width="2" opacity=".55" stroke-linecap="round"/>',
+  telescopio:
+    '<path d="M21.5 29l-4.5 12M26.5 29l4.5 12" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>'
+   +'<g transform="rotate(-26 24 23)">'
+   +'<rect x="9" y="18" width="25" height="10" rx="5" fill="#fff"/>'
+   +'<rect x="31" y="15.5" width="8" height="15" rx="3.4" fill="%A%"/></g>'
+   +'<circle cx="40" cy="9" r="2" fill="#fff" opacity=".8"/>'
+   +'<circle cx="34" cy="15" r="1.2" fill="#fff" opacity=".6"/>',
+  sol:
+    '<g stroke="#fff" stroke-width="3.4" stroke-linecap="round" fill="none">'
+   +'<path d="M24 4v5"/><path d="M24 39v5"/><path d="M4 24h5"/><path d="M39 24h5"/>'
+   +'<path d="M10 10l3.6 3.6"/><path d="M34.4 34.4L38 38"/>'
+   +'<path d="M38 10l-3.6 3.6"/><path d="M13.6 34.4L10 38"/></g>'
+   +'<circle cx="24" cy="24" r="10.5" fill="#fff"/>'
+   +'<circle cx="24" cy="24" r="6.5" fill="%A%" opacity=".5"/>',
+  galaxia:
+    '<path d="M29.5 18.5c6.5-3 12.5-.5 13 4.5.5 6-7 13-15.5 12.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>'
+   +'<path d="M18.5 29.5c-6.5 3-12.5.5-13-4.5-.5-6 7-13 15.5-12.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>'
+   +'<g transform="rotate(-20 24 24)"><ellipse cx="24" cy="24" rx="6" ry="3.8" fill="#fff"/></g>'
+   +'<circle cx="24" cy="24" r="2.4" fill="%A%"/>'
+   +'<circle cx="9" cy="38" r="1.6" fill="#fff" opacity=".7"/>'
+   +'<circle cx="39" cy="9.5" r="1.8" fill="#fff" opacity=".65"/>',
+  constelacao:
+    '<path d="M10 36l7.5-11 8 3.5L34 12" fill="none" stroke="#fff" stroke-width="2.2" opacity=".5" stroke-linecap="round" stroke-linejoin="round"/>'
+   +'<circle cx="10" cy="36" r="3.4" fill="#fff"/>'
+   +'<circle cx="17.5" cy="25" r="2.6" fill="#fff"/>'
+   +'<circle cx="25.5" cy="28.5" r="2.6" fill="#fff"/>'
+   +'<circle cx="34" cy="12" r="4.4" fill="%A%"/>'
+   +'<circle cx="40" cy="31" r="1.5" fill="#fff" opacity=".7"/>'
+   +'<circle cx="13" cy="12" r="1.4" fill="#fff" opacity=".6"/>',
+  trofeu:
+    '<path d="M16.5 10.5h-5.5a7 7 0 0 0 6.5 7" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>'
+   +'<path d="M31.5 10.5h5.5a7 7 0 0 1-6.5 7" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>'
+   +'<path d="M16 7h16v10a8 8 0 0 1-16 0z" fill="#fff"/>'
+   +'<path d="M21.5 25h5v6.5h-5z" fill="#fff"/>'
+   +'<path d="M14.5 39h19l-2.5-6h-14z" fill="#fff"/>'
+   +'<path d="M24 10l1.7 3.6 3.9.5-2.8 2.8.7 3.9-3.5-1.9-3.5 1.9.7-3.9-2.8-2.8 3.9-.5z" fill="#ffd15c"/>',
+  /* ── arte das conquistas do estágio ── */
+  claquete:
+    '<rect x="7" y="18" width="34" height="21" rx="3" fill="#fff"/>'
+   +'<path d="M7 12.5l31-5.5 2 7-31 5.5z" fill="%A%"/>'
+   +'<path d="M14.5 11.2l3.5 6.3M22.5 9.8l3.5 6.3M30.5 8.4l3.5 6.3" stroke="#fff" stroke-width="2.2"/>'
+   +'<path d="M21 24.5l9 4.5-9 4.5z" fill="%A%"/>',
+  disco:
+    '<circle cx="24" cy="24" r="16" fill="#fff"/>'
+   +'<circle cx="24" cy="24" r="11" fill="none" stroke="%A%" stroke-width="1.6" opacity=".55"/>'
+   +'<circle cx="24" cy="24" r="7" fill="%A%"/>'
+   +'<circle cx="24" cy="24" r="2" fill="#fff"/>'
+   +'<path d="M31 32.5c4-2 6.5-5 7-9" fill="none" stroke="%A%" stroke-width="2" opacity=".6" stroke-linecap="round"/>',
+  nota:
+    '<path d="M20 33V11l17-3.5v22" fill="none" stroke="#fff" stroke-width="3.2" stroke-linejoin="round"/>'
+   +'<ellipse cx="15.5" cy="33.5" rx="6" ry="5" fill="#fff"/>'
+   +'<ellipse cx="32.5" cy="29.5" rx="6" ry="5" fill="#fff"/>'
+   +'<path d="M20 17l17-3.5" stroke="%A%" stroke-width="3.2"/>',
+  fone:
+    '<path d="M10 30v-5a14 14 0 0 1 28 0v5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>'
+   +'<rect x="6" y="26" width="9" height="14" rx="4.5" fill="#fff"/>'
+   +'<rect x="33" y="26" width="9" height="14" rx="4.5" fill="#fff"/>'
+   +'<path d="M8.5 30.5h4M35.5 30.5h4" stroke="%A%" stroke-width="2" stroke-linecap="round"/>',
+  tela:
+    '<rect x="5" y="10" width="38" height="24" rx="3.5" fill="#fff"/>'
+   +'<path d="M20.5 16.5l10 5.5-10 5.5z" fill="%A%"/>'
+   +'<path d="M18 39h12" stroke="#fff" stroke-width="3" stroke-linecap="round"/>'
+   +'<path d="M24 34v5" stroke="#fff" stroke-width="3"/>',
+  livro:
+    '<path d="M24 13c-4-3-9-3.5-14-2.5v22c5-1 10-.5 14 2.5z" fill="#fff"/>'
+   +'<path d="M24 13c4-3 9-3.5 14-2.5v22c-5-1-10-.5-14 2.5z" fill="#fff" opacity=".82"/>'
+   +'<path d="M24 13v22" stroke="%A%" stroke-width="2.4"/>'
+   +'<path d="M14 18.5c2.5-.5 5-.5 6.5 0M14 24c2.5-.5 5-.5 6.5 0" stroke="%A%" stroke-width="1.8" stroke-linecap="round" opacity=".7"/>',
+  /* a escuta é onda, não orelha: orelha em 48px vira borrão, onda lê de longe */
+  onda:
+    '<g stroke="#fff" stroke-linecap="round" stroke-width="3.6" fill="none">'
+   +'<path d="M8 21v6"/><path d="M16 13.5v21"/><path d="M24 8v32"/>'
+   +'<path d="M32 15v18"/><path d="M40 21v6"/></g>'
+   +'<circle cx="24" cy="24" r="4.6" fill="%A%"/>',
+  raio:
+    '<path d="M27 4L11 27h9l-1 17 17-24h-9z" fill="#fff"/>'
+   +'<path d="M24 12.5L17.5 22h6l-1 8 7-10h-5.5z" fill="%A%" opacity=".55"/>',
+  album:
+    '<rect x="8" y="8" width="32" height="32" rx="4" fill="#fff"/>'
+   +'<rect x="8" y="8" width="7" height="32" rx="4" fill="%A%" opacity=".55"/>'
+   +'<circle cx="27" cy="19" r="6" fill="%A%"/>'
+   +'<path d="M20 31h15" stroke="%A%" stroke-width="2.6" stroke-linecap="round" opacity=".55"/>',
+  /* metade: o disco partido ao meio lê na hora, o anel vazado não lia */
+  meio:
+    '<circle cx="24" cy="24" r="15.5" fill="#fff"/>'
+   +'<path d="M24 8.5a15.5 15.5 0 0 1 0 31z" fill="%A%"/>'
+   +'<circle cx="24" cy="24" r="15.5" fill="none" stroke="#fff" stroke-width="3.2"/>'
+   +'<path d="M24 6v36" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>',
+  coroa:
+    '<path d="M8 33l-3-19 9.5 6.5L24 8l9.5 12.5L43 14l-3 19z" fill="#fff"/>'
+   +'<path d="M8 33h32v5H8z" fill="%A%"/>'
+   +'<circle cx="24" cy="24" r="2.6" fill="%A%"/>'
+   +'<circle cx="15" cy="27" r="1.8" fill="%A%" opacity=".7"/>'
+   +'<circle cx="33" cy="27" r="1.8" fill="%A%" opacity=".7"/>'
+};
+function svgFig(chave,ac){
+  return '<svg viewBox="0 0 48 48" aria-hidden="true">'
+    +(ART[chave]||'').split('%A%').join(ac||'#ffffff')+'</svg>';
+}
+/* o véu do slot vazio: a mesma cor da figurinha, quase apagada */
+function veu(hex,a){
+  return 'rgba('+parseInt(hex.slice(1,3),16)+','+parseInt(hex.slice(3,5),16)
+    +','+parseInt(hex.slice(5,7),16)+','+a+')';
+}
+
+/* ── página 1: as 15 casas do Essentials 1, espalhadas em constelação ── */
+var CORES={
+  azul: {b:'#1d3685',a:'#8ab0ff'},
+  rosa: {b:'#d81b7c',a:'#ffb3d9'},
+  ambar:{b:'#e07a10',a:'#ffd48a'},
+  teal: {b:'#0d8a92',a:'#8ff0e4'},
+  rox:  {b:'#6a3fc4',a:'#cdb4ff'}
+};
+/* O `tema` é o nome da unidade como está IMPRESSO na tabela de conteúdos do
+   Essentials 1 — em inglês, do jeito que o aluno vê no livro (decisão do
+   Pedro em 15/08). Conferido no PDF oficial, não de cabeça. */
+var LICOES=[
+  {id:'INTRO',nm:'Intro',        tema:'Before you start',ic:'escotilha',   cor:'teal', tem:'04/06'},
+  {id:'L1',   nm:'Lesson 1',     tema:'All about you',   ic:'astronauta',  cor:'azul', tem:'12/06'},
+  {id:'L2',   nm:'Lesson 2',     tema:'Food',            ic:'lanche',      cor:'ambar',tem:'26/06'},
+  {id:'L3',   nm:'Lesson 3',     tema:'Everyday life',   ic:'rotina',      cor:'rox',  tem:'10/07'},
+  {id:'L4',   nm:'Lesson 4',     tema:'People we know',  ic:'familia',     cor:'teal'},
+  {id:'L5',   nm:'Lesson 5',     tema:'Fashion',         ic:'traje',       cor:'rosa'},
+  /* Checkpoint e Test não têm tema de unidade no livro: o subtítulo diz o
+     que eles cobrem, que é a informação que o aluno quer ali. */
+  {id:'CHP1', nm:'Checkpoint 1', tema:'Review 1–5',      ic:'bandeiralua', cor:'azul'},
+  {id:'TEST1',nm:'Test 1',       tema:'Lessons 1–5',     ic:'medalha',     cor:'ambar'},
+  {id:'L6',   nm:'Lesson 6',     tema:'Working out',     ic:'halter',      cor:'teal'},
+  {id:'L7',   nm:'Lesson 7',     tema:'Around town',     ic:'cidade',      cor:'rox'},
+  {id:'L8',   nm:'Lesson 8',     tema:'Going places',    ic:'mala',        cor:'azul'},
+  {id:'L9',   nm:'Lesson 9',     tema:'Entertain me',    ic:'ovni',        cor:'rosa'},
+  {id:'L10',  nm:'Lesson 10',    tema:'Last weekend',    ic:'lua',         cor:'teal'},
+  {id:'CHP2', nm:'Checkpoint 2', tema:'Review 6–10',     ic:'bandeiralua2',cor:'rox'},
+  {id:'TEST2',nm:'Test 2',       tema:'Lessons 6–10',    ic:'trofeu',      cor:'rosa'}
+];
+/* 15 casas = a sequência real do livro (INTRO, L1–L10, CHP1/2, TEST1/2).
+   O Test 2 já teve o dobro do tamanho (era o troféu do mapa da trajetória);
+   perdeu o privilégio em 15/08, quando o Pedro pediu tudo na mesma proporção. */
+
+var mural=document.getElementById('mural');
+LICOES.forEach(function(f,i){
+  var c=CORES[f.cor];
+  var b=document.createElement('button');
+  b.type='button';
+  b.className='fig'+(f.tem?'':' vazio');
+  /* a bagunça das rotações: o multiplicador tem de ser primo COM o módulo,
+     senão (i*n)%n é sempre 0 e as 15 saem com a mesma inclinação */
+  b.style.setProperty('--rot',((i*7)%11-5)+'deg');
+  b.style.setProperty('--ades',c.b);
+  b.style.setProperty('--ades-fraco',veu(c.b,.16));
+  b.dataset.id=f.id;
+  b.innerHTML='<span class="adesivo">'+svgFig(f.ic,c.a)
+    +'<i class="num">'+(i+1)+'</i></span>'
+    +'<span class="nm">'+f.nm+'</span>'
+    +'<span class="tema" lang="en">'+f.tema+'</span>'
+    +(f.tem?'<span class="quando">'+f.tem+'</span>'
+           :'<span class="quando">feche a lição no <i lang="en">checking</i></span>');
+  b.addEventListener('click',function(){
+    abreDetalhe('Nº '+(i+1)+' · '+f.nm+' · '+f.tema, f.tem
+      ? 'Colada em <b>'+f.tem+'</b>, no dia em que o professor fechou a lição no <i lang="en">checking</i>.'
+      : 'Esta casa acende quando o professor <b>fechar a '+f.nm+' no <i lang="en">checking</i></b>. Você sempre vê o que falta — surpresa aqui, só a data.');
+  });
+  mural.appendChild(b);
+});
+
+/* ── página 2: as conquistas DO ESTÁGIO ────────────────────────────────
+   Nascem do que o Essentials 1 realmente tem hoje no portal — 8 filmes,
+   5 músicas, 14 blocos de áudio, 11 blocos de Explanation Videos, 5 vídeos
+   de Videobook — mais os marcos do próprio álbum. Recomeçam a cada livro,
+   como as figurinhas: é o que as separa das conquistas do portal, que são
+   vitalícias. `alvo` é a meta e `feito` é onde a Ana está.
+   As duas marcadas com segueAlbum contam figurinhas coladas, então a
+   Simular mexe nelas junto — o álbum inteiro é um organismo só.          */
+var ESTAGIO=[
+  {ic:'album', cor:'teal', nm:'Primeira página',   alvo:1, feito:1, segueAlbum:1,
+   d:'Cole a sua primeira figurinha do <i lang="en">Essentials 1</i>.'},
+  {ic:'meio',  cor:'azul', nm:'Meio do caminho',   alvo:8, feito:0, segueAlbum:1,
+   d:'Chegue a 8 das 15 figurinhas do livro.'},
+  {ic:'coroa', cor:'ambar',nm:'Álbum completo',    alvo:15,feito:0, segueAlbum:1,
+   d:'Complete as 15 figurinhas do <i lang="en">Essentials 1</i>. Esta é a página fechada.'},
+  {ic:'claquete',cor:'rosa',nm:'Cinemateca',       alvo:8, feito:2,
+   d:'Conclua os 8 filmes do <i lang="en">Movie Program</i> do seu estágio.'},
+  {ic:'nota',  cor:'rox',  nm:'Primeiro refrão',   alvo:1, feito:1,
+   d:'Conclua uma música do <i lang="en">Song Program</i> do seu estágio.'},
+  {ic:'disco', cor:'rosa', nm:'Playlist fechada',  alvo:5, feito:1,
+   d:'Conclua as 5 músicas do <i lang="en">Essentials 1</i>.'},
+  {ic:'fone',  cor:'teal', nm:'Ouvido no livro',   alvo:14,feito:5,
+   d:'Ouça os 14 blocos de áudio do seu livro.'},
+  {ic:'tela',  cor:'azul', nm:'Aula revista',      alvo:6, feito:2,
+   d:'Assista aos <i lang="en">Explanation Videos</i> de 6 lições.'},
+  {ic:'livro', cor:'ambar',nm:'<i lang="en">Videobook</i>', alvo:5, feito:0,
+   d:'Assista aos 5 vídeos do <i lang="en">Videobook</i> do seu estágio.'},
+  {ic:'onda',  cor:'rox',  nm:'Escuta treinada',   alvo:3, feito:3,
+   d:'Conclua 3 atividades do <i lang="en">Listening Lab</i> do seu estágio.'},
+  {ic:'raio',  cor:'teal', nm:'<i lang="en">Quick Practice</i>', alvo:10, feito:4,
+   d:'Faça 10 treinos de <i lang="en">Quick Practice</i> do seu estágio.'}
+];
+var trilha=document.getElementById('trilha');
+function figurinhasColadas(){ return document.querySelectorAll('#mural .fig:not(.vazio)').length; }
+function feitoDe(c){ return c.segueAlbum ? figurinhasColadas() : c.feito; }
+
+function pintaTrilha(){
+  trilha.innerHTML='';
+  ESTAGIO.forEach(function(c,i){
+    var cr=CORES[c.cor], f=Math.min(feitoDe(c),c.alvo), pronto=f>=c.alvo;
+    var b=document.createElement('button');
+    b.type='button';
+    b.className='est'+(pronto?'':' vazio');
+    b.style.setProperty('--rot',((i*13)%9-4)+'deg');
+    b.style.setProperty('--ades',cr.b);
+    b.style.setProperty('--ades-fraco',veu(cr.b,.16));
+    b.innerHTML='<span class="adesivo">'+svgFig(c.ic,cr.a)+'</span>'
+      +'<span class="nm">'+c.nm+'</span>'
+      +(pronto
+        ? '<span class="prog">conquistada</span>'
+        : '<span class="prog">'+f+' de '+c.alvo+'</span>'
+          +'<span class="barra"><i style="width:'+Math.round(f/c.alvo*100)+'%"></i></span>');
+    b.addEventListener('click',function(){
+      abreDetalhe(c.nm.replace(/<[^>]+>/g,''), pronto
+        ? 'Conquistada. '+c.d
+        : c.d+' <b>Você está em '+f+' de '+c.alvo+'.</b>');
+    });
+    trilha.appendChild(b);
+  });
+}
+pintaTrilha();
+
+/* ── página 3: as conquistas do portal, nomes do catálogo pt ── */
+var N1=[
+  {id:'primeira-atividade',ic:'🚀',nm:'Primeiros Passos',d:'Conclua a sua primeira atividade no portal.',tem:1},
+  {id:'primeiro-filme',ic:'🎬',nm:'Primeira Sessão',d:'Conclua uma atividade do Movie Program.',tem:1},
+  {id:'primeira-musica',ic:'🎤',nm:'Primeira Música',d:'Conclua uma atividade do Song Program.',tem:1},
+  {id:'nota-100',ic:'🏆',nm:'Nota 100!',d:'Acerte 100% em qualquer atividade.'},
+  {id:'nota-100-5',ic:'💯',nm:'Perfeccionista',d:'Acerte 100% em 5 atividades diferentes.'},
+  {id:'seq-3',ic:'🔥',nm:'3 dias seguidos',d:'Entre no portal 3 dias seguidos.',tem:1},
+  {id:'seq-7',ic:'⚡',nm:'7 dias seguidos',d:'Entre no portal 7 dias seguidos.'},
+  {id:'seq-14',ic:'📆',nm:'14 dias seguidos',d:'Entre no portal 14 dias seguidos.'},
+  {id:'seq-30',ic:'🌟',nm:'30 dias seguidos',d:'Entre no portal 30 dias seguidos.'},
+  {id:'fs-500',ic:'💰',nm:'F$ 500',d:'Acumule F$ 500 somando tudo o que já ganhou.',tem:1},
+  {id:'fs-2000',ic:'🏦',nm:'F$ 2.000',d:'Acumule F$ 2.000 somando tudo o que já ganhou.'},
+  {id:'fs-5000',ic:'💎',nm:'F$ 5.000',d:'Acumule F$ 5.000 somando tudo o que já ganhou.'},
+  {id:'maratona-5',ic:'📚',nm:'Maratonista',d:'Conclua 5 atividades.',tem:1},
+  {id:'persistente',ic:'🎯',nm:'Persistente',d:'Refaça uma atividade e melhore a sua nota.'}
+];
+var elN=document.getElementById('niveis');
+
+var n1=document.createElement('div');
+n1.className='nivel';
+var ganhas1=N1.filter(function(c){return c.tem;}).length;
+n1.innerHTML='<div class="nivel-cab"><h3>Nível 1 · Começo</h3>'
+  +'<span class="qt">'+ganhas1+' de '+N1.length+'</span></div>';
+var nuvem=document.createElement('div');
+nuvem.className='nuvem';
+N1.forEach(function(c,i){
+  var b=document.createElement('button');
+  b.type='button';
+  b.className='cq'+(c.tem?'':' falta');
+  b.style.setProperty('--rot',((i*3)%7-3)+'deg');
+  b.innerHTML='<span class="moldura">'+c.ic+'</span><span class="nm">'+c.nm+'</span>';
+  b.addEventListener('click',function(){
+    abreDetalhe(c.nm,(c.tem?'Já é sua. ':'')+c.d);
+  });
+  nuvem.appendChild(b);
+});
+n1.appendChild(nuvem);
+elN.appendChild(n1);
+
+/* níveis 2 e 3: fechados de verdade — nem o nome viaja até esta página */
+[{n:'Nível 2 · Dedicação',q:11},{n:'Nível 3 · Lenda',q:14}].forEach(function(nv){
+  var d=document.createElement('div');
+  d.className='nivel';
+  var sil='';
+  for(var i=0;i<nv.q;i++) sil+='<span>?</span>';
+  d.innerHTML='<div class="nivel-cab"><h3>'+nv.n+'</h3>'
+    +'<span class="qt">0 de '+nv.q+'</span></div>'
+    +'<div class="trancado">'
+    +'<span class="cad"><svg viewBox="0 0 24 24" aria-hidden="true">'
+    +'<path d="M8 11V8a4 4 0 018 0v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'
+    +'<rect x="5.5" y="11" width="13" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>'
+    +'<span class="txt"><b>'+nv.q+' conquistas secretas.</b> Termine o nível anterior para revelar — é a única chave que existe.</span>'
+    +'<span class="silhuetas">'+sil+'</span></div>';
+  elN.appendChild(d);
+});
+
+/* ── contagem da capa: as três coleções somadas ──────────────────────────
+   O total inclui as 25 escondidas (11 da Dedicação + 14 da Lenda): saber
+   QUANTAS faltam é parte do convite, saber QUAIS é que não.               */
+var TOTAL_PORTAL=N1.length+11+14;   /* as 39 reais do FD_NIVEIS */
+function conta(){
+  var fl=figurinhasColadas();
+  var es=ESTAGIO.filter(function(c){ return feitoDe(c)>=c.alvo; }).length;
+  var cq=N1.filter(function(c){ return c.tem; }).length;
+  document.getElementById('conta').textContent=
+    (fl+es+cq)+' / '+(LICOES.length+ESTAGIO.length+TOTAL_PORTAL);
+  /* o placar de cada folha, para a folha fechada ainda dizer alguma coisa */
+  document.getElementById('qf1').textContent=fl+' de '+LICOES.length;
+  document.getElementById('qf2').textContent=es+' de '+ESTAGIO.length;
+  document.getElementById('qf3').textContent=cq+' de '+TOTAL_PORTAL;
+}
+conta();
+
+/* ── o popover ── */
+var det=document.getElementById('detalhe');
+function abreDetalhe(nm,tx){
+  document.getElementById('dNm').textContent=nm;
+  document.getElementById('dTx').innerHTML=tx;
+  det.classList.add('aberto');
+}
+document.getElementById('dFechar').addEventListener('click',function(){det.classList.remove('aberto');});
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') det.classList.remove('aberto'); });
+
+/* ── Simular: o professor fechou a Lesson 4 ── */
+document.getElementById('btnSim').addEventListener('click',function(){
+  var alvo=document.querySelector('#mural .fig[data-id="L4"]');
+  if(!alvo || !alvo.classList.contains('vazio')) return;
+  alvo.classList.remove('vazio');
+  alvo.classList.add('nova');
+  alvo.querySelector('.quando').textContent='15/08';
+  pintaTrilha();  /* as conquistas do estágio andam junto: 4 → 5 figurinhas */
+  conta();
+  this.disabled=true;
+  this.textContent='Figurinha colada! A Lesson 4 agora é sua.';
+  alvo.scrollIntoView({behavior:'smooth',block:'center'});
+});
+})();
+</script>

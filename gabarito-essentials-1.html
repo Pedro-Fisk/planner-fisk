@@ -1,0 +1,1586 @@
+<title>Gabarito do Planner — Essentials 1</title>
+<style>
+  :root{
+    --marinho:#1d3685; --roxo:#912d99; --lima:#d4e909; --lima-esc:#8d9c05;
+    --texto:#002060; --magenta:#d91e9e;
+    --papel:#fff; --chao:#eaeef7; --chao2:#f5f7fc; --linha:#ccd6e9; --media:#54648d;
+    --fonte:"Trebuchet MS","Lucida Grande","Segoe UI",system-ui,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--chao);color:var(--texto);font-family:var(--fonte);font-size:17px;line-height:1.45}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px 80px}
+  header{background:var(--marinho);color:#fff;border-radius:0 0 24px 24px;padding:28px 30px 30px}
+  header h1{margin:0 0 6px;font-size:34px;line-height:1.1}
+  header p{margin:0;font-size:18px;color:#bcc9e9;max-width:74ch}
+  .placar{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+  .kpi{background:#0f2260;border-radius:14px;padding:12px 18px;min-width:120px}
+  .kpi b{display:block;font-family:var(--mono);font-size:26px;font-variant-numeric:tabular-nums}
+  .kpi span{font-size:13px;color:#bcc9e9;letter-spacing:.05em;text-transform:uppercase}
+  .kpi[data-d="aluno"]{background:#123a86} .kpi[data-d="professor"]{background:#5d1c63}
+  .kpi[data-d="plataforma"]{background:#5b6605}
+
+  .aviso{background:#fff;border:1px solid var(--linha);border-left:8px solid var(--magenta);
+         border-radius:14px;padding:18px 22px;margin:26px 0 0;max-width:88ch}
+  .aviso h2{margin:0 0 8px;font-size:21px}
+  .aviso p{margin:0 0 10px}
+  .aviso ul{margin:0;padding-left:22px} .aviso li{margin-bottom:7px}
+  .aviso code{font-family:var(--mono);background:var(--chao);padding:1px 6px;border-radius:5px;font-size:15px}
+  .aviso.calmo{border-left-color:var(--lima-esc)}
+
+  h2.lic{display:flex;align-items:center;gap:12px;margin:34px 0 12px;font-size:24px}
+  h2.lic .tag{background:var(--roxo);color:#fff;border-radius:999px;padding:5px 18px;font-size:19px;letter-spacing:.05em}
+  h2.lic .qt{font-size:15px;color:var(--media);font-weight:400}
+
+  .aula{background:var(--papel);border:1px solid var(--linha);border-radius:16px;margin-bottom:12px;overflow:hidden}
+  .cab-aula{display:flex;align-items:center;gap:12px;background:var(--chao2);padding:10px 16px;border-bottom:1px solid var(--linha);flex-wrap:wrap}
+  .cab-aula .num{font-family:var(--mono);font-size:14px;color:var(--media)}
+  .cab-aula .papel{font-weight:700;font-size:18px}
+  .cab-aula .campo{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--media)}
+
+  .aula table{width:100%;border-collapse:collapse}
+  th{text-align:left;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--media);
+     padding:9px 16px;border-bottom:1px solid var(--linha);font-weight:700;white-space:nowrap}
+  td{padding:10px 16px;border-bottom:1px solid #eef1f8;vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  td.item{font-weight:700;font-size:17px}
+  td.item.ch{color:var(--lima-esc)}
+  td.pag{font-family:var(--mono);font-size:15px;color:var(--media);white-space:nowrap;font-variant-numeric:tabular-nums}
+  td.link{font-size:15px;color:var(--media)}
+  .tipo{font-family:var(--mono);font-size:13px;background:var(--chao);border-radius:999px;padding:3px 10px;color:var(--media)}
+  .dono{font-size:14px;font-weight:700;border-radius:999px;padding:4px 13px;white-space:nowrap;display:inline-block}
+  .dono[data-d="aluno"]{background:#dbe6fb;color:#123a86}
+  .dono[data-d="professor"]{background:#f6dcf8;color:#5d1c63}
+  .dono[data-d="plataforma"]{background:var(--lima);color:#3f4703}
+
+  .rodape{margin-top:34px;font-size:16px;color:var(--media);max-width:86ch}
+  @media (max-width:760px){
+    .aula{overflow-x:auto} .aula table{min-width:660px}
+    header h1{font-size:26px} body{font-size:16px}
+  }
+</style>
+
+<header>
+  <div class="wrap" style="padding-bottom:0">
+    <h1>Gabarito do Planner — Essentials 1</h1>
+    <p>Os 147 itens do planner, extraídos do PDF por coordenada e organizados por lição e por aula.
+       É esta tabela que a tela do planner vai desenhar. Revise linha a linha: o que estiver errado aqui
+       nasce errado na tela.</p>
+    <div class="placar">
+      <div class="kpi"><b>147</b><span>itens</span></div>
+      <div class="kpi"><b>41</b><span>aulas</span></div>
+      <div class="kpi" data-d="aluno"><b>74</b><span>aluno marca</span></div>
+      <div class="kpi" data-d="professor"><b>40</b><span>professor marca</span></div>
+      <div class="kpi" data-d="plataforma"><b>33</b><span>plataforma marca</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="aviso">
+    <h2>Duas divergências entre o planner e o gabarito do card</h2>
+    <p>O PDF tem <b>41 caixas de data</b>, uma por aula. A linha <i>Essentials 1 e 2</i> da aba
+       <code>Gabarito Placeholder</code> tem <b>39 posições</b> antes dos <code>.DT</code>. A diferença
+       de duas está em dois pontos exatos:</p>
+    <ul>
+      <li>a <b>introdução</b> ocupa <b>2 aulas</b> no planner (<code>Data 01</code> e <code>Data 02</code>)
+          e <b>1</b> no card (<code>.INTRO</code>);</li>
+      <li>a <b>Lesson 8</b> ocupa <b>4 aulas</b> no planner (<code>Data 28</code> a <code>Data 31</code>)
+          e <b>3</b> no card (<code>.L8 .L8 .L8</code>).</li>
+    </ul>
+    <p style="margin-bottom:0">Isso importa porque o Abridor de Planners distribui as datas nas 41 caixas
+       e o card planeja 39. Ao longo do estágio as duas contas andam desencontradas em duas aulas, o que
+       afeta a régua de atraso. Foi uma leitura só, então vale conferir antes de mexer em qualquer coisa.</p>
+  </div>
+
+  <div class="aviso calmo">
+    <h2>Como ler a coluna “quem marca”</h2>
+    <p style="margin-bottom:0"><b>Aluno</b> é o que só ele sabe se fez (exercícios, tarefa, correção da tarefa).
+       <b>Professor</b> é o que depende dele (a explicação na mesa, o checking, provas, <i>Book Review</i>).
+       <b>Plataforma</b> é o que o portal já registra sozinho hoje (Quick Practice, Movie Program,
+       Listening Lab, vídeos). Esta é a proposta, não um fato: é justamente o que eu preciso que você corrija.</p>
+  </div>
+
+  
+  <h2 class="lic"><span class="tag">INTRO</span>
+    <span class="qt">2 aulas · 4 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">1ª aula do curso</span>
+        <span class="papel">Introdução · parte 1</span>
+        <span class="campo">Data 01</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Book introduction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">intro</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Planner Introduction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">intro</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">2ª aula do curso</span>
+        <span class="papel">Introdução · parte 2</span>
+        <span class="campo">Data 02</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Exploration Before You Start</td>
+          <td class="pag"></td>
+          <td><span class="tipo">exploration</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Vídeo de explicação da lição</td>
+        </tr><tr>
+          <td class="item">Exercises Before You Start – p. 6 / 7 / 8</td>
+          <td class="pag">6 / 7 / 8</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">L1</span>
+    <span class="qt">3 aulas · 14 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">3ª aula do curso</span>
+        <span class="papel">Explanation</span>
+        <span class="campo">Data 03</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">QR Code Introduction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">qr</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice da lição</td>
+        </tr><tr>
+          <td class="item">Exploration L1</td>
+          <td class="pag"></td>
+          <td><span class="tipo">exploration</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Vídeo de explicação da lição</td>
+        </tr><tr>
+          <td class="item">Exercises L1 A – p. 09 / 10 / 11/ 12</td>
+          <td class="pag">09 / 10 / 11/ 12</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L1 A - p. 99/100</td>
+          <td class="pag">99/100</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">4ª aula do curso</span>
+        <span class="papel">Exercises</span>
+        <span class="campo">Data 04</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Exercises L1 B – p. 13/14/15/16</td>
+          <td class="pag">13/14/15/16</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L1 B - p. 100/101</td>
+          <td class="pag">100/101</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Writing Task - p. 15</td>
+          <td class="pag">15</td>
+          <td><span class="tipo">writing</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">5ª aula do curso</span>
+        <span class="papel">Checking</span>
+        <span class="campo">Data 05</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Movie Introduction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">movie</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Movie Program</td>
+        </tr><tr>
+          <td class="item">Movie 1</td>
+          <td class="pag"></td>
+          <td><span class="tipo">movie</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Movie Program</td>
+        </tr><tr>
+          <td class="item">QR Code Exercises - p. 16</td>
+          <td class="pag">16</td>
+          <td><span class="tipo">qr</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice da lição</td>
+        </tr><tr>
+          <td class="item ch">CHECK L1 — BEST: pronúncia / estrutura / fluência / vocabulário</td>
+          <td class="pag"></td>
+          <td><span class="tipo">checking</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">dispara o encaminhamento</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">L2</span>
+    <span class="qt">3 aulas · 14 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">6ª aula do curso</span>
+        <span class="papel">Explanation</span>
+        <span class="campo">Data 06</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Exploration L2</td>
+          <td class="pag"></td>
+          <td><span class="tipo">exploration</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Vídeo de explicação da lição</td>
+        </tr><tr>
+          <td class="item">Songs Introduction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">song</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Listening Lab</td>
+        </tr><tr>
+          <td class="item">Exercises L2 A – p. 17/18/19/20</td>
+          <td class="pag">17/18/19/20</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Song 1 ___</td>
+          <td class="pag"></td>
+          <td><span class="tipo">song</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Listening Lab</td>
+        </tr><tr>
+          <td class="item">Homework L2 A - p. 102/103</td>
+          <td class="pag">102/103</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">7ª aula do curso</span>
+        <span class="papel">Exercises</span>
+        <span class="campo">Data 07</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Video Ac. Introduction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">video</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Smart Pack / vídeo</td>
+        </tr><tr>
+          <td class="item">Exercises L2 B – p. 21/22/23/24</td>
+          <td class="pag">21/22/23/24</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L2 B - p. 103/104</td>
+          <td class="pag">103/104</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Writing Task - p. 23</td>
+          <td class="pag">23</td>
+          <td><span class="tipo">writing</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">8ª aula do curso</span>
+        <span class="papel">Checking</span>
+        <span class="campo">Data 08</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Video Activity 1</td>
+          <td class="pag"></td>
+          <td><span class="tipo">video</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Smart Pack / vídeo</td>
+        </tr><tr>
+          <td class="item">QR Code Exercises - p. 24</td>
+          <td class="pag">24</td>
+          <td><span class="tipo">qr</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice da lição</td>
+        </tr><tr>
+          <td class="item ch">CHECK L2 — BEST: pronúncia / estrutura / fluência / vocabulário</td>
+          <td class="pag"></td>
+          <td><span class="tipo">checking</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">dispara o encaminhamento</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">L3</span>
+    <span class="qt">3 aulas · 12 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">9ª aula do curso</span>
+        <span class="papel">Explanation</span>
+        <span class="campo">Data 09</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Exploration L3</td>
+          <td class="pag"></td>
+          <td><span class="tipo">exploration</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Vídeo de explicação da lição</td>
+        </tr><tr>
+          <td class="item">Extra Exercises Intro</td>
+          <td class="pag"></td>
+          <td><span class="tipo">extra</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice (revisão)</td>
+        </tr><tr>
+          <td class="item">Exercises L3 A – p. 25/26/27/28</td>
+          <td class="pag">25/26/27/28</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L3 A - p. 105/106</td>
+          <td class="pag">105/106</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">10ª aula do curso</span>
+        <span class="papel">Exercises</span>
+        <span class="campo">Data 10</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Exercises L3 B – p. 29/30/31/32</td>
+          <td class="pag">29/30/31/32</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L3 B - p. 106/107</td>
+          <td class="pag">106/107</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Writing Task - p. 31</td>
+          <td class="pag">31</td>
+          <td><span class="tipo">writing</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">11ª aula do curso</span>
+        <span class="papel">Checking</span>
+        <span class="campo">Data 11</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Movie 2</td>
+          <td class="pag"></td>
+          <td><span class="tipo">movie</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Movie Program</td>
+        </tr><tr>
+          <td class="item">QR Code Exercises - p. 32</td>
+          <td class="pag">32</td>
+          <td><span class="tipo">qr</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice da lição</td>
+        </tr><tr>
+          <td class="item ch">CHECK L3 — BEST: pronúncia / estrutura / fluência / vocabulário</td>
+          <td class="pag"></td>
+          <td><span class="tipo">checking</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">dispara o encaminhamento</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">L4</span>
+    <span class="qt">3 aulas · 12 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">12ª aula do curso</span>
+        <span class="papel">Explanation</span>
+        <span class="campo">Data 12</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Exploration L4</td>
+          <td class="pag"></td>
+          <td><span class="tipo">exploration</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Vídeo de explicação da lição</td>
+        </tr><tr>
+          <td class="item">Exercises L4 A – p. 33/34/35/36</td>
+          <td class="pag">33/34/35/36</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Song 2 ___</td>
+          <td class="pag"></td>
+          <td><span class="tipo">song</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Listening Lab</td>
+        </tr><tr>
+          <td class="item">Homework L4 A - p. 108/109</td>
+          <td class="pag">108/109</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">13ª aula do curso</span>
+        <span class="papel">Exercises</span>
+        <span class="campo">Data 13</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Exercises L4 B – p. 37/38/39/40</td>
+          <td class="pag">37/38/39/40</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L4 B - p. 109/110</td>
+          <td class="pag">109/110</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Writing Task - p.39</td>
+          <td class="pag">39</td>
+          <td><span class="tipo">writing</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">14ª aula do curso</span>
+        <span class="papel">Checking</span>
+        <span class="campo">Data 14</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Video Activity 2</td>
+          <td class="pag"></td>
+          <td><span class="tipo">video</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Smart Pack / vídeo</td>
+        </tr><tr>
+          <td class="item">QR Code Exercises - p. 40</td>
+          <td class="pag">40</td>
+          <td><span class="tipo">qr</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice da lição</td>
+        </tr><tr>
+          <td class="item ch">CHECK L4 — BEST: pronúncia / estrutura / fluência / vocabulário</td>
+          <td class="pag"></td>
+          <td><span class="tipo">checking</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">dispara o encaminhamento</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">L5</span>
+    <span class="qt">3 aulas · 12 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">15ª aula do curso</span>
+        <span class="papel">Explanation</span>
+        <span class="campo">Data 15</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Exploration L5</td>
+          <td class="pag"></td>
+          <td><span class="tipo">exploration</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Vídeo de explicação da lição</td>
+        </tr><tr>
+          <td class="item">Exercises L5 A – p. 41/42/43/44</td>
+          <td class="pag">41/42/43/44</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Movie 3</td>
+          <td class="pag"></td>
+          <td><span class="tipo">movie</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Movie Program</td>
+        </tr><tr>
+          <td class="item">Homework L5 A - p. 111/112</td>
+          <td class="pag">111/112</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">16ª aula do curso</span>
+        <span class="papel">Exercises</span>
+        <span class="campo">Data 16</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Exercises L5 B – p. 45/46/47/48</td>
+          <td class="pag">45/46/47/48</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L5 B - p. 112/113</td>
+          <td class="pag">112/113</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Writing Task - p. 47</td>
+          <td class="pag">47</td>
+          <td><span class="tipo">writing</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">17ª aula do curso</span>
+        <span class="papel">Checking</span>
+        <span class="campo">Data 17</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">QR Code Exercises - p. 48</td>
+          <td class="pag">48</td>
+          <td><span class="tipo">qr</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice da lição</td>
+        </tr><tr>
+          <td class="item">Song 3 ___</td>
+          <td class="pag"></td>
+          <td><span class="tipo">song</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Listening Lab</td>
+        </tr><tr>
+          <td class="item ch">CHECK L5 — BEST: pronúncia / estrutura / fluência / vocabulário</td>
+          <td class="pag"></td>
+          <td><span class="tipo">checking</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">dispara o encaminhamento</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">CHP</span>
+    <span class="qt">2 aulas · 8 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">18ª aula do curso</span>
+        <span class="papel">Checkpoint · parte 1</span>
+        <span class="campo">Data 18</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Checkpoint Exercises – p. 49/50/51/52</td>
+          <td class="pag">49/50/51/52</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Prepare Speech For Your Oral Presentation</td>
+          <td class="pag"></td>
+          <td><span class="tipo">oral</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Conversation Maker</td>
+        </tr><tr>
+          <td class="item">QR Code Exercises - p. 52</td>
+          <td class="pag">52</td>
+          <td><span class="tipo">qr</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice da lição</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">19ª aula do curso</span>
+        <span class="papel">Checkpoint · parte 2</span>
+        <span class="campo">Data 19</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Checkpoint Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Extra Review Exercises Intro</td>
+          <td class="pag"></td>
+          <td><span class="tipo">extra</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice (revisão)</td>
+        </tr><tr>
+          <td class="item">Review Plan - p. 52</td>
+          <td class="pag">52</td>
+          <td><span class="tipo">review</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Review Plan Exercises</td>
+          <td class="pag"></td>
+          <td><span class="tipo">review</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Oral Presentation</td>
+          <td class="pag"></td>
+          <td><span class="tipo">oral</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Conversation Maker</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">TEST</span>
+    <span class="qt">2 aulas · 4 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">20ª aula do curso</span>
+        <span class="papel">Provas · parte 1</span>
+        <span class="campo">Data 20</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Written Test</td>
+          <td class="pag"></td>
+          <td><span class="tipo">prova</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Listening Test 1</td>
+          <td class="pag"></td>
+          <td><span class="tipo">prova</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">21ª aula do curso</span>
+        <span class="papel">Provas · parte 2</span>
+        <span class="campo">Data 21</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Comments - Test 1</td>
+          <td class="pag"></td>
+          <td><span class="tipo">reportcard</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Book Review Part I — Choose A Book To Read</td>
+          <td class="pag"></td>
+          <td><span class="tipo">bookreview</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">L6</span>
+    <span class="qt">3 aulas · 11 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">22ª aula do curso</span>
+        <span class="papel">Explanation</span>
+        <span class="campo">Data 22</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Exploration L6</td>
+          <td class="pag"></td>
+          <td><span class="tipo">exploration</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Vídeo de explicação da lição</td>
+        </tr><tr>
+          <td class="item">Exercises L6 A – p. 53/54/55/56</td>
+          <td class="pag">53/54/55/56</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L6 A – p. 114/115</td>
+          <td class="pag">114/115</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">23ª aula do curso</span>
+        <span class="papel">Exercises</span>
+        <span class="campo">Data 23</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Exercises L6 B – p. 57/58/59/60</td>
+          <td class="pag">57/58/59/60</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L6 B - p. 115/116</td>
+          <td class="pag">115/116</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Writing Task - p. 59</td>
+          <td class="pag">59</td>
+          <td><span class="tipo">writing</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">24ª aula do curso</span>
+        <span class="papel">Checking</span>
+        <span class="campo">Data 24</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Video Activity 3</td>
+          <td class="pag"></td>
+          <td><span class="tipo">video</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Smart Pack / vídeo</td>
+        </tr><tr>
+          <td class="item">QR Code Exercises - P. 60</td>
+          <td class="pag">60</td>
+          <td><span class="tipo">qr</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice da lição</td>
+        </tr><tr>
+          <td class="item ch">CHECK L6 — BEST: pronúncia / estrutura / fluência / vocabulário</td>
+          <td class="pag"></td>
+          <td><span class="tipo">checking</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">dispara o encaminhamento</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">L7</span>
+    <span class="qt">3 aulas · 11 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">25ª aula do curso</span>
+        <span class="papel">Explanation</span>
+        <span class="campo">Data 25</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Exploration L7</td>
+          <td class="pag"></td>
+          <td><span class="tipo">exploration</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Vídeo de explicação da lição</td>
+        </tr><tr>
+          <td class="item">Exercises L7 A – p. 61/62/63/64</td>
+          <td class="pag">61/62/63/64</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L7 A - p. 117/118</td>
+          <td class="pag">117/118</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">26ª aula do curso</span>
+        <span class="papel">Exercises</span>
+        <span class="campo">Data 26</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Exercises L7 B –p. 65/66/67/68</td>
+          <td class="pag">65/66/67/68</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L7 B - p. 118/119</td>
+          <td class="pag">118/119</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Writing Task - p. 67</td>
+          <td class="pag">67</td>
+          <td><span class="tipo">writing</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">27ª aula do curso</span>
+        <span class="papel">Checking</span>
+        <span class="campo">Data 27</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Movie 4</td>
+          <td class="pag"></td>
+          <td><span class="tipo">movie</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Movie Program</td>
+        </tr><tr>
+          <td class="item">QR Code Exercises - p. 68</td>
+          <td class="pag">68</td>
+          <td><span class="tipo">qr</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice da lição</td>
+        </tr><tr>
+          <td class="item ch">CHECK L7 — BEST: pronúncia / estrutura / fluência / vocabulário</td>
+          <td class="pag"></td>
+          <td><span class="tipo">checking</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">dispara o encaminhamento</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">L8</span>
+    <span class="qt">4 aulas · 12 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">28ª aula do curso</span>
+        <span class="papel">Explanation</span>
+        <span class="campo">Data 28</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Exploration L8</td>
+          <td class="pag"></td>
+          <td><span class="tipo">exploration</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Vídeo de explicação da lição</td>
+        </tr><tr>
+          <td class="item">Exercises L8 A – p. 69/70/71/22</td>
+          <td class="pag">69/70/71/22</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Song 4 ___</td>
+          <td class="pag"></td>
+          <td><span class="tipo">song</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Listening Lab</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">29ª aula do curso</span>
+        <span class="papel">Exercises</span>
+        <span class="campo">Data 29</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework L8 A - p. 120/121</td>
+          <td class="pag">120/121</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Exercises L8 B – p. 73/74/75/76</td>
+          <td class="pag">73/74/75/76</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">30ª aula do curso</span>
+        <span class="papel">Checking</span>
+        <span class="campo">Data 30</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework L8 B - p. 121/122</td>
+          <td class="pag">121/122</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Writing Task - p.75</td>
+          <td class="pag">75</td>
+          <td><span class="tipo">writing</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">31ª aula do curso</span>
+        <span class="papel">Extra</span>
+        <span class="campo">Data 31</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Video Activity 4</td>
+          <td class="pag"></td>
+          <td><span class="tipo">video</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Smart Pack / vídeo</td>
+        </tr><tr>
+          <td class="item">QR Code Exercises - p. 76</td>
+          <td class="pag">76</td>
+          <td><span class="tipo">qr</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice da lição</td>
+        </tr><tr>
+          <td class="item ch">CHECK L8 — BEST: pronúncia / estrutura / fluência / vocabulário</td>
+          <td class="pag"></td>
+          <td><span class="tipo">checking</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">dispara o encaminhamento</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">L9</span>
+    <span class="qt">3 aulas · 12 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">32ª aula do curso</span>
+        <span class="papel">Explanation</span>
+        <span class="campo">Data 32</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Exploration L9</td>
+          <td class="pag"></td>
+          <td><span class="tipo">exploration</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Vídeo de explicação da lição</td>
+        </tr><tr>
+          <td class="item">Exercises L9 A – p. 77/78/79/80</td>
+          <td class="pag">77/78/79/80</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Song 5 ___</td>
+          <td class="pag"></td>
+          <td><span class="tipo">song</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Listening Lab</td>
+        </tr><tr>
+          <td class="item">Homework L9 A - p. 123/124</td>
+          <td class="pag">123/124</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">33ª aula do curso</span>
+        <span class="papel">Exercises</span>
+        <span class="campo">Data 33</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Exercises L9 B – p. 81/82/83/84</td>
+          <td class="pag">81/82/83/84</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L9 B - p. 124/125</td>
+          <td class="pag">124/125</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Writing Task - p.83</td>
+          <td class="pag">83</td>
+          <td><span class="tipo">writing</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">34ª aula do curso</span>
+        <span class="papel">Checking</span>
+        <span class="campo">Data 34</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Movie 5</td>
+          <td class="pag"></td>
+          <td><span class="tipo">movie</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Movie Program</td>
+        </tr><tr>
+          <td class="item">QR Code Exercises - p. 84</td>
+          <td class="pag">84</td>
+          <td><span class="tipo">qr</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice da lição</td>
+        </tr><tr>
+          <td class="item ch">CHECK L9 — BEST: pronúncia / estrutura / fluência / vocabulário</td>
+          <td class="pag"></td>
+          <td><span class="tipo">checking</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">dispara o encaminhamento</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">L10</span>
+    <span class="qt">3 aulas · 11 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">35ª aula do curso</span>
+        <span class="papel">Explanation</span>
+        <span class="campo">Data 35</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Exploration L10</td>
+          <td class="pag"></td>
+          <td><span class="tipo">exploration</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Vídeo de explicação da lição</td>
+        </tr><tr>
+          <td class="item">Exercises L10 A – p. 85/86/87/88</td>
+          <td class="pag">85/86/87/88</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L10 A - p. 126/127</td>
+          <td class="pag">126/127</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">36ª aula do curso</span>
+        <span class="papel">Exercises</span>
+        <span class="campo">Data 36</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Exercises L10 B – p. 89/90/91/92</td>
+          <td class="pag">89/90/91/92</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Homework L10 B - p. 127/128</td>
+          <td class="pag">127/128</td>
+          <td><span class="tipo">homework</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Writing Task - p.91</td>
+          <td class="pag">91</td>
+          <td><span class="tipo">writing</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">37ª aula do curso</span>
+        <span class="papel">Checking</span>
+        <span class="campo">Data 37</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Homework Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Video Activity 5</td>
+          <td class="pag"></td>
+          <td><span class="tipo">video</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Smart Pack / vídeo</td>
+        </tr><tr>
+          <td class="item">QR Code Exercises - p. 92</td>
+          <td class="pag">92</td>
+          <td><span class="tipo">qr</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice da lição</td>
+        </tr><tr>
+          <td class="item ch">CHECK L10 — BEST: pronúncia / estrutura / fluência / vocabulário</td>
+          <td class="pag"></td>
+          <td><span class="tipo">checking</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">dispara o encaminhamento</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">CHP</span>
+    <span class="qt">2 aulas · 7 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">38ª aula do curso</span>
+        <span class="papel">Checkpoint · parte 1</span>
+        <span class="campo">Data 38</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Prepare Speech For Your Oral Presentation</td>
+          <td class="pag"></td>
+          <td><span class="tipo">oral</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Conversation Maker</td>
+        </tr><tr>
+          <td class="item">Checkpoint Exercises – p. 93/94/95/96</td>
+          <td class="pag">93/94/95/96</td>
+          <td><span class="tipo">exercicios</span></td>
+          <td><span class="dono" data-d="aluno">Aluno</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">QR Code Exercises - p. 96</td>
+          <td class="pag">96</td>
+          <td><span class="tipo">qr</span></td>
+          <td><span class="dono" data-d="plataforma">Plataforma</span></td>
+          <td class="link">Quick Practice da lição</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">39ª aula do curso</span>
+        <span class="papel">Checkpoint · parte 2</span>
+        <span class="campo">Data 39</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Checkpoint Correction</td>
+          <td class="pag"></td>
+          <td><span class="tipo">correcao</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Review Plan - p. 96</td>
+          <td class="pag">96</td>
+          <td><span class="tipo">review</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Review Plan Exercises</td>
+          <td class="pag"></td>
+          <td><span class="tipo">review</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Oral Presentation</td>
+          <td class="pag"></td>
+          <td><span class="tipo">oral</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link">Conversation Maker</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  <h2 class="lic"><span class="tag">TEST</span>
+    <span class="qt">2 aulas · 3 itens</span>
+  </h2>
+  
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">40ª aula do curso</span>
+        <span class="papel">Provas · parte 1</span>
+        <span class="campo">Data 40</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Written Test 2</td>
+          <td class="pag"></td>
+          <td><span class="tipo">prova</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr><tr>
+          <td class="item">Listening Test</td>
+          <td class="pag"></td>
+          <td><span class="tipo">prova</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="aula">
+      <div class="cab-aula">
+        <span class="num">41ª aula do curso</span>
+        <span class="papel">Provas · parte 2</span>
+        <span class="campo">Data 41</span>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Páginas</th><th>Tipo</th><th>Quem marca</th><th>Link no portal</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="item">Comments - Test 2</td>
+          <td class="pag"></td>
+          <td><span class="tipo">reportcard</span></td>
+          <td><span class="dono" data-d="professor">Professor</span></td>
+          <td class="link"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+  <p class="rodape">Extraído de <code>Planner - Essentials 1</code> (o PDF embutido no Abridor de Planners),
+     casando cada checkbox com o texto impresso ao lado e com a caixa de data que o cobre.
+     A coluna <i>campo_pdf</i> do CSV guarda o nome original do campo, para a tela poder escrever de volta
+     no PDF na hora de imprimir.</p>
+</div>

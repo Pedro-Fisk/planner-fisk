@@ -1,2 +1,8 @@
 .claude/
 .DS_Store
+# saída de conferência do detectar-arte.py: 2,7 MB, refeito a cada rodada
+_debug-lajes.png
+_preview-essentials-2.*
+# artes derivadas pelo assar-sombra.py: refeitas por comando
+assets/trajetoria/*-sombra[0-9][0-9].png
+assets/trajetoria/*-sombra[0-9][0-9].webp

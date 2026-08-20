@@ -1,0 +1,527 @@
+<title>Trajetória do aluno — Essentials 1</title>
+<style>
+  :root{
+    /* Portal do Aluno (recipiente claro) — de portal.css */
+    --papel:#fff; --chao:#f7f6f6; --borda:#ececec;
+    --tinta:#161414; --tinta-fraca:#6f6a6a; --vermelho:#d81f26;
+
+    /* identidade do planner, puxada da arte do PDF e aberta para tela */
+    --noite:#0b1338;      /* céu do mapa */
+    --noite-2:#131f57;    /* relevo */
+    --marinho:#1d3685;    /* superfície */
+    --asfalto:#22317a;    /* estrada por percorrer */
+    --rota:#3f63d9;
+    --lima:#d4e909; --lima-2:#a9c400;
+    --magenta:#ff2e93;
+    --roxo:#a855c9;
+    --gelo:#e8ecfb; --gelo-2:#93a4d8;
+
+    --disp:'Poppins','Avenir Next','Century Gothic','Trebuchet MS',system-ui,sans-serif;
+    --corpo:'Nunito','SF Pro Rounded','Avenir Next',system-ui,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--chao);color:var(--tinta);
+    font-family:var(--corpo);font-size:17px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.disp{font-family:var(--disp);font-weight:800;letter-spacing:-.01em}
+  .wrap{max-width:1560px;margin:0 auto;padding:0 20px 90px}
+
+  /* ---------- rótulo de zoom ---------- */
+  .zoom-rot{display:flex;align-items:center;gap:14px;margin:46px 0 14px}
+  .zoom-rot .n{
+    width:38px;height:38px;border-radius:50%;background:var(--noite);color:var(--lima);
+    display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:19px;flex:0 0 auto;
+  }
+  .zoom-rot h2{margin:0;font-size:25px}
+  .zoom-rot p{margin:0;font-size:16px;color:var(--tinta-fraca)}
+
+  /* ---------- chrome do portal (zoom 1) ---------- */
+  .portal{background:var(--papel);border:1.5px solid var(--borda);border-radius:18px;overflow:hidden;
+          box-shadow:0 6px 22px rgba(22,20,20,.07)}
+  .portal-top{display:flex;align-items:center;gap:14px;padding:15px 20px;border-bottom:1.5px solid var(--borda)}
+  .portal-top .marca{font-family:var(--disp);font-weight:800;font-size:20px;color:var(--vermelho);letter-spacing:.02em}
+  .portal-top .quem{margin-left:auto;display:flex;align-items:center;gap:11px;font-weight:700;font-size:15px}
+  .portal-top .av{width:36px;height:36px;border-radius:50%;background:var(--noite);color:var(--lima);
+                  display:grid;place-items:center;font-family:var(--disp);font-size:15px}
+
+  /* ---------- o mapa ---------- */
+  .mapa{position:relative;background:var(--noite);overflow:hidden}
+  .mapa-cab{display:flex;align-items:flex-end;gap:18px;padding:22px 26px 4px;flex-wrap:wrap;position:relative;z-index:3}
+  .mapa-cab h3{margin:0;color:#fff;font-size:26px}
+  .mapa-cab .sub{color:var(--gelo-2);font-size:15px;font-weight:700}
+  .mapa-cab .dir{margin-left:auto;text-align:right}
+  .mapa-cab .pc{font-family:var(--disp);font-size:34px;color:var(--lima);line-height:1;font-variant-numeric:tabular-nums}
+  .mapa-cab .pc small{font-size:14px;color:var(--gelo-2);display:block;font-family:var(--corpo);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-top:3px}
+
+  .pista{position:relative;z-index:2;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;
+         scrollbar-color:var(--rota) transparent;padding-bottom:6px}
+  .pista::-webkit-scrollbar{height:10px}
+  .pista::-webkit-scrollbar-thumb{background:var(--rota);border-radius:6px}
+  .pista::-webkit-scrollbar-track{background:rgba(255,255,255,.06)}
+  .pista svg{display:block}
+
+  .mapa-pe{display:flex;align-items:center;gap:14px;padding:6px 26px 22px;flex-wrap:wrap;position:relative;z-index:3}
+  .cta{
+    display:inline-flex;align-items:center;gap:10px;background:var(--lima);color:#101a3d;
+    border:0;border-radius:999px;padding:14px 26px;font-family:var(--disp);font-weight:800;font-size:17px;
+    cursor:pointer;text-decoration:none;
+  }
+  .cta:hover{background:#e2f80c}
+  .cta:focus-visible{outline:3px solid #fff;outline-offset:3px}
+  .cta-2{background:transparent;color:var(--gelo);border:2px solid rgba(255,255,255,.28)}
+  .cta-2:hover{background:rgba(255,255,255,.08)}
+  .dica{color:var(--gelo-2);font-size:15px;margin-left:auto}
+
+  /* ---------- textos dentro do svg ---------- */
+  .est-rot{font-family:var(--disp);font-weight:800;fill:#fff;font-size:17px}
+  .est-rot.off{fill:var(--gelo-2)}
+  .est-sub{font-family:var(--corpo);font-weight:700;fill:var(--gelo-2);font-size:12.5px;letter-spacing:.05em}
+  .est-num{font-family:var(--disp);font-weight:800;font-size:26px}
+  .no-btn{cursor:pointer}
+  .no-btn:focus-visible{outline:none}
+  .no-btn:focus-visible .foco{opacity:1}
+
+  @media (prefers-reduced-motion:no-preference){
+    .pulso{animation:pulso 2.6s ease-out infinite}
+    @keyframes pulso{0%{r:44;opacity:.55}70%{r:70;opacity:0}100%{r:70;opacity:0}}
+    .flutua{animation:flutua 3.4s ease-in-out infinite}
+    @keyframes flutua{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  }
+
+  /* ---------- lição aberta (zoom 3) ---------- */
+  .licao{background:var(--papel);border:1.5px solid var(--borda);border-radius:20px;overflow:hidden;
+         box-shadow:0 6px 22px rgba(22,20,20,.07)}
+  .licao-cab{display:flex;align-items:center;gap:20px;padding:22px 26px;background:var(--noite);color:#fff;flex-wrap:wrap}
+  .licao-cab .selo{
+    width:74px;height:74px;border-radius:22px;background:var(--lima);color:#101a3d;flex:0 0 auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;
+  }
+  .licao-cab .selo b{font-family:var(--disp);font-size:32px}
+  .licao-cab .selo span{font-size:10.5px;font-weight:800;letter-spacing:.1em}
+  .licao-cab h3{margin:0 0 2px;font-size:27px}
+  .licao-cab .meta{color:var(--gelo-2);font-size:15px;font-weight:700}
+  .alerta{
+    margin-left:auto;background:rgba(255,46,147,.16);border:2px solid var(--magenta);color:#ffd7ec;
+    border-radius:14px;padding:11px 17px;font-size:15px;font-weight:700;max-width:330px;
+  }
+  .alerta b{color:#fff}
+
+  .aulas{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1.5px;background:var(--borda)}
+  .aula{background:var(--papel);padding:18px 20px 22px}
+  .aula-cab{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .aula-cab .ord{width:30px;height:30px;border-radius:50%;background:var(--noite);color:#fff;
+                 display:grid;place-items:center;font-family:var(--disp);font-size:15px;flex:0 0 auto}
+  .aula-cab .nm{font-family:var(--disp);font-weight:800;font-size:19px}
+  .aula-cab .dt{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--tinta-fraca)}
+  .aula[data-e="extra"] .aula-cab .ord{background:var(--magenta)}
+
+  .itens{display:flex;flex-direction:column;gap:9px}
+  .it{display:flex;align-items:center;gap:11px;background:var(--chao);border:1.5px solid var(--borda);
+      border-radius:14px;padding:9px 13px 9px 9px;flex-wrap:wrap;row-gap:8px}
+  .it[data-t="tarefa"]{background:#fff3fa;border-color:#ffc8e6}
+  .it.fim{background:#f2f4f8;border-color:#e6e9f0}
+  .it.fim .nm{color:#9aa2b5;text-decoration:line-through;text-decoration-thickness:2px}
+  .it .nm{font-weight:800;font-size:16px;flex:0 1 auto;min-width:0}
+  .it .nm .pg{font-weight:600;color:var(--tinta-fraca)}
+  .lk{
+    margin-left:auto;display:inline-flex;align-items:center;gap:7px;background:var(--noite);color:#fff;
+    border-radius:999px;padding:7px 14px;font-size:13.5px;font-weight:800;text-decoration:none;white-space:nowrap;
+    font-family:var(--corpo);
+  }
+  .lk:hover{background:#16265e}
+  .lk[data-k="audio"]{background:#0f7a6c}
+  .lk[data-k="video"]{background:#7a3fa8}
+  .lk[data-k="quick"]{background:var(--marinho)}
+  .lk[data-k="song"]{background:#0f7a6c}
+  .lk:focus-visible{outline:3px solid var(--roxo);outline-offset:2px}
+  .it.fim .lk{background:#aab2c4}
+
+  /* marca de duas metades */
+  .mk{flex:0 0 auto;width:34px;height:34px;padding:0;border:0;background:transparent;cursor:pointer;display:grid;place-items:center}
+  .mk svg{width:32px;height:32px;display:block}
+  .mk .bg{fill:#fff}
+  .mk .ring{fill:none;stroke:var(--rota);stroke-width:2.4}
+  .mk[data-f="tri"] .ring{stroke:var(--magenta)}
+  .mk .ha,.mk .hp{opacity:0;fill:var(--rota)}
+  .mk[data-f="tri"] .ha,.mk[data-f="tri"] .hp{fill:var(--magenta)}
+  .mk .div{stroke:var(--rota);stroke-width:1.4;opacity:.3}
+  .mk[data-f="tri"] .div{stroke:var(--magenta)}
+  .mk[data-a="1"] .ha{opacity:1}
+  .mk[data-a="p"] .ha{opacity:1;fill:var(--lima-2)}
+  .mk[data-p="1"] .hp{opacity:1}
+  .mk:focus-visible{outline:3px solid var(--roxo);outline-offset:2px;border-radius:50%}
+
+  .check-box{
+    grid-column:1/-1;background:linear-gradient(180deg,#1d3685,#101c4e);color:#fff;padding:20px 24px;
+    display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+  }
+  .check-box h4{margin:0;font-family:var(--disp);font-size:21px;display:flex;align-items:center;gap:11px}
+  .check-box .crits{display:flex;gap:9px;flex-wrap:wrap;margin-left:auto}
+  .crit{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.2);color:#fff;
+        border-radius:999px;padding:9px 18px;font-family:var(--corpo);font-weight:800;font-size:14px;cursor:pointer}
+  .crit[aria-pressed="true"]{background:var(--lima);color:#101a3d;border-color:var(--lima)}
+  .crit:focus-visible{outline:3px solid #fff;outline-offset:2px}
+  .presc{width:100%;background:rgba(212,233,9,.13);border-left:5px solid var(--lima);border-radius:12px;
+         padding:14px 18px;font-size:16px;color:#eaf0ff}
+  .presc b{color:var(--lima)}
+
+  .nota{background:var(--papel);border:1.5px solid var(--borda);border-left:7px solid var(--roxo);
+        border-radius:14px;padding:17px 21px;margin-top:16px;font-size:16.5px;max-width:92ch}
+  .nota b{font-weight:800}
+  .selo-mock{display:inline-block;background:var(--lima);color:#101a3d;border-radius:999px;
+             padding:6px 14px;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+</style>
+
+<div class="wrap">
+
+  <div style="display:flex;align-items:center;gap:16px;margin:34px 0 4px;flex-wrap:wrap">
+    <h1 style="margin:0;font-size:34px">Trajetória do aluno</h1>
+    <span class="selo-mock">dados simulados</span>
+  </div>
+  <p style="margin:0;color:var(--tinta-fraca);max-width:80ch;font-size:17px">
+    O planner do Essentials 1 como mapa de percurso. A espinha azul do papel virou a estrada,
+    cada lição virou uma estação e o <i>checkpoint</i> e as provas viraram marcos. Mesmo conteúdo do PDF,
+    mesma paleta do Fisk.
+  </p>
+
+  <!-- ZOOM 1 -->
+  <div class="zoom-rot">
+    <span class="n">1</span>
+    <div><h2>Na home do Portal</h2><p>o primeiro cartão que o aluno vê, rolando na horizontal</p></div>
+  </div>
+
+  <div class="portal">
+    <div class="portal-top">
+      <span class="marca">FISK</span>
+      <span style="color:var(--tinta-fraca);font-weight:700;font-size:15px">Portal do Aluno</span>
+      <span class="quem"><span class="av">AB</span> Ana Beatriz</span>
+    </div>
+    <div class="mapa">
+      <div class="mapa-cab">
+        <div>
+          <h3>Sua trajetória</h3>
+          <div class="sub">Essentials 1 · Lesson 4 de 10</div>
+        </div>
+        <div class="dir"><div class="pc" id="pcHome">28%</div><small>do estágio</small></div>
+      </div>
+      <div class="pista" id="pistaHome"></div>
+      <div class="mapa-pe">
+        <a class="cta" href="#z3">Continuar de onde parei →</a>
+        <a class="cta cta-2" href="#z2">Ver o plano inteiro</a>
+        <span class="dica">arraste para o lado ↔</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZOOM 2 -->
+  <div class="zoom-rot" id="z2">
+    <span class="n">2</span>
+    <div><h2>A página da trajetória</h2><p>o plano de curso inteiro de uma vez, as 15 etapas e as 41 aulas</p></div>
+  </div>
+
+  <div class="mapa" style="border-radius:20px;border:1.5px solid var(--borda)">
+    <div class="mapa-cab">
+      <div>
+        <h3>Essentials 1 · plano de curso</h3>
+        <div class="sub">15 etapas · 41 aulas previstas · 147 itens no planner</div>
+      </div>
+      <div class="dir"><div class="pc">4<span style="font-size:19px;color:var(--gelo-2)"> / 15</span></div><small>etapas concluídas</small></div>
+    </div>
+    <div class="pista" id="pistaFull"></div>
+    <div class="mapa-pe">
+      <span class="dica" style="margin-left:0">clique numa estação para abrir a lição</span>
+    </div>
+  </div>
+
+  <!-- ZOOM 3 -->
+  <div class="zoom-rot" id="z3">
+    <span class="n">3</span>
+    <div><h2>A lição aberta</h2><p>a Lesson 4 com os itens reais do PDF e os links para o que já existe no portal</p></div>
+  </div>
+
+  <div class="licao">
+    <div class="licao-cab">
+      <div class="selo"><b>4</b><span>LESSON</span></div>
+      <div>
+        <h3>Lesson 4</h3>
+        <div class="meta">Do / Does – Long Answers · The Time</div>
+      </div>
+      <div class="alerta">
+        <b>5 aulas nesta lição</b>, e o previsto eram 3.<br>
+        A janela é o tempo real que a Ana está aqui, de 28/07 até hoje.
+      </div>
+    </div>
+
+    <div class="aulas" id="aulas"></div>
+
+    <div class="check-box">
+      <h4><span aria-hidden="true">✦</span> Checking da Lesson 4</h4>
+      <div class="crits" id="crits"></div>
+      <div class="presc" id="presc">Marque em que a Ana mandou melhor. O encaminhamento sai daqui, e a plataforma escolhe qual das outras três treinar com base no que ela já fez.</div>
+    </div>
+  </div>
+
+  <p class="nota">
+    <b>O que é real aqui:</b> os itens e as páginas saíram do PDF do Essentials 1; os áudios por página
+    vêm do catálogo do portal (<b>9 áudios</b> nas páginas 33 a 36, <b>8</b> nas 37 a 40, e nenhum nas
+    páginas de <i>homework</i>, que são do <i>workbook</i>); os pontos do Quick Practice vêm do
+    <code>topicos.json</code>. <b>O que é inventado:</b> a aluna, as datas e o que ela fez.
+  </p>
+
+  <p class="nota" style="border-left-color:var(--lima-2)">
+    <b>Fontes:</b> o Portal usa Poppins e Nunito pelo Google Fonts, que não carrega aqui dentro por
+    política de segurança da página. Está com as substitutas do sistema, então no portal de verdade
+    o desenho fica ainda mais próximo do resto.
+  </p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- as 15 etapas do Essentials 1 ---------------- */
+  var ETAPAS = [
+    {id:'INTRO', rot:'Intro',      sub:'2 aulas', aulas:2, tipo:'licao',  estado:'feita'},
+    {id:'L1',    rot:'Lesson 1',   sub:'3 aulas', aulas:3, tipo:'licao',  estado:'feita'},
+    {id:'L2',    rot:'Lesson 2',   sub:'3 aulas', aulas:3, tipo:'licao',  estado:'feita'},
+    {id:'L3',    rot:'Lesson 3',   sub:'3 aulas', aulas:3, tipo:'licao',  estado:'feita'},
+    {id:'L4',    rot:'Lesson 4',   sub:'5 aulas · previsto 3', aulas:3, reais:5, tipo:'licao', estado:'atual'},
+    {id:'L5',    rot:'Lesson 5',   sub:'3 aulas', aulas:3, tipo:'licao',  estado:'futura'},
+    {id:'CHP1',  rot:'Checkpoint 1',sub:'2 aulas',aulas:2, tipo:'marco',  estado:'futura'},
+    {id:'TEST1', rot:'Prova 1',    sub:'2 aulas', aulas:2, tipo:'prova',  estado:'futura'},
+    {id:'L6',    rot:'Lesson 6',   sub:'3 aulas', aulas:3, tipo:'licao',  estado:'futura'},
+    {id:'L7',    rot:'Lesson 7',   sub:'3 aulas', aulas:3, tipo:'licao',  estado:'futura'},
+    {id:'L8',    rot:'Lesson 8',   sub:'4 aulas', aulas:4, tipo:'licao',  estado:'futura'},
+    {id:'L9',    rot:'Lesson 9',   sub:'3 aulas', aulas:3, tipo:'licao',  estado:'futura'},
+    {id:'L10',   rot:'Lesson 10',  sub:'3 aulas', aulas:3, tipo:'licao',  estado:'futura'},
+    {id:'CHP2',  rot:'Checkpoint 2',sub:'2 aulas',aulas:2, tipo:'marco',  estado:'futura'},
+    {id:'TEST2', rot:'Prova 2',    sub:'2 aulas', aulas:2, tipo:'prova',  estado:'futura'}
+  ];
+
+  var NS='http://www.w3.org/2000/svg';
+  function el(n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);return e;}
+
+  /* curva suave passando por todos os pontos (Catmull-Rom → Bézier) */
+  function curva(pts){
+    var d='M'+pts[0].x+','+pts[0].y;
+    for(var i=0;i<pts.length-1;i++){
+      var p0=pts[i-1]||pts[i], p1=pts[i], p2=pts[i+1], p3=pts[i+2]||p2;
+      var c1x=p1.x+(p2.x-p0.x)/6, c1y=p1.y+(p2.y-p0.y)/6;
+      var c2x=p2.x-(p3.x-p1.x)/6, c2y=p2.y-(p3.y-p1.y)/6;
+      d+='C'+c1x+','+c1y+' '+c2x+','+c2y+' '+p2.x+','+p2.y;
+    }
+    return d;
+  }
+
+  function desenha(alvo, o){
+    var pas=o.passo, amp=o.amp, base=o.base, marg=o.marg;
+    var pts=ETAPAS.map(function(e,i){
+      return {x:marg+i*pas, y:base + Math.sin(i*0.78+0.4)*amp};
+    });
+    var L=marg*2+(ETAPAS.length-1)*pas, H=o.alt;
+    var svg=el('svg',{viewBox:'0 0 '+L+' '+H,width:L,height:H,role:'img',
+      'aria-label':'Mapa do plano de curso do Essentials 1, 15 etapas'});
+
+    /* relevo de fundo, discreto */
+    var defs=el('defs');
+    var g1=el('linearGradient',{id:'gLima',x1:'0',y1:'0',x2:'1',y2:'0'});
+    g1.appendChild(el('stop',{offset:'0','stop-color':'#a9c400'}));
+    g1.appendChild(el('stop',{offset:'1','stop-color':'#d4e909'}));
+    defs.appendChild(g1);
+    var gl=el('filter',{id:'brilho',x:'-50%',y:'-50%',width:'200%',height:'200%'});
+    gl.appendChild(el('feGaussianBlur',{stdDeviation:'9',result:'b'}));
+    var mg=el('feMerge'); mg.appendChild(el('feMergeNode',{in:'b'})); mg.appendChild(el('feMergeNode',{in:'SourceGraphic'}));
+    gl.appendChild(mg); defs.appendChild(gl);
+    svg.appendChild(defs);
+
+    var fundo=el('g',{opacity:'.5'});
+    for(var i=0;i<ETAPAS.length;i+=2){
+      fundo.appendChild(el('circle',{cx:marg+i*pas+pas*0.5, cy:base+amp*1.9, r:pas*1.15, fill:'#131f57'}));
+    }
+    for(var s=0;s<26;s++){
+      var sx=(s*97)%L, sy=(s*53)%(H*0.5);
+      fundo.appendChild(el('circle',{cx:sx,cy:sy+8,r:(s%3)?1.4:2.2,fill:'#5f74c4',opacity:.5}));
+    }
+    svg.appendChild(fundo);
+
+    var d=curva(pts);
+    /* casing, asfalto, faixa central */
+    svg.appendChild(el('path',{d:d,fill:'none',stroke:'#0a1130',"stroke-width":o.via+14,'stroke-linecap':'round'}));
+    svg.appendChild(el('path',{d:d,fill:'none',stroke:'#22317a',"stroke-width":o.via,'stroke-linecap':'round'}));
+
+    /* trecho já percorrido, em lima */
+    var feito=el('path',{d:d,fill:'none',stroke:'url(#gLima)',"stroke-width":o.via,'stroke-linecap':'round'});
+    svg.appendChild(feito);
+    var faixa=el('path',{d:d,fill:'none',stroke:'rgba(255,255,255,.34)',"stroke-width":Math.max(3,o.via*0.07),
+      'stroke-dasharray':(o.via*0.34)+' '+(o.via*0.42),'stroke-linecap':'round'});
+    svg.appendChild(faixa);
+
+    /* estações */
+    var iAtual=ETAPAS.findIndex(function(e){return e.estado==='atual';});
+    ETAPAS.forEach(function(e,i){
+      var p=pts[i], g=el('g',{class:'no-btn',tabindex:'0',role:'button',
+        'aria-label':e.rot+', '+e.sub+', '+(e.estado==='feita'?'concluída':e.estado==='atual'?'você está aqui':'ainda não começou')});
+      g.appendChild(el('circle',{class:'foco',cx:p.x,cy:p.y,r:o.raio+13,fill:'none',stroke:'#fff','stroke-width':3,opacity:0}));
+
+      if(e.estado==='atual'){
+        g.appendChild(el('circle',{class:'pulso',cx:p.x,cy:p.y,r:o.raio+10,fill:'none',stroke:'#d4e909','stroke-width':4,opacity:.55}));
+      }
+      var cor = e.estado==='feita' ? '#d4e909' : e.estado==='atual' ? '#ffffff' : '#1a2757';
+      var traco = e.estado==='futura' ? '#33438c' : '#0a1130';
+
+      if(e.tipo==='licao'){
+        g.appendChild(el('circle',{cx:p.x,cy:p.y,r:o.raio,fill:cor,stroke:traco,'stroke-width':4}));
+      }else{
+        var r=o.raio*1.06, dd='M'+p.x+','+(p.y-r)+'L'+(p.x+r)+','+p.y+'L'+p.x+','+(p.y+r)+'L'+(p.x-r)+','+p.y+'Z';
+        g.appendChild(el('path',{d:dd,fill:e.estado==='feita'?'#d4e909':(e.tipo==='prova'?'#ff2e93':'#a855c9'),
+          stroke:traco,'stroke-width':4, opacity:e.estado==='futura'?.85:1}));
+      }
+
+      /* conteúdo do nó: nunca um ✓ em etapa que ainda não aconteceu */
+      var num, esc = 0.86;
+      if(e.id==='INTRO')            num = e.estado==='feita' ? '✓' : '★';
+      else if(e.tipo==='licao')     num = e.estado==='feita' ? '✓' : e.id.slice(1);
+      else { num = (e.tipo==='prova'?'P':'CP') + e.id.slice(-1); esc = 0.42; }
+      var t=el('text',{class:'est-num',x:p.x,y:p.y+(o.raio*esc*0.38),'text-anchor':'middle',
+        fill:e.estado==='futura'?'#7d8dd0':'#101a3d','font-size':o.raio*esc});
+      t.textContent=num; g.appendChild(t);
+
+      /* rótulo: quando a estação é a atual, sobe para não bater no pin */
+      var acima = p.y < base;
+      var ly = acima ? p.y-o.raio-24-(e.estado==='atual'?78:0) : p.y+o.raio+30;
+      var r1=el('text',{class:'est-rot'+(e.estado==='futura'?' off':''),x:p.x,y:ly,'text-anchor':'middle','font-size':o.rot});
+      r1.textContent=e.rot; g.appendChild(r1);
+      var r2=el('text',{class:'est-sub',x:p.x,y:ly+(o.rot*1.05),'text-anchor':'middle','font-size':o.rot*0.74});
+      r2.textContent=e.sub; g.appendChild(r2);
+
+      /* bolinhas das aulas: as que passam do previsto saem em magenta,
+         que é como a lição que se estende aparece sem virar texto */
+      var np=Math.max(e.aulas, e.reais||0), dy=ly+o.rot*1.9, w=(np-1)*11;
+      for(var k=0;k<np;k++){
+        var cheia = e.estado==='feita' || (e.estado==='atual' && k<(e.reais||0));
+        var extra = k>=e.aulas;
+        g.appendChild(el('circle',{cx:p.x-w/2+k*11, cy:dy, r:3.6,
+          fill: cheia ? (extra?'#ff2e93':'#d4e909') : '#3b4a92'}));
+      }
+
+      /* avatar de "você está aqui" */
+      if(e.estado==='atual'){
+        var pin=el('g',{class:'flutua'});
+        var py=p.y-o.raio-(acima?58:58);
+        pin.appendChild(el('path',{d:'M'+p.x+','+(py+30)+'l-11,-15a13.5,13.5 0 1,1 22,0Z',fill:'#ff2e93',stroke:'#0a1130','stroke-width':3}));
+        pin.appendChild(el('circle',{cx:p.x,cy:py+7,r:6.5,fill:'#fff'}));
+        g.appendChild(pin);
+      }
+      svg.appendChild(g);
+    });
+
+    alvo.appendChild(svg);
+
+    /* preenche a estrada até a estação atual */
+    var total=feito.getTotalLength();
+    var frac=(iAtual)/(ETAPAS.length-1);
+    feito.style.strokeDasharray=total; feito.style.strokeDashoffset=total*(1-frac);
+    faixa.setAttribute('opacity','.9');
+
+    /* deixa a estação atual à vista */
+    var xAtual=pts[iAtual].x;
+    alvo.scrollLeft=Math.max(0,xAtual-alvo.clientWidth*0.42);
+    return svg;
+  }
+
+  desenha(document.getElementById('pistaHome'), {passo:200,amp:44,base:186,marg:130,alt:362,via:34,raio:31,rot:16});
+  desenha(document.getElementById('pistaFull'), {passo:232,amp:66,base:236,marg:150,alt:492,via:44,raio:40,rot:18});
+
+  /* ---------------- Lesson 4, itens reais do PDF ---------------- */
+  var AULAS=[
+    {ord:1,nome:'Explanation',dt:'28/07',itens:[
+      {id:'i1',nm:'Exploration L4',a:'p',p:'1',lk:'2 vídeos de explicação',k:'video'},
+      {id:'i2',nm:'Exercises L4 A',pg:'p. 33/34/35/36',a:'1',p:'1',lk:'9 áudios destas páginas',k:'audio'},
+      {id:'i3',nm:'Song 2',a:'p',p:'1',lk:'Listening Lab',k:'song'},
+      {id:'i4',nm:'Homework L4 A',pg:'p. 108/109',a:'1',p:'1',t:'tarefa',f:'tri'}
+    ]},
+    {ord:2,nome:'Exercises',dt:'30/07 e 04/08',itens:[
+      {id:'i5',nm:'Homework Correction',a:'1',p:'1'},
+      {id:'i6',nm:'Exercises L4 B',pg:'p. 37/38/39/40',a:'1',p:'',lk:'8 áudios destas páginas',k:'audio'},
+      {id:'i7',nm:'Homework L4 B',pg:'p. 109/110',a:'1',p:'',t:'tarefa',f:'tri'},
+      {id:'i8',nm:'Writing Task',pg:'p. 39',a:'',p:'',t:'tarefa',f:'tri'}
+    ]},
+    {ord:3,nome:'Checking',dt:'06/08 e 11/08',e:'extra',itens:[
+      {id:'i9',nm:'Homework Correction',a:'1',p:''},
+      {id:'i10',nm:'Video Activity 2',a:'p',p:'',lk:'Smart Pack',k:'video'},
+      {id:'i11',nm:'QR Code Exercises',pg:'p. 40',a:'p',p:'',lk:'Quick Practice da Lesson 4',k:'quick'}
+    ]}
+  ];
+
+  function svgMk(f){
+    if(f==='tri'){
+      var t='M16 3.2 29.2 27.4 2.8 27.4 Z';
+      return '<svg viewBox="0 0 32 32" aria-hidden="true">'
+        +'<path class="bg" d="'+t+'"/>'
+        +'<path class="ha" d="M16 3.2 16 27.4 2.8 27.4 Z"/>'
+        +'<path class="hp" d="M16 3.2 29.2 27.4 16 27.4 Z"/>'
+        +'<line class="div" x1="16" y1="5" x2="16" y2="27.4"/>'
+        +'<path class="ring" d="'+t+'" fill="none"/></svg>';
+    }
+    return '<svg viewBox="0 0 32 32" aria-hidden="true">'
+      +'<circle class="bg" cx="16" cy="16" r="12.6"/>'
+      +'<path class="ha" d="M16 3.4 A12.6 12.6 0 0 0 16 28.6 Z"/>'
+      +'<path class="hp" d="M16 3.4 A12.6 12.6 0 0 1 16 28.6 Z"/>'
+      +'<line class="div" x1="16" y1="3.4" x2="16" y2="28.6"/>'
+      +'<circle class="ring" cx="16" cy="16" r="12.6"/></svg>';
+  }
+
+  var cont=document.getElementById('aulas');
+  AULAS.forEach(function(A){
+    var d=document.createElement('div');
+    d.className='aula'; if(A.e) d.dataset.e=A.e;
+    var itens=A.itens.map(function(it){
+      var fim=(it.a&&it.p)?' fim':'';
+      return '<div class="it'+fim+'"'+(it.t?' data-t="'+it.t+'"':'')+'>'
+        +'<button class="mk" data-f="'+(it.f||'cir')+'" data-a="'+(it.a||'')+'" data-p="'+(it.p||'')+'" '
+        +'aria-label="'+it.nm+'">'+svgMk(it.f)+'</button>'
+        +'<span class="nm">'+it.nm+(it.pg?' <span class="pg">'+it.pg+'</span>':'')+'</span>'
+        +(it.lk?'<a class="lk" data-k="'+(it.k||'')+'" href="#" onclick="return false">'+it.lk+' →</a>':'')
+        +'</div>';
+    }).join('');
+    d.innerHTML='<div class="aula-cab"><span class="ord">'+A.ord+'</span>'
+      +'<span class="nm">'+A.nome+'</span><span class="dt">'+A.dt+'</span></div>'
+      +'<div class="itens">'+itens+'</div>';
+    cont.appendChild(d);
+  });
+
+  /* clique alterna a metade do professor (a visão aqui é a dele) */
+  document.addEventListener('click',function(ev){
+    var b=ev.target.closest('.mk'); if(!b) return;
+    b.dataset.p = b.dataset.p==='1' ? '' : '1';
+    var it=b.parentElement;
+    it.classList.toggle('fim', !!(b.dataset.a && b.dataset.p));
+  });
+
+  /* ---------------- checking ---------------- */
+  var CR=[{k:'Pronúncia',n:'pronúncia'},{k:'Estrutura',n:'estrutura'},{k:'Fluência',n:'fluência'},{k:'Vocabulário',n:'vocabulário'}];
+  var EV={
+    'pronúncia':{t:'ouviu 6 dos 9 áudios das páginas desta lição',f:'Listening Lab',forca:1},
+    'estrutura':{t:'Quick Practice de Do/Does – Long Answers em 78%',f:'Quick Practice',forca:3},
+    'fluência':{t:'nenhuma atividade de fala registrada nesta lição',f:'Conversation Maker',forca:0},
+    'vocabulário':{t:'Quick Practice de The Time em 55%',f:'Quick Practice',forca:1}
+  };
+  var melhor=null, crits=document.getElementById('crits'), presc=document.getElementById('presc');
+  CR.forEach(function(c){
+    var b=document.createElement('button');
+    b.type='button'; b.className='crit'; b.setAttribute('aria-pressed','false'); b.textContent=c.k;
+    b.addEventListener('click',function(){
+      melhor = melhor===c.n ? null : c.n;
+      crits.querySelectorAll('.crit').forEach(function(o,i){ o.setAttribute('aria-pressed',String(CR[i].n===melhor)); });
+      if(!melhor){ presc.innerHTML='Marque em que a Ana mandou melhor. O encaminhamento sai daqui, e a plataforma escolhe qual das outras três treinar com base no que ela já fez.'; return; }
+      var alvo=CR.map(function(x){return x.n;}).filter(function(n){return n!==melhor;})
+        .map(function(n){return {n:n,e:EV[n]};}).sort(function(a,b2){return a.e.forca-b2.e.forca;})[0];
+      presc.innerHTML='A Ana mandou muito bem em <b>'+melhor+'</b>. Agora vamos treinar <b>'+alvo.n+'</b>, '
+        +'porque '+alvo.e.t+'. <br><span style="opacity:.75">Abre o '+alvo.e.f+' com os pontos da Lesson 4 já selecionados.</span>';
+    });
+    crits.appendChild(b);
+  });
+})();
+</script>

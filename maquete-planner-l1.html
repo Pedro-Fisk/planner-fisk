@@ -1,0 +1,764 @@
+<title>Planner Interativo — Essentials 1, Lesson 1</title>
+<style>
+  :root{
+    /* amostradas da arte do PDF original */
+    --marinho:#1d3685;
+    --marinho-fundo:#16295f;
+    --roxo:#912d99;
+    --lima:#d4e909;
+    --lima-escura:#a8b907;
+    --pil-azul:#dce6f2;
+    --pil-lavanda:#e6e0ec;
+    --espinha:#c6d9f1;
+    --texto:#002060;
+    --magenta:#d91e9e;
+    --azul-traco:#0d38c3;
+
+    /* neutros com viés azul, puxados do marinho */
+    --papel:#ffffff;
+    --chao:#e9edf6;
+    --chao-2:#f4f6fb;
+    --linha:#ccd6e9;
+    --tinta-media:#54648d;
+
+    --feito:#dfe5ef;
+    --feito-tinta:#7c88a6;
+
+    --ok:#146c3e;
+    --alerta:#a2540a;
+
+    --fonte:"Trebuchet MS","Lucida Grande","Segoe UI",system-ui,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+    --r-cartao:24px;
+    --r-pil:999px;
+  }
+
+  *{box-sizing:border-box}
+
+  body{
+    margin:0;
+    background:var(--chao);
+    color:var(--texto);
+    font-family:var(--fonte);
+    font-size:19px;
+    line-height:1.4;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{max-width:1500px;margin:0 auto;padding:0 24px 80px}
+
+  /* ---------- barra de topo ---------- */
+  .chrome{
+    background:var(--marinho);
+    color:#fff;
+    border-radius:0 0 26px 26px;
+    padding:20px 26px;
+    display:flex;
+    align-items:center;
+    gap:22px;
+    flex-wrap:wrap;
+  }
+  .selo-estagio{
+    display:inline-flex;align-items:center;gap:10px;
+    background:#0f2260;border:3px solid #fff;border-radius:var(--r-pil);
+    padding:7px 8px 7px 20px;font-weight:700;font-size:24px;letter-spacing:.01em;white-space:nowrap;
+  }
+  .selo-estagio b{
+    background:var(--lima);color:var(--texto);
+    width:36px;height:36px;border-radius:50%;
+    display:grid;place-items:center;font-size:22px;
+  }
+  .quem{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .quem .nome{font-weight:700;font-size:26px;line-height:1.15}
+  .quem .sub{font-size:16px;color:#c2cdea}
+  .chrome .empurra{margin-left:auto}
+
+  .toggle{display:flex;background:#0f2260;border-radius:var(--r-pil);padding:4px;gap:3px}
+  .toggle button{
+    font:inherit;font-weight:700;font-size:18px;
+    color:#c2cdea;background:transparent;border:0;cursor:pointer;
+    padding:11px 24px;border-radius:var(--r-pil);
+  }
+  .toggle button[aria-pressed="true"]{background:var(--lima);color:var(--texto)}
+  .toggle button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+
+  .selo-mock{
+    font-family:var(--mono);font-size:13px;letter-spacing:.07em;text-transform:uppercase;
+    color:#0f2260;background:var(--lima);
+    border-radius:var(--r-pil);padding:7px 14px;font-weight:700;
+  }
+
+  /* ---------- notas ---------- */
+  .nota{
+    background:var(--chao-2);border:1px solid var(--linha);
+    border-left:7px solid var(--roxo);
+    border-radius:14px;padding:16px 20px;margin:24px 0 0;
+    font-size:17px;color:#33436f;max-width:82ch;
+  }
+  .nota + .nota{margin-top:12px}
+  .nota:last-of-type{margin-bottom:30px}
+  .nota b{color:var(--texto)}
+
+  /* ---------- grade ---------- */
+  .grade{display:grid;grid-template-columns:minmax(0,1.95fr) minmax(340px,.95fr);gap:28px;align-items:start}
+  @media (max-width:1180px){ .grade{grid-template-columns:1fr} }
+
+  h2.titulo{
+    font-size:16px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--tinta-media);margin:0 0 14px;font-weight:700;
+  }
+  .legendinha{font-size:15px;color:var(--tinta-media);margin:14px 0 0}
+
+  /* ---------- tarefa da semana (visão do aluno) ---------- */
+  .tarefa{
+    background:var(--papel);border:3px solid var(--magenta);border-radius:20px;
+    padding:18px 22px;margin-bottom:22px;
+  }
+  .tarefa[hidden]{display:none}
+  .tarefa h3{margin:0 0 4px;font-size:22px;color:var(--texto);display:flex;align-items:center;gap:11px}
+  .tarefa .exp{font-size:16px;color:var(--tinta-media);margin:0 0 12px}
+  .tarefa ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .tarefa li{display:flex;align-items:center;gap:12px;font-size:18px;font-weight:700}
+  .tarefa .est{
+    font-size:14px;font-weight:700;border-radius:var(--r-pil);padding:4px 12px;
+    background:var(--chao);color:var(--tinta-media);white-space:nowrap;margin-left:auto;
+  }
+  .tarefa .est[data-e="falta"]{background:#fde8f5;color:#a01371}
+
+  /* ---------- bloco da lição ---------- */
+  .licao{display:flex;gap:14px;align-items:stretch}
+  .aba{
+    flex:0 0 60px;background:var(--roxo);color:#fff;border-radius:var(--r-pil);
+    display:grid;place-items:center;
+    writing-mode:vertical-rl;transform:rotate(180deg);
+    font-weight:700;font-size:26px;letter-spacing:.14em;
+    padding:26px 0;
+  }
+  .aulas{flex:1;display:flex;flex-direction:column;gap:16px;min-width:0}
+
+  .aula{
+    background:var(--marinho);border-radius:var(--r-cartao);
+    padding:16px;display:flex;gap:16px;align-items:stretch;
+  }
+  .aula[data-quando="futura"]{background:var(--marinho-fundo)}
+
+  .regua{
+    flex:0 0 74px;background:var(--papel);border:3px solid #0f2260;
+    border-radius:18px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:10px;padding:14px 4px;
+  }
+  .regua .rot{
+    writing-mode:vertical-rl;transform:rotate(180deg);
+    font-size:15px;letter-spacing:.1em;font-weight:700;color:var(--tinta-media);
+    text-transform:uppercase;
+  }
+  .regua .dt{
+    font-family:var(--mono);font-size:19px;font-weight:700;color:var(--texto);
+    writing-mode:vertical-rl;transform:rotate(180deg);font-variant-numeric:tabular-nums;
+  }
+  .aula[data-quando="hoje"] .regua{border-color:var(--lima);box-shadow:0 0 0 5px rgba(212,233,9,.5)}
+
+  .corpo{flex:1;position:relative;display:flex;flex-direction:column;gap:10px;min-width:0}
+  .corpo::before{
+    content:"";position:absolute;left:20px;top:8px;bottom:8px;width:11px;
+    background:var(--espinha);border-radius:6px;
+  }
+
+  .margem{flex:0 0 216px;display:flex;flex-direction:column;gap:12px;justify-content:center}
+
+  @media (max-width:760px){
+    .aula{flex-wrap:wrap}
+    .margem{flex:1 1 100%}
+    .regua{flex:0 0 100%;flex-direction:row;padding:9px}
+    .regua .rot,.regua .dt{writing-mode:horizontal-tb;transform:none}
+    .aba{flex:0 0 46px;font-size:20px}
+  }
+
+  /* ---------- item ---------- */
+  .item{
+    display:flex;align-items:center;gap:13px;position:relative;z-index:1;
+    background:var(--pil-azul);border-radius:28px;
+    padding:8px 20px 8px 8px;min-height:60px;
+    flex-wrap:wrap;row-gap:8px;
+  }
+  .item[data-pil="lavanda"]{background:var(--pil-lavanda)}
+  .item[data-pil="lima"]{background:var(--lima)}
+  /* o rótulo pede espaço antes de o botão de link cair para a linha de baixo */
+  .item .rot{font-weight:700;font-size:20px;color:var(--texto);flex:0 1 auto;min-width:0}
+  .item .rot .pag{font-weight:400;color:#2f4278}
+  .item.destacado{box-shadow:0 0 0 5px var(--lima),0 0 0 9px rgba(212,233,9,.4)}
+
+  /* concluído: as duas metades marcadas, vira item riscado de checklist */
+  .item.concluido{background:var(--feito)}
+  .item.concluido .rot{color:var(--feito-tinta);text-decoration:line-through;text-decoration-thickness:2px}
+  .item.concluido .rot .pag{color:var(--feito-tinta)}
+  .item.concluido .icone{opacity:.45}
+
+  .icone{
+    flex:0 0 auto;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;
+    font-size:19px;line-height:1;color:#fff;background:var(--marinho);
+  }
+  .icone[data-i="movie"]{background:#c0392b}
+  .icone[data-i="qr"]{background:#2b2b2b}
+  .icone[data-i="song"]{background:#0f7a6c}
+  .icone[data-i="video"]{background:#7a3fa8}
+
+  .pct{
+    margin-left:auto;flex:0 0 auto;
+    background:var(--papel);border:4px solid var(--lima);border-radius:var(--r-pil);
+    min-width:70px;height:40px;display:grid;place-items:center;
+    font-family:var(--mono);font-size:17px;font-weight:700;color:var(--texto);
+    font-variant-numeric:tabular-nums;
+  }
+  .pct[data-vazio="sim"]{color:#98a5c4;border-color:#c3cee5}
+
+  /* link para o conteúdo do portal */
+  a.abrir{
+    margin-left:auto;flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;
+    background:var(--marinho);color:#fff;text-decoration:none;
+    border-radius:var(--r-pil);padding:9px 18px;font-weight:700;font-size:16px;white-space:nowrap;
+  }
+  a.abrir:hover{background:#132a6d}
+  a.abrir:focus-visible{outline:3px solid var(--roxo);outline-offset:3px}
+  .item[data-pil="lima"] a.abrir{background:var(--texto)}
+  .item.concluido a.abrir{background:#9aa6c2}
+  .pct + a.abrir{margin-left:12px}
+
+  /* ---------- a marca de duas metades ---------- */
+  .marca{
+    flex:0 0 auto;width:48px;height:48px;padding:0;border:0;background:transparent;
+    cursor:pointer;display:grid;place-items:center;border-radius:50%;
+  }
+  .marca[disabled]{cursor:default}
+  .marca:focus-visible{outline:3px solid var(--roxo);outline-offset:3px}
+  .marca svg{width:46px;height:46px;display:block}
+
+  .marca .fundo{fill:var(--papel)}
+  .marca .base{fill:none;stroke:var(--azul-traco);stroke-width:2.4}
+  .marca[data-forma="triangulo"] .base{stroke:var(--magenta)}
+  .marca .divisa{stroke:var(--azul-traco);stroke-width:1.6;opacity:.35}
+  .marca[data-forma="triangulo"] .divisa{stroke:var(--magenta)}
+
+  .marca .metadeA,.marca .metadeP{opacity:0}
+  .marca .metadeA{fill:var(--azul-traco)}
+  .marca .metadeP{fill:var(--azul-traco)}
+  .marca[data-forma="triangulo"] .metadeA,
+  .marca[data-forma="triangulo"] .metadeP{fill:var(--magenta)}
+
+  .marca[data-aluno="declarado"] .metadeA{opacity:1}
+  .marca[data-aluno="provado"]   .metadeA{opacity:1;fill:var(--lima-escura)}
+  .marca[data-prof="1"]          .metadeP{opacity:1}
+
+  /* ---------- caixas da margem ---------- */
+  .caixa-lima{
+    background:var(--lima);border-radius:18px;padding:12px 16px;
+    display:flex;align-items:center;gap:12px;
+  }
+  .caixa-lima .rot{font-weight:700;font-size:17px;letter-spacing:.02em;color:var(--texto);text-transform:uppercase}
+
+  .check{background:var(--lima);border-radius:18px;padding:16px 18px;border:4px solid var(--lima-escura)}
+  .check .cab{font-weight:700;font-size:22px;letter-spacing:.03em;color:var(--texto);margin-bottom:10px}
+  .check .best{font-weight:700;font-size:15px;letter-spacing:.1em;color:#4c5514;margin-bottom:8px}
+  .criterios{display:flex;flex-direction:column;gap:5px}
+  .crit{
+    display:flex;align-items:center;gap:11px;background:transparent;border:0;padding:7px 9px;
+    font:inherit;font-size:17px;font-weight:700;color:var(--texto);
+    cursor:pointer;border-radius:11px;text-align:left;
+  }
+  .crit:hover{background:rgba(255,255,255,.5)}
+  .crit:focus-visible{outline:3px solid var(--roxo);outline-offset:1px}
+  .crit .bola{flex:0 0 auto;width:22px;height:22px;border-radius:50%;border:3.5px solid var(--texto);background:var(--papel)}
+  .crit[aria-pressed="true"] .bola{background:var(--texto);box-shadow:inset 0 0 0 4px var(--lima)}
+  .crit[aria-pressed="true"]{background:rgba(255,255,255,.7)}
+
+  /* ---------- painel ---------- */
+  .painel{position:sticky;top:20px;display:flex;flex-direction:column;gap:18px}
+  @media (max-width:1180px){ .painel{position:static} }
+
+  .cartao{background:var(--papel);border:1px solid var(--linha);border-radius:22px;padding:20px 22px}
+  .cartao h3{margin:0 0 4px;font-size:23px;color:var(--texto)}
+  .cartao .janela{font-family:var(--mono);font-size:14px;color:var(--tinta-media);margin-bottom:14px}
+
+  .hist{display:flex;flex-direction:column}
+  .linha{
+    display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline;
+    background:transparent;border:0;width:100%;text-align:left;font:inherit;
+    padding:13px 10px;border-radius:13px;cursor:pointer;
+  }
+  .linha:hover,.linha:focus-visible{background:var(--chao-2)}
+  .linha:focus-visible{outline:3px solid var(--roxo);outline-offset:-3px}
+  .linha + .linha{border-top:1px solid #edf0f7}
+  .linha .dia{font-family:var(--mono);font-size:15px;color:var(--tinta-media);font-variant-numeric:tabular-nums}
+  .linha .oq{min-width:0}
+  .linha .fonte{
+    display:inline-block;font-size:13px;font-weight:700;letter-spacing:.07em;
+    text-transform:uppercase;color:#fff;background:var(--roxo);
+    border-radius:var(--r-pil);padding:3px 11px;margin-bottom:5px;
+  }
+  .linha .fonte[data-f="quick"]{background:#1d3685}
+  .linha .fonte[data-f="movie"]{background:#c0392b}
+  .linha .fonte[data-f="listening"]{background:#0f7a6c}
+  .linha .fonte[data-f="video"]{background:#7a3fa8}
+  .linha .tit{display:block;font-weight:700;font-size:19px;color:var(--texto)}
+  .linha .meta{display:block;font-size:16px;color:var(--tinta-media)}
+  .linha .val{font-family:var(--mono);font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .val[data-t="bom"]{color:var(--ok)}
+  .val[data-t="fraco"]{color:var(--alerta)}
+
+  .presc{border-left:7px solid var(--lima)}
+  .presc p{font-size:19px;color:var(--texto);margin:0 0 11px}
+  .presc p b{background:var(--lima);padding:2px 8px;border-radius:6px}
+  .presc .porque{font-size:16px;color:var(--tinta-media);margin:13px 0 0;padding-top:13px;border-top:1px solid #edf0f7}
+  .presc .acao{
+    display:inline-flex;align-items:center;gap:10px;
+    background:var(--marinho);color:#fff;border-radius:var(--r-pil);
+    padding:13px 24px;font-weight:700;font-size:18px;text-decoration:none;border:0;cursor:pointer;font-family:inherit;
+  }
+  .presc .acao:focus-visible{outline:3px solid var(--roxo);outline-offset:3px}
+  .vazio{font-size:18px;color:var(--tinta-media)}
+
+  /* ---------- legenda ---------- */
+  .legenda{margin-top:28px;background:var(--papel);border:1px solid var(--linha);border-radius:22px;padding:20px 24px}
+  .legenda strong{font-size:19px}
+  .legenda ul{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:16px 34px}
+  .legenda li{display:flex;align-items:center;gap:13px;font-size:17px;color:#33436f}
+  .legenda li b{color:var(--texto)}
+
+  .rodape{margin-top:26px;font-size:17px;color:var(--tinta-media);max-width:84ch}
+
+  @media (prefers-reduced-motion:no-preference){
+    .item,.linha{transition:box-shadow .16s ease,background-color .16s ease}
+  }
+</style>
+
+<div class="chrome">
+  <span class="selo-estagio">Essentials <b>1</b></span>
+  <span class="quem">
+    <span class="nome">Ana Beatriz Moraes</span>
+    <span class="sub">Ter/Qui 19h · Prof. Marina · Lesson 1 de 10</span>
+  </span>
+  <span class="empurra"></span>
+  <span class="selo-mock">dados simulados</span>
+  <div class="toggle" role="group" aria-label="Ponto de vista">
+    <button type="button" id="vProf" aria-pressed="true">Professor</button>
+    <button type="button" id="vAluno" aria-pressed="false">Aluno</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <p class="nota">
+    Maquete da <b>Lesson 1 do Essentials 1</b>, com as cores, as formas e os itens tirados do
+    próprio PDF. Cada marca tem <b>duas metades</b>: a da esquerda é do aluno, a da direita é do
+    professor. Quando as duas fecham, a linha risca. Troque o ponto de vista ali em cima e clique
+    nas marcas.
+  </p>
+
+  <p class="nota" style="border-left-color:var(--lima)">
+    <b>O molde muda de estágio para estágio, e quem manda é o gabarito do card.</b>
+    Lido da aba <i>Gabarito Placeholder</i>: Essentials e Transitions têm três aulas por lição;
+    Focus e Inmediato 1 e 2 têm quatro; Fluency e Inmediato 3 encaixam o <i>Fluency Booster</i>
+    (<b>FB1</b> a <b>FB4</b>) entre as lições. O <i>checkpoint</i> depois da <i>Lesson</i> 5 e da 10
+    ocupa duas aulas (<b>CHP1I</b> e <b>CHP1II</b>), e a prova mais duas. Esta tela não decide nada
+    disso: ela desenha o que o gabarito disser.
+  </p>
+
+  <div class="grade">
+
+    <section>
+      <div class="tarefa" id="tarefa" hidden>
+        <h3><span aria-hidden="true">▲</span> Sua tarefa desta semana</h3>
+        <p class="exp">É o que está marcado com o <b>triângulo rosa</b> no seu planner, igual ao papel.</p>
+        <ul id="tarefaLista"></ul>
+      </div>
+
+      <h2 class="titulo">A lição, aula por aula</h2>
+      <div class="licao">
+        <div class="aba">LESSON 1</div>
+        <div class="aulas" id="aulas"></div>
+      </div>
+      <p class="legendinha">As datas de cada aula vêm do <b>Abridor de Planners</b>, a mesma conta que já imprime o PDF do aluno.</p>
+
+      <div class="legenda">
+        <strong>Como ler as marcas</strong>
+        <ul id="legenda"></ul>
+      </div>
+    </section>
+
+    <aside class="painel">
+      <div class="cartao">
+        <h3>O que a Ana fez nesta lição</h3>
+        <div class="janela" id="janela"></div>
+        <div class="hist" id="hist"></div>
+      </div>
+
+      <div class="cartao presc">
+        <h3 style="margin-bottom:12px">Encaminhamento do checking</h3>
+        <div id="prescCorpo"></div>
+      </div>
+    </aside>
+
+  </div>
+
+  <p class="rodape">
+    O aluno continua recebendo a via impressa em branco, só com as datas, do jeito que o Abridor de
+    Planners já faz. Esta tela não substitui o papel: ela é o que o papel nunca conseguiu ser, que é
+    um documento que conversa com o resto da plataforma.
+  </p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* Conteúdo real da Lesson 1 do Essentials 1, extraído do PDF.
+     Cada "aula" é um dos três blocos que a caixa de data cobre no papel. */
+  var AULAS = [
+    { n:1, nome:"Explanation", data:"11/08", quando:"passada", itens:[
+        {id:"a1i1", rot:"Homework Correction",   forma:"circulo",  pil:"azul"},
+        {id:"a1i2", rot:"Exploration L1",        forma:"circulo",  pil:"lima",
+         icone:"▶", i:"video", link:"Ver a explicação"},
+        {id:"a1i3", rot:"Exercises L1 A", pag:"– p. 09 / 10 / 11 / 12", forma:"circulo", pil:"azul"},
+        {id:"a1i4", rot:"Homework L1 A",  pag:"- p. 99/100", forma:"triangulo", pil:"lavanda", tarefa:true}
+      ],
+      margem:[ {id:"a1m1", rot:"QR Code Introduction", icone:"▤", i:"qr", link:"Abrir"} ]
+    },
+    { n:2, nome:"Exercises", data:"13/08", quando:"hoje", itens:[
+        {id:"a2i1", rot:"Homework Correction",   forma:"circulo",  pil:"azul"},
+        {id:"a2i2", rot:"Exercises L1 B", pag:"– p. 13/14/15/16", forma:"circulo", pil:"azul"},
+        {id:"a2i3", rot:"Homework L1 B",  pag:"- p. 100/101", forma:"triangulo", pil:"lavanda", tarefa:true},
+        {id:"a2i4", rot:"Writing Task",   pag:"- p. 15", forma:"triangulo", pil:"lavanda", pct:null, tarefa:true}
+      ],
+      margem:[ {id:"a2m1", rot:"Glossary Intro", icone:"♪", i:"song", link:"Abrir"} ]
+    },
+    { n:3, nome:"Checking", data:"18/08", quando:"futura", itens:[
+        {id:"a3i1", rot:"Homework Correction",   forma:"circulo",  pil:"azul"},
+        {id:"a3i2", rot:"Movie Introduction",    forma:"circulo",  pil:"azul", icone:"▶", i:"movie", link:"Abrir"},
+        {id:"a3i3", rot:"Movie 1",               forma:"circulo",  pil:"azul", icone:"▶", i:"movie", pct:90, link:"Abrir"},
+        {id:"a3i4", rot:"QR Code Exercises", pag:"- p. 16", forma:"circulo", pil:"azul", icone:"▤", i:"qr", link:"Praticar"}
+      ],
+      margem:[], check:true
+    }
+  ];
+
+  /* aluno: "" | "declarado" (azul) | "provado" (lima, a plataforma viu)
+     prof:  "" | "1" */
+  var INICIAL = {
+    a1i1:{aluno:"declarado", prof:"1"}, a1i2:{aluno:"provado", prof:"1"},
+    a1i3:{aluno:"declarado", prof:"1"}, a1i4:{aluno:"declarado", prof:"1"},
+    a1m1:{aluno:"provado",   prof:""},
+    a2i1:{aluno:"declarado", prof:""},  a2i2:{aluno:"declarado", prof:""},
+    a2i3:{aluno:"declarado", prof:""},  a2i4:{aluno:"",          prof:""},
+    a2m1:{aluno:"provado",   prof:""},
+    a3i1:{aluno:"",          prof:""},  a3i2:{aluno:"provado",   prof:""},
+    a3i3:{aluno:"provado",   prof:""},  a3i4:{aluno:"provado",   prof:""}
+  };
+
+  var HISTORICO = [
+    {dia:"11/08", f:"video",     fonte:"Vídeo",          tit:"Explicação da Lesson 1",   meta:"6 min · assistido até o fim", val:"100%", t:"bom",  marca:["a1i2"]},
+    {dia:"11/08", f:"quick",     fonte:"Quick Practice", tit:"Articles: A / AN",         meta:"12 questões",                 val:"83%",  t:"bom",  marca:["a1m1"]},
+    {dia:"11/08", f:"listening", fonte:"Listening Lab",  tit:"Áudios da Lesson 1",       meta:"3 de 4 áudios · 16 min",      val:"",     t:"",     marca:[]},
+    {dia:"12/08", f:"movie",     fonte:"Movie Program",  tit:"Movie 1",                  meta:"atividade concluída",         val:"90%",  t:"bom",  marca:["a3i2","a3i3"]},
+    {dia:"12/08", f:"quick",     fonte:"Quick Practice", tit:"Verb To Be – Affirmative", meta:"10 questões",                 val:"60%",  t:"fraco",marca:["a3i4"]},
+    {dia:"12/08", f:"listening", fonte:"Listening Lab",  tit:"Glossary Intro",           meta:"vocabulário da Lesson 1 · 8 min", val:"", t:"",    marca:["a2m1"]},
+    {dia:"13/08", f:"quick",     fonte:"Quick Practice", tit:"Articles: A / AN",         meta:"refez · 12 questões",         val:"92%",  t:"bom",  marca:[]}
+  ];
+
+  var CRITERIOS = [
+    {k:"PRONUNC.",  nome:"pronúncia"}, {k:"STRUCTURE", nome:"estrutura"},
+    {k:"FLUENCY",   nome:"fluência"},  {k:"VOCAB",     nome:"vocabulário"}
+  ];
+  var EVIDENCIA = {
+    "pronúncia":  {txt:"ouviu 3 dos 4 áudios da lição no Listening Lab", ferr:"Listening Lab",      forte:1},
+    "estrutura":  {txt:"Quick Practice de Articles: A / AN em 92% na segunda tentativa", ferr:"Quick Practice", forte:3},
+    "fluência":   {txt:"nenhuma atividade de fala registrada nesta lição", ferr:"Conversation Maker", forte:0},
+    "vocabulário":{txt:"Quick Practice de Verb To Be em 60%", ferr:"Quick Practice", forte:1}
+  };
+
+  var estado = {}; Object.keys(INICIAL).forEach(function(k){ estado[k] = {aluno:INICIAL[k].aluno, prof:INICIAL[k].prof}; });
+  var visao = "professor", melhor = null;
+  var porId = {};
+
+  /* -------- desenho da marca, dividida ao meio -------- */
+  function svgMarca(forma){
+    if(forma === "triangulo"){
+      var tri = "M12 2.4 22.4 20.8 1.6 20.8 Z";
+      return '<svg viewBox="0 0 24 24" aria-hidden="true">'
+        + '<path class="fundo"  d="' + tri + '"/>'
+        + '<path class="metadeA" d="M12 2.4 12 20.8 1.6 20.8 Z"/>'
+        + '<path class="metadeP" d="M12 2.4 22.4 20.8 12 20.8 Z"/>'
+        + '<line class="divisa" x1="12" y1="3.4" x2="12" y2="20.8"/>'
+        + '<path class="base"   d="' + tri + '"/>'
+        + '</svg>';
+    }
+    return '<svg viewBox="0 0 24 24" aria-hidden="true">'
+      + '<circle class="fundo"  cx="12" cy="12" r="9.4"/>'
+      + '<path class="metadeA" d="M12 2.6 A9.4 9.4 0 0 0 12 21.4 Z"/>'
+      + '<path class="metadeP" d="M12 2.6 A9.4 9.4 0 0 1 12 21.4 Z"/>'
+      + '<line class="divisa" x1="12" y1="2.6" x2="12" y2="21.4"/>'
+      + '<circle class="base"   cx="12" cy="12" r="9.4"/>'
+      + '</svg>';
+  }
+
+  function descreve(st){
+    var a = st.aluno === "provado" ? "a plataforma registrou"
+          : st.aluno === "declarado" ? "o aluno declarou" : "o aluno ainda não marcou";
+    var p = st.prof === "1" ? "o professor confirmou" : "o professor ainda não confirmou";
+    return a + ", " + p;
+  }
+
+  function pinta(id){
+    var reg = porId[id]; if(!reg) return;
+    var st = estado[id];
+    reg.marca.dataset.aluno = st.aluno || "";
+    reg.marca.dataset.prof  = st.prof  || "";
+    var fim = !!st.aluno && st.prof === "1";
+    reg.item.classList.toggle("concluido", fim);
+    reg.marca.setAttribute("aria-label", reg.rot + ": " + descreve(st));
+    reg.marca.title = (visao === "aluno")
+      ? (st.aluno === "provado" ? "A plataforma já registrou isto" : "Clique para marcar que você fez")
+      : "Clique para confirmar";
+    reg.marca.disabled = (visao === "aluno" && st.aluno === "provado");
+  }
+
+  /* -------- construção -------- */
+  var elAulas = document.getElementById("aulas");
+
+  function fazMarca(it){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "marca";
+    b.dataset.forma = it.forma || "circulo";
+    b.dataset.id = it.id;
+    b.innerHTML = svgMarca(it.forma);
+    return b;
+  }
+
+  function fazItem(it){
+    var d = document.createElement("div");
+    d.className = "item"; d.dataset.pil = it.pil || "azul"; d.dataset.id = it.id;
+    var b = fazMarca(it); d.appendChild(b);
+
+    if(it.icone){
+      var ic = document.createElement("span");
+      ic.className = "icone"; if(it.i) ic.dataset.i = it.i;
+      ic.textContent = it.icone; ic.setAttribute("aria-hidden","true");
+      d.appendChild(ic);
+    }
+
+    var r = document.createElement("span");
+    r.className = "rot"; r.textContent = it.rot;
+    if(it.pag){ var p = document.createElement("span"); p.className = "pag"; p.textContent = " " + it.pag; r.appendChild(p); }
+    d.appendChild(r);
+
+    if(it.pct !== undefined){
+      var pc = document.createElement("span"); pc.className = "pct";
+      if(it.pct === null){ pc.dataset.vazio = "sim"; pc.textContent = "%"; } else { pc.textContent = it.pct + "%"; }
+      d.appendChild(pc);
+    }
+    if(it.link){
+      var a = document.createElement("a");
+      a.className = "abrir"; a.href = "#"; a.textContent = it.link + " →";
+      a.setAttribute("aria-label", it.link + ": " + it.rot + " (maquete, não navega)");
+      a.addEventListener("click", function(e){ e.preventDefault(); });
+      d.appendChild(a);
+    }
+
+    porId[it.id] = {item:d, marca:b, rot:it.rot};
+    return d;
+  }
+
+  AULAS.forEach(function(a){
+    var card = document.createElement("div");
+    card.className = "aula"; card.dataset.quando = a.quando;
+
+    var reg = document.createElement("div");
+    reg.className = "regua";
+    reg.innerHTML = '<span class="rot">' + a.n + ' · ' + a.nome + '</span><span class="dt">' + a.data + '</span>';
+    card.appendChild(reg);
+
+    var corpo = document.createElement("div");
+    corpo.className = "corpo";
+    a.itens.forEach(function(it){ corpo.appendChild(fazItem(it)); });
+    card.appendChild(corpo);
+
+    var marg = document.createElement("div");
+    marg.className = "margem";
+    (a.margem || []).forEach(function(m){
+      var cx = document.createElement("div");
+      cx.className = "caixa-lima"; cx.dataset.id = m.id;
+      var b = fazMarca({id:m.id, forma:"circulo"});
+      cx.appendChild(b);
+      if(m.icone){
+        var ic = document.createElement("span");
+        ic.className = "icone"; if(m.i) ic.dataset.i = m.i;
+        ic.textContent = m.icone; ic.setAttribute("aria-hidden","true");
+        cx.appendChild(ic);
+      }
+      var r = document.createElement("span"); r.className = "rot"; r.textContent = m.rot;
+      cx.appendChild(r);
+      porId[m.id] = {item:cx, marca:b, rot:m.rot};
+      marg.appendChild(cx);
+    });
+    if(a.check) marg.appendChild(fazCheck());
+    card.appendChild(marg);
+
+    elAulas.appendChild(card);
+  });
+
+  function fazCheck(){
+    var box = document.createElement("div");
+    box.className = "check";
+    box.innerHTML = '<div class="cab">✓ CHECK L1</div><div class="best">BEST:</div>';
+    var lista = document.createElement("div"); lista.className = "criterios";
+    CRITERIOS.forEach(function(c){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "crit";
+      b.setAttribute("aria-pressed","false"); b.dataset.nome = c.nome;
+      b.innerHTML = '<span class="bola" aria-hidden="true"></span>' + c.k;
+      b.addEventListener("click", function(){
+        melhor = (melhor === c.nome) ? null : c.nome;
+        lista.querySelectorAll(".crit").forEach(function(o){
+          o.setAttribute("aria-pressed", String(o.dataset.nome === melhor));
+        });
+        desenhaPrescricao();
+      });
+      lista.appendChild(b);
+    });
+    box.appendChild(lista);
+    return box;
+  }
+
+  /* -------- clique: cada ponto de vista mexe só na sua metade -------- */
+  document.addEventListener("click", function(ev){
+    var b = ev.target.closest(".marca");
+    if(!b || b.disabled) return;
+    var st = estado[b.dataset.id]; if(!st) return;
+    if(visao === "aluno"){ st.aluno = st.aluno ? "" : "declarado"; }
+    else { st.prof = st.prof === "1" ? "" : "1"; }
+    pinta(b.dataset.id);
+    montaTarefa();
+  });
+
+  /* -------- ponto de vista -------- */
+  var bProf = document.getElementById("vProf"), bAluno = document.getElementById("vAluno");
+  function poeVisao(v){
+    visao = v;
+    bProf.setAttribute("aria-pressed", String(v === "professor"));
+    bAluno.setAttribute("aria-pressed", String(v === "aluno"));
+    document.getElementById("tarefa").hidden = (v !== "aluno");
+    Object.keys(porId).forEach(pinta);
+    montaTarefa();
+  }
+  bProf.addEventListener("click", function(){ poeVisao("professor"); });
+  bAluno.addEventListener("click", function(){ poeVisao("aluno"); });
+
+  /* -------- tarefa da semana: sai dos triângulos -------- */
+  var elTar = document.getElementById("tarefaLista");
+  function montaTarefa(){
+    if(visao !== "aluno") return;
+    elTar.innerHTML = "";
+    AULAS.forEach(function(a){
+      a.itens.filter(function(it){ return it.tarefa; }).forEach(function(it){
+        var st = estado[it.id];
+        var li = document.createElement("li");
+        var sp = document.createElement("span");
+        sp.className = "marca"; sp.dataset.forma = "triangulo";
+        sp.dataset.aluno = st.aluno || ""; sp.dataset.prof = st.prof || "";
+        sp.innerHTML = svgMarca("triangulo");
+        li.appendChild(sp);
+        var t = document.createElement("span");
+        t.textContent = it.rot + (it.pag ? " " + it.pag : "");
+        li.appendChild(t);
+        var e = document.createElement("span");
+        e.className = "est";
+        if(!st.aluno){ e.dataset.e = "falta"; e.textContent = "ainda não fiz"; }
+        else if(st.prof !== "1"){ e.textContent = "esperando a professora"; }
+        else { e.textContent = "fechado"; }
+        li.appendChild(e);
+        elTar.appendChild(li);
+      });
+    });
+  }
+
+  /* -------- relatório -------- */
+  document.getElementById("janela").textContent = "janela da lição · 11/08 a 13/08/2026 · 3 aulas previstas";
+  var elHist = document.getElementById("hist");
+  HISTORICO.forEach(function(h){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "linha";
+    b.innerHTML =
+      '<span class="dia">' + h.dia + '</span>' +
+      '<span class="oq"><span class="fonte" data-f="' + h.f + '">' + h.fonte + '</span>' +
+      '<span class="tit">' + h.tit + '</span><span class="meta">' + h.meta + '</span></span>' +
+      '<span class="val" data-t="' + h.t + '">' + h.val + '</span>';
+    if(h.marca.length){
+      b.setAttribute("aria-label", h.tit + ". Mostrar o que isto marcou no planner.");
+      b.addEventListener("click", function(){ realca(h.marca); });
+      b.addEventListener("mouseenter", function(){ realca(h.marca, true); });
+      b.addEventListener("mouseleave", limpaRealce);
+    } else {
+      b.setAttribute("aria-label", h.tit + ". Não marcou nenhum item do planner.");
+    }
+    elHist.appendChild(b);
+  });
+
+  var timer = null;
+  function limpaRealce(){
+    document.querySelectorAll(".destacado").forEach(function(e){ e.classList.remove("destacado"); });
+  }
+  function realca(ids, leve){
+    clearTimeout(timer); limpaRealce();
+    ids.forEach(function(id){
+      var reg = porId[id]; if(!reg) return;
+      reg.item.classList.add("destacado");
+      if(!leve) reg.item.scrollIntoView({block:"center", behavior:"smooth"});
+    });
+    if(!leve) timer = setTimeout(limpaRealce, 2800);
+  }
+
+  /* -------- encaminhamento -------- */
+  var elPresc = document.getElementById("prescCorpo");
+  function desenhaPrescricao(){
+    if(!melhor){
+      elPresc.innerHTML = '<p class="vazio" style="margin:0">Marque no <b>CHECK L1</b>, ali na '
+        + 'terceira aula, aquilo em que a Ana mandou melhor. O encaminhamento sai daqui.</p>';
+      return;
+    }
+    var alvo = CRITERIOS.map(function(c){ return c.nome; })
+      .filter(function(n){ return n !== melhor; })
+      .map(function(n){ return {nome:n, ev:EVIDENCIA[n]}; })
+      .sort(function(a,b){ return a.ev.forte - b.ev.forte; })[0];
+    elPresc.innerHTML =
+      '<p>A Ana mandou muito bem em <b>' + melhor + '</b>.</p>' +
+      '<p style="margin-bottom:15px">Agora vamos trabalhar <b>' + alvo.nome + '</b>.</p>' +
+      '<button class="acao" type="button">Abrir ' + alvo.ev.ferr + ' →</button>' +
+      '<p class="porque"><b>Por que ' + alvo.nome + ' e não os outros dois:</b> ' + alvo.ev.txt +
+      '. Os outros dois entram depois, um de cada vez.</p>';
+  }
+
+  /* -------- legenda -------- */
+  var elLeg = document.getElementById("legenda");
+  [[{aluno:"",prof:""},"circulo","Ninguém marcou ainda"],
+   [{aluno:"declarado",prof:""},"circulo","<b>O aluno</b> declarou que fez"],
+   [{aluno:"provado",prof:""},"circulo","<b>A plataforma</b> viu o aluno fazer"],
+   [{aluno:"",prof:"1"},"circulo","<b>O professor</b> confirmou"],
+   [{aluno:"declarado",prof:"1"},"circulo","As duas metades: <b>item fechado</b>"],
+   [{aluno:"declarado",prof:"1"},"triangulo","O <b>triângulo</b> é tarefa de casa, como no papel"]
+  ].forEach(function(l){
+    var li = document.createElement("li");
+    var sp = document.createElement("span");
+    sp.className = "marca"; sp.dataset.forma = l[1];
+    sp.dataset.aluno = l[0].aluno; sp.dataset.prof = l[0].prof;
+    sp.innerHTML = svgMarca(l[1]);
+    li.appendChild(sp);
+    var t = document.createElement("span"); t.innerHTML = l[2];
+    li.appendChild(t);
+    elLeg.appendChild(li);
+  });
+
+  Object.keys(porId).forEach(pinta);
+  desenhaPrescricao();
+  poeVisao("professor");
+})();
+</script>
