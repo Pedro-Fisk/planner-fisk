@@ -17,11 +17,18 @@ sessão. **Prompt novo entra aqui**, junto com o que a arte entregou de fato.
 | vista | de cima, estilo mapa de jogo mobile, sem contorno preto, luz do dia |
 | borda esquerda | o mundo **anterior** derretendo para dentro |
 | borda direita | o mundo **seguinte** já à vista |
+| as bordas | são só um **gostinho**: não precisam casar com a arte do vizinho |
 | trilha | **exatamente 15 marcos**, todos vazios: sem número, sem ícone |
 | material | 11 marcos de um material, **4 de outro — nas posições 7, 8, 14 e 15** |
 | clareiras | 3, ligadas à trilha por atalhos, com **exatamente 5 pratos brancos vazios** cada |
 | respiro | espaço calmo acima e abaixo da trilha, para os rótulos |
 | texto | **nenhuma letra, número ou símbolo na imagem** |
+
+**As bordas não são emenda** (decisão do Pedro, 20/08/2026). Cada mundo aparece
+sozinho, só no estágio dele. As faixas laterais existem para o aluno ter um
+gostinho do que vem por aí, não para os mundos serem encostados numa rolagem
+contínua. Então a borda direita de um mundo **não precisa combinar** com a borda
+esquerda do seguinte: basta que sugira o clima certo.
 
 ### Antes de aceitar a arte, contar
 
