@@ -7,26 +7,17 @@
      O MUNDO DO ESSENTIALS 2 — arte v2 (16/08/2026)
 
      A separação que não pode ser quebrada:
-       ARTE  = o mundo. Não muda nunca, não sabe quem é o aluno.
+       ARTE   = o mundo. Não muda nunca, não sabe quem é o aluno.
        CÓDIGO = o estado. Quais lições foram vencidas, onde o aluno está,
                 quanto de cada programa foi feito.
 
-     ⚠️ A GEOMETRIA VEM DA ARTE. As 15 lajes da trilha e os 15 pratos das
-     três clareiras foram DETECTADOS na imagem por análise de pixel, nunca
-     estimados a olho (o script de detecção está descrito em PASSOS). Se a
-     arte for repintada, tudo abaixo tem de ser redetectado.
+     Esta página é só a moldura. O que faz o trabalho:
+       mundo-essentials-2.js  a geometria detectada na arte + os textos
+       trajetoria-mundo.js    o desenho do estado, comum a todos os mundos
 
-     O sistema de coordenadas é o da própria imagem (2080 × 756): o <image>
-     e o overlay dividem o mesmo viewBox, então tudo escala junto e não há
-     conta de proporção em lugar nenhum.
-
-     O que mudou da v1 para a v2:
-       · as três clareiras passaram a ter 5 pratos cada (eram 4, 4 e 5),
-         então o `discoPintado` — o quinto prato que o código desenhava por
-         cima — foi embora;
-       · a trilha tem exatamente 15 marcos;
-       · as pedras que somem no universo (esquerda) e no deserto (direita)
-         já vêm pintadas; o código só põe o rótulo do mundo vizinho.
+     ⚠️ Precisa ser servido por HTTP. Em `file://` o WebP não carrega e o
+     mapa fica verde vazio:
+       python3 -m http.server 8788 --directory planner-fisk
      ═══════════════════════════════════════════════════════════════════════ -->
 <style>
   :root{
@@ -58,12 +49,13 @@
     scrollbar-width:thin;scrollbar-color:#6f9a4a transparent}
   .pista::-webkit-scrollbar{height:9px}
   .pista::-webkit-scrollbar-thumb{background:#6f9a4a;border-radius:6px}
-  .pista svg{display:block;height:auto}
+  .pista svg{display:block}
   .legenda{padding:12px 22px 18px;font-size:13.5px;color:#cfe0c4}
   .legenda b{color:#fff}
 
   .rot{font-family:var(--disp);font-weight:700;font-size:15px;fill:#fff}
   .rot-t{font-family:var(--disp);font-weight:600;font-size:12.5px;fill:#dfeeda}
+  .rot-g{transition:opacity .18s ease}
   .no{cursor:pointer}
   .no:focus-visible .foco{opacity:1}
   .no:hover .foco{opacity:.5}
@@ -88,8 +80,8 @@
 
   <section class="mapa">
     <div class="cab">
-      <h2>Essentials 2</h2>
-      <span class="meta">15 steps · the forest trail</span>
+      <h2 id="livro"></h2>
+      <span class="meta" id="meta"></span>
       <span class="conta" id="conta"></span>
     </div>
     <div class="pista" id="pista"></div>
@@ -104,198 +96,16 @@
     (o PNG tinha 2,9 MB).</p>
 </div>
 
+<script src="mundo-essentials-2.js"></script>
+<script src="trajetoria-mundo.js"></script>
 <script>
-/* ── a arte manda: tudo abaixo é medida tirada dela ─────────────────────
-   ART_W/ART_H são as dimensões reais do arquivo.
+/* dado simulado: o aluno está na Lesson 3 */
+var ESTADO={iAtual:3, programas:{songs:2, videobook:0, movies:1}};
 
-   PASSOS saiu de uma varredura por componentes conexos com dois filtros:
-     · pedra  → claro e pouco saturado (r>200, g>190, b>175, max−min<50)
-     · madeira→ marrom quente (r−b>75, r−g>45), medida pela caixa envolvente
-   Ordem: da esquerda para a direita, que é a ordem do curso.
+document.getElementById('livro').textContent=MUNDO_E2.livro;
+document.getElementById('meta').textContent=MUNDO_E2.meta;
+document.getElementById('conta').textContent=ESTADO.iAtual+' of '+MUNDO_E2.etapas.length+' steps';
 
-   ⚠️ A PONTE DO RIO NÃO É PASSO. Contando tudo que é pisável, a arte tem
-   16 travessias: 13 pedras e 3 de madeira. Mas a de x≈660 é uma PONTE com
-   guarda-corpo sobre o rio — objeto diferente das outras duas, que são
-   plataformas rasas assentadas na areia, no mesmo plano das pedras. O curso
-   tem 15 etapas, então a ponte é cenário. Quem contar 16 quebra o encaixe.
-
-   ⚠️ A arte v2 entregou 2 plataformas de madeira (passos 11 e 14), e o
-   pedido do prompt eram 4, nas posições 7, 8, 14 e 15 — os dois checkpoints
-   e os dois testes. Enquanto a arte não for repintada, quem marca
-   checkpoint e teste é a PLACA desenhada pelo código, não o material
-   pintado. Por isso o passo 11 é uma lição comum apesar da madeira, e o
-   passo 14 (Checkpoint 2) cai por sorte em cima de uma madeira pintada.  */
-var ART_W=2080, ART_H=756;
-var ARTE='assets/trajetoria/essentials-2-v2.webp';
-
-var PASSOS=[
-  [178,408],[282,382],[370,394],[461,364],[556,370],
-  [766,382],[879,386],[995,388],[1150,372],[1267,397],
-  [1365,428],[1470,434],[1587,410],[1708,406],[1812,403]
-];
-
-/* os mundos vizinhos: a arte já pinta as pedras sumindo nos dois cantos,
-   o código só põe o rótulo. Nada é desenhado por cima delas. */
-var VIZINHOS=[
-  {x:150, y:505, nome:'Essentials 1', tema:'the universe behind you'},
-  {x:1918,y:474, nome:'Transitions 1', tema:'the desert goes on'}
-];
-
-/* ── onde cada rótulo cai ───────────────────────────────────────────────
-   `lado` (-1 acima, +1 abaixo) e os empurrões `dx`/`dy` NÃO são estética:
-   são o resultado de rodar um teste de colisão do retângulo de cada pílula
-   contra (a) as outras pílulas, (b) os 15 pratos pintados das clareiras e
-   (c) as 15 lajes da trilha. A alternância cega acima/abaixo da v1 batia em
-   seis lugares. Se um rótulo mudar de texto, a largura muda e o teste tem
-   de rodar de novo — a largura é ~7,4px por caractere da linha mais longa. */
-var ETAPAS=[
-  {id:'INTRO',rot:'Intro',       tema:'Before you start',      lado:-1, dx:-14},
-  {id:'L1',   rot:'Lesson 1',    tema:'Good times',            lado:+1},
-  {id:'L2',   rot:'Lesson 2',    tema:'Having fun',            lado:-1},
-  {id:'L3',   rot:'Lesson 3',    tema:'Food talk',             lado:+1},
-  {id:'L4',   rot:'Lesson 4',    tema:'City life',             lado:-1},
-  {id:'L5',   rot:'Lesson 5',    tema:'Looking back',          lado:+1},
-  {id:'CHP1', rot:'Checkpoint 1',tema:'Review 1–5',            lado:-1, marco:1},
-  {id:'TEST1',rot:'Test 1',      tema:'Lessons 1–5',           lado:+1, marco:1, trofeu:1},
-  {id:'L6',   rot:'Lesson 6',    tema:'Health',                lado:-1},
-  {id:'L7',   rot:'Lesson 7',    tema:'Chores and errands',    lado:+1, dx:-27},
-  {id:'L8',   rot:'Lesson 8',    tema:'Appearances',           lado:-1},
-  {id:'L9',   rot:'Lesson 9',    tema:'Read this',             lado:+1, dy:+56},
-  {id:'L10',  rot:'Lesson 10',   tema:'The world we live in',  lado:-1},
-  {id:'CHP2', rot:'Checkpoint 2',tema:'Review 6–10',           lado:+1, marco:1},
-  {id:'TEST2',rot:'Test 2',      tema:'Lessons 6–10',          lado:-1, marco:1, trofeu:1}
-];
-var iAtual=3;   /* dado simulado: o aluno está na Lesson 3 */
-
-/* os pratos brancos de cada clareira, detectados na arte (#fefefe, aro
-   quente de 2-3px, ~46×39 px). Cinco em cada, como o prompt pediu.
-   O prato VAZIO já está pintado: o código só pinta o que foi conquistado.
-
-   `rotXY` da cabana e do cinema fica DENTRO do anel de pratos, na faixa de
-   grama entre o prédio e a fileira de baixo: fora do anel o rótulo batia na
-   trilha e no Checkpoint 1. Na fogueira não dá — o fogo ocupa o miolo —,
-   então o rótulo de Songs fica abaixo da clareira. */
-var PROGRAMAS=[
-  {nome:'Songs',      feitos:2, rotXY:[833,722],
-   slots:[[721,600],[767,644],[834,659],[901,644],[945,604]]},
-  {nome:'Video Book', feitos:0, rotXY:[944,225],
-   slots:[[827,212],[871,261],[944,275],[1017,260],[1062,211]]},
-  {nome:'Movies',     feitos:1, rotXY:[1415,270],
-   slots:[[1298,243],[1339,294],[1411,314],[1488,304],[1537,262]]}
-];
-
-var NS='http://www.w3.org/2000/svg';
-function el(t,a){var e=document.createElementNS(NS,t);for(var k in (a||{}))e.setAttribute(k,a[k]);return e;}
-
-var svg=el('svg',{viewBox:'0 0 '+ART_W+' '+ART_H,width:ART_W,height:ART_H,
-  role:'img','aria-label':'Essentials 2: a forest trail with 15 steps, a campfire for songs, a cabin for the Video Book and an outdoor screen for the movies.'});
-/* o xlink:href entra ANTES do href: se o href vier primeiro, o navegador
-   resolve a imagem duas vezes e baixa 368 KB de novo. */
-var img=el('image',{x:0,y:0,width:ART_W,height:ART_H});
-img.setAttributeNS('http://www.w3.org/1999/xlink','href',ARTE);   /* navegador antigo */
-img.setAttribute('href',ARTE);
-svg.appendChild(img);
-
-/* ── rótulo: pílula escura, porque texto solto some numa arte cheia.
-   O x é preso à moldura para o rótulo dos extremos não vazar.          */
-function rotulo(g,x,y,titulo,tema){
-  var larg=Math.max(titulo.length,(tema||'').length)*7.4+22;
-  var alt=tema?40:26;
-  x=Math.min(Math.max(x,larg/2+8),ART_W-larg/2-8);
-  g.appendChild(el('rect',{x:x-larg/2,y:y-alt/2,width:larg,height:alt,rx:alt/2,
-    fill:'var(--tinta)',opacity:.74,stroke:'#ffffff','stroke-opacity':.18,'stroke-width':1.5}));
-  var t1=el('text',{class:'rot',x:x,y:tema?y-2:y+5,'text-anchor':'middle'});
-  t1.textContent=titulo; g.appendChild(t1);
-  if(tema){
-    var t2=el('text',{class:'rot-t',x:x,y:y+15,'text-anchor':'middle'});
-    t2.textContent=tema; g.appendChild(t2);
-  }
-}
-
-/* ── os 15 passos ── */
-ETAPAS.forEach(function(e,i){
-  var p=PASSOS[i], x=p[0], y=p[1];
-  var estado = i<iAtual ? 'feita' : (i===iAtual ? 'aqui' : 'futura');
-  var g=el('g',{class:'no',role:'button',tabindex:'0',
-    'aria-label':e.rot+(e.tema?', '+e.tema:'')+'. '+
-      (estado==='feita'?'Done.':estado==='aqui'?'You are here.':'Not started.')});
-  g.appendChild(el('circle',{class:'foco',cx:x,cy:y,r:32,fill:'none',
-    stroke:'#fff','stroke-width':3,opacity:0}));
-
-  if(e.marco){
-    /* marco: placa de madeira em losango sobre a laje. É ELA que diz
-       "checkpoint" ou "teste" — o material pintado embaixo não conta. */
-    g.appendChild(el('rect',{x:x-21,y:y-19,width:42,height:38,rx:5,
-      fill:'#8a5a2b',stroke:'#5d3a1f','stroke-width':3,
-      transform:'rotate(45 '+x+' '+y+')'}));
-    if(e.trofeu){
-      g.appendChild(el('path',{d:'M'+(x-7)+','+(y-9)+' h14 v6 a7,7 0 0 1 -14,0 z',fill:'#f2c14e'}));
-      g.appendChild(el('rect',{x:x-2,y:y-3,width:4,height:7,fill:'#f2c14e'}));
-      g.appendChild(el('rect',{x:x-7,y:y+4,width:14,height:4,rx:2,fill:'#f2c14e'}));
-    }else{
-      var n=el('text',{x:x,y:y+6,'text-anchor':'middle','font-size':17,
-        'font-weight':700,fill:'#ffe6b8','font-family':'var(--disp)'});
-      n.textContent=(e.id==='CHP1'?'1':'2'); g.appendChild(n);
-    }
-  }else if(estado==='feita'){
-    g.appendChild(el('circle',{cx:x,cy:y,r:20,fill:'var(--ok)',stroke:'#1c6b34','stroke-width':3}));
-    g.appendChild(el('path',{d:'M'+(x-8)+','+y+' l6,6 l11,-13',fill:'none',stroke:'#fff',
-      'stroke-width':4,'stroke-linecap':'round','stroke-linejoin':'round'}));
-  }else if(estado==='aqui'){
-    g.appendChild(el('circle',{class:'pulso',cx:x,cy:y,r:24,fill:'#fff',opacity:.55}));
-    g.appendChild(el('circle',{cx:x,cy:y,r:20,fill:'var(--aqui)',stroke:'var(--pt-vermelho)','stroke-width':4}));
-    g.appendChild(el('circle',{cx:x,cy:y,r:7,fill:'var(--pt-vermelho)'}));
-  }else{
-    /* futura: a laje pintada já basta; só um número discreto.
-       O contorno claro não é enfeite: o número é cinza-escuro, que some em
-       cima das plataformas de madeira. Com `paint-order:stroke fill` o halo
-       fica atrás do glifo — imperceptível na pedra clara, e é o que faz o
-       número aparecer na madeira. */
-    var nf=el('text',{x:x,y:y+6,'text-anchor':'middle','font-size':16,'font-weight':700,
-      fill:'#5b5346','font-family':'var(--disp)',opacity:.9,
-      stroke:'#f6f1e6','stroke-width':3.5,'stroke-linejoin':'round',
-      'paint-order':'stroke fill'});
-    nf.textContent=String(i); g.appendChild(nf);
-  }
-  rotulo(g, x + (e.dx||0), y + e.lado*56 + (e.dy||0), e.rot, e.tema);
-  svg.appendChild(g);
-});
-
-/* ── os mundos vizinhos: só rótulo, a arte já pintou as pedras sumindo ── */
-VIZINHOS.forEach(function(v){
-  var g=el('g');
-  rotulo(g, v.x, v.y, v.nome, v.tema);
-  svg.appendChild(g);
-});
-
-/* ── os três programas, nas clareiras ── */
-PROGRAMAS.forEach(function(pr){
-  var g=el('g',{class:'no',role:'button',tabindex:'0',
-    'aria-label':pr.nome+': '+pr.feitos+' of '+pr.slots.length+' done.'});
-  pr.slots.forEach(function(s,k){
-    if(k>=pr.feitos) return;      /* o prato vazio já está pintado na arte */
-    g.appendChild(el('circle',{cx:s[0],cy:s[1],r:26,fill:'#ffb347',opacity:.28}));
-    g.appendChild(el('ellipse',{cx:s[0],cy:s[1],rx:20,ry:17,fill:'#ffb347',
-      stroke:'#e07a10','stroke-width':3}));
-    g.appendChild(el('path',{d:'M'+(s[0]-7)+','+s[1]+' l5,5 l9,-11',fill:'none',
-      stroke:'#7a3f04','stroke-width':3.4,'stroke-linecap':'round','stroke-linejoin':'round'}));
-  });
-  rotulo(g, pr.rotXY[0], pr.rotXY[1], pr.nome, pr.feitos+' of '+pr.slots.length);
-  svg.appendChild(g);
-});
-
-var pista=document.getElementById('pista');
-pista.appendChild(svg);
-document.getElementById('conta').textContent=(iAtual)+' of '+ETAPAS.length+' steps';
-
-/* ── começar onde o aluno está ─────────────────────────────────────────
-   Num celular a janela mostra ~16% da largura da trilha. Abrir em x=0
-   deixa o aluno olhando para um pedaço do mundo onde ele já passou, e
-   ainda por cima ele não tem como saber que precisa arrastar. Centraliza
-   o passo atual. */
-(function(){
-  var esc=svg.getBoundingClientRect().width/ART_W;      /* px de tela por unidade da arte */
-  var alvo=PASSOS[Math.min(iAtual,PASSOS.length-1)][0]*esc - pista.clientWidth/2;
-  pista.scrollLeft=Math.max(0,alvo);
-})();
+TrajetoriaMundo.desenhar(document.getElementById('pista'), MUNDO_E2, ESTADO,
+  {ajuste:'natural', rotulos:'todos'});
 </script>
