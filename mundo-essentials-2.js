@@ -40,6 +40,15 @@ var MUNDO_E2 = {
     [1201,433],[1315,458],[1430,473],[1549,486],[1664,497]
   ],
 
+  /* o que está pintado no miolo de cada clareira e não pode ser tapado por
+     rótulo. Entra no `posicionar-rotulos.py` como obstáculo; sem isto, rodar
+     o posicionador de novo devolve uma resposta pior do que a publicada. */
+  predios: [
+    [600,540,840,660],     /* a fogueira e as toras */
+    [640,80,940,262],      /* a cabana */
+    [1150,90,1460,290]     /* o telão, as caixas de som e o projetor */
+  ],
+
   /* `lado` (-1 acima, +1 abaixo) e os empurrões `dx`/`dy` saíram do
      `posicionar-rotulos.py`, que testa a caixa de cada pílula contra as
      outras pílulas, os 15 marcos, os 15 pratos e os prédios das clareiras.

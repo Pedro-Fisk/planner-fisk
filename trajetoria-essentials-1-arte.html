@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trajetória · Essentials 1 · com a arte</title>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     O MUNDO DO ESSENTIALS 2 — arte v2 (16/08/2026)
+
+     A separação que não pode ser quebrada:
+       ARTE   = o mundo. Não muda nunca, não sabe quem é o aluno.
+       CÓDIGO = o estado. Quais lições foram vencidas, onde o aluno está,
+                quanto de cada programa foi feito.
+
+     Esta página é só a moldura. O que faz o trabalho:
+       mundo-essentials-1.js  a geometria detectada na arte + os textos
+       trajetoria-mundo.js    o desenho do estado, comum a todos os mundos
+
+     ⚠️ Precisa ser servido por HTTP. Em `file://` o WebP não carrega e o
+     mapa fica verde vazio:
+       python3 -m http.server 8788 --directory planner-fisk
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style>
+  :root{
+    --pt-vermelho:#d81f26;
+    --ok:#2e9e4f;          /* lição vencida */
+    --aqui:#ffffff;        /* você está aqui */
+    --tinta:#12331a;
+    --disp:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans',sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#eef1f6;color:#22304d;font-family:var(--disp);font-size:16px;line-height:1.5}
+  .chrome{display:flex;align-items:center;gap:14px;padding:16px 22px;background:#161414;border-bottom:6px solid var(--pt-vermelho)}
+  .chrome .marca{font-weight:700;font-size:20px;color:var(--pt-vermelho)}
+  .chrome .sec{font-size:13px;color:#d8d5d5;font-weight:600}
+  .wrap{max-width:1240px;margin:0 auto;padding:24px 18px 60px}
+  .selo{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:#8a6d00;background:#ffe9a8;border:1px solid #e8c95a;border-radius:999px;padding:4px 12px;margin-bottom:14px}
+  h1{font-size:22px;margin:0 0 4px}
+  .sub{font-size:14px;color:#66779c;font-weight:600;margin:0 0 18px;max-width:72ch}
+
+  .mapa{background:#20351c;border-radius:18px;overflow:hidden;box-shadow:0 14px 40px rgba(30,60,25,.22)}
+  .cab{display:flex;align-items:baseline;gap:14px;padding:16px 22px 10px;color:#fff}
+  .cab h2{font-weight:600;font-size:22px;margin:0}
+  .cab .meta{font-size:14px;font-weight:600;color:#bcd6b0}
+  .cab .conta{margin-left:auto;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
+  /* a pista rola na horizontal; a cor de fundo evita o flash branco enquanto
+     a arte não chega */
+  .pista{overflow-x:auto;overflow-y:hidden;background:#20351c;
+    scrollbar-width:thin;scrollbar-color:#6f9a4a transparent}
+  /* no celular a pista precisa de uma altura própria: é ela que o
+     ajuste 'altura' mede para saber quanto encolher a arte */
+  @media (max-width:700px){ .pista{height:58vh;min-height:300px} }
+  .pista::-webkit-scrollbar{height:9px}
+  .pista::-webkit-scrollbar-thumb{background:#6f9a4a;border-radius:6px}
+  .pista svg{display:block}
+  .legenda{padding:12px 22px 18px;font-size:13.5px;color:#cfe0c4}
+  .legenda b{color:#fff}
+
+  .rot{font-family:var(--disp);font-weight:700;font-size:15px;fill:#fff}
+  .rot-t{font-family:var(--disp);font-weight:600;font-size:12.5px;fill:#dfeeda}
+  .rot-g{transition:opacity .18s ease}
+  .no{cursor:pointer}
+  .no:focus-visible .foco{opacity:1}
+  .no:hover .foco{opacity:.5}
+  @media (prefers-reduced-motion:no-preference){
+    .pulso{animation:p 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+    @keyframes p{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.28);opacity:.15}}
+  }
+  .nota{font-size:13px;color:#5a6b8c;margin-top:16px;max-width:78ch}
+  .nota b{color:#22304d}
+</style>
+
+<div class="chrome">
+  <span class="marca">FISK</span>
+  <span class="sec">Portal do Aluno · Planner — o mundo do Essentials 1</span>
+</div>
+
+<div class="wrap">
+  <span class="selo">Dados simulados · teste de encaixe da arte</span>
+  <h1>A trilha do universo</h1>
+  <p class="sub">O mundo é arte pintada; o código desenha só o que muda:
+    o que você venceu, onde está e o progresso de cada programa.</p>
+
+  <section class="mapa">
+    <div class="cab">
+      <h2 id="livro"></h2>
+      <span class="meta" id="meta"></span>
+      <span class="conta" id="conta"></span>
+    </div>
+    <div class="pista" id="pista"></div>
+    <p class="legenda">This trail is your <b>plan</b>, not a deadline. The stones are lessons;
+      the wooden badges are checkpoints and tests. The radio dish sings, the capsule shows the Video Book,
+      the screen among the stars plays the movies — side paths never block the trail. You start at Earth,
+      and the last step is the bridge into the forest of <b>Essentials 2</b>.</p>
+  </section>
+
+  <p class="nota"><b>Encaixe:</b> os 15 marcos e os 15 pratos foram detectados na arte por
+    análise de pixel e conferidos num PNG numerado; cinco objetos pintados (a Terra, a janela
+    da cápsula, a antena em dois pontos e a pipoca) chegaram a se passar por marco ou prato e
+    foram cortados na conferência. As posições dos rótulos saíram por busca, com zero conflito.
+    Arte em WebP de 184 KB (o PNG tinha 2,4 MB).</p>
+</div>
+
+<script src="mundo-essentials-1.js"></script>
+<script src="trajetoria-mundo.js"></script>
+<script>
+/* dado simulado: o aluno está na Lesson 3 */
+var ESTADO={iAtual:3, programas:{songs:2, videobook:0, movies:1}};
+
+document.getElementById('livro').textContent=MUNDO_E1.livro;
+document.getElementById('meta').textContent=MUNDO_E1.meta;
+document.getElementById('conta').textContent=ESTADO.iAtual+' of '+MUNDO_E1.etapas.length+' steps';
+
+/* ── a escolha do Pedro, 20/08/2026: no celular vale a variante 3 ────────
+   No telefone a arte encolhe até o mundo caber de cima a baixo, e só o passo
+   atual mostra pílula, contra-escalada para chegar ao olho no tamanho de
+   projeto. Os outros aparecem no toque. Em tela larga não há aperto, então
+   a arte vai no tamanho real com as 15 pílulas à mostra.
+
+   O corte em 700px não é redondo por acaso: abaixo disso as 15 pílulas não
+   cabem sem colidir por mais que se empurre. Comparação em
+   `maquete-tamanho-celular.html`. */
+function pintar(){
+  var estreito = window.matchMedia('(max-width: 700px)').matches;
+  TrajetoriaMundo.desenhar(document.getElementById('pista'), MUNDO_E1, ESTADO,
+    estreito ? {ajuste:'altura', rotulos:'foco'}
+             : {ajuste:'natural', rotulos:'todos'});
+}
+pintar();
+
+/* redesenha ao virar o telefone: o 'altura' mede o recipiente, e o
+   recipiente muda de altura na rotação */
+var ultimo=window.innerWidth, t;
+addEventListener('resize',function(){
+  if(window.innerWidth===ultimo) return;      /* barra de endereço subindo não conta */
+  ultimo=window.innerWidth;
+  clearTimeout(t); t=setTimeout(pintar,180);
+});
+</script>

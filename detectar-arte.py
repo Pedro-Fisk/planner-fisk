@@ -29,14 +29,39 @@ from PIL import Image, ImageDraw
 # Então achamos todas as manchas claras do tamanho certo, medimos a saturação
 # de cada uma, e cortamos no maior vão da lista ordenada. Dois grupos saem
 # sozinhos, sem número escrito à mão.
-CLARO_MIN   = 150     # o canal mais escuro de um disco claro
-BRILHO_MIN  = 200     # o canal mais claro
 AREA_MIN    = 700
 AREA_MAX    = 9000
 
 
-def e_claro(p):
-    return min(p) >= CLARO_MIN and max(p) >= BRILHO_MIN
+def limiar_otsu(dados):
+    """Acha sozinho onde acaba o fundo e começa o disco claro.
+
+    O piso de brilho era a última suposição fixa que sobrava, e ela caiu na
+    terceira arte: no universo os discos são (204,169,134), e um corte em 150
+    os jogava fora inteiros porque a cena toda é escura. Otsu procura o corte
+    que melhor separa a imagem em dois grupos, então cada arte traz o seu.
+
+    Roda sobre o canal mais ESCURO de cada pixel: é ele que distingue um
+    disco lavado (min alto) de uma cor saturada por mais clara que pareça.
+    """
+    hist = [0] * 256
+    for p in dados:
+        hist[min(p)] += 1
+    total = len(dados)
+    soma = sum(i * hist[i] for i in range(256))
+    somaB, wB, melhor, corte = 0.0, 0, -1.0, 0
+    for i in range(256):
+        wB += hist[i]
+        if wB == 0:
+            continue
+        wF = total - wB
+        if wF == 0:
+            break
+        somaB += i * hist[i]
+        entre = wB * wF * ((somaB / wB) - ((soma - somaB) / wF)) ** 2
+        if entre > melhor:
+            melhor, corte = entre, i
+    return corte
 
 
 def e_madeira(p):
@@ -44,8 +69,10 @@ def e_madeira(p):
     return 90 < r < 235 and 45 < g < 165 and 5 < b < 115 and r - b > 75 and r - g > 45
 
 
-def manchas(dados, W, H):
+def manchas(dados, W, H, corte):
     """Componentes conexos claros, com cor média e saturação de cada um."""
+    def e_claro(p):
+        return min(p) >= corte
     visto = bytearray(W * H)
     achados = []
     for i in range(W * H):
@@ -138,9 +165,11 @@ def main():
     dados = list(im.getdata())
     print('arte: %s  %d × %d  (proporção %.2f:1)' % (caminho, W, H, W / H))
 
-    ms = manchas(dados, W, H)
+    corte = limiar_otsu(dados)
+    ms = manchas(dados, W, H, corte)
     pratos, pedras, lim = separar(ms)
-    print('\n%d manchas claras, cortadas em saturação %.3f' % (len(ms), lim))
+    print('\nlimiar de brilho achado por Otsu: %d' % corte)
+    print('%d manchas claras, cortadas em saturação %.3f' % (len(ms), lim))
 
     print('\n%d pedras na trilha:' % len(pedras))
     for m in pedras:

@@ -41,7 +41,7 @@ numerados por cima. Nunca estimar coordenada a olho.
 
 ---
 
-## Essentials 2 — a floresta ✅ pronta (v2)
+## Essentials 2 — a floresta ✅ pronta (v3)
 
 `assets/trajetoria/essentials-2-v2.png` · `essentials-2-v2.webp` (368 KB)
 
@@ -104,7 +104,7 @@ Não passar o `assar-sombra.py` nela. O script fica para arte que vier lavada.
 
 ---
 
-## Essentials 1 — o universo ⏳ a gerar
+## Essentials 1 — o universo ✅ pronta (v1)
 
 O mundo **anterior** ao Essentials 2. A borda direita dele tem de conversar
 com a borda esquerda da floresta, que já mostra o espaço.
@@ -134,6 +134,26 @@ com a borda esquerda da floresta, que já mostra o espaço.
 >
 > Keep the space just above and just below the path calm and uncluttered.
 > No text, no letters, no numbers anywhere in the image.
+
+**O que a arte entregou (v1, 1774×887, 2,00:1, aprovada de primeira):**
+14 discos + a ponte = 15 ✅ · 5+5+5 pratos ✅ · nenhum material diferente nas
+posições 7, 8, 14 e 15 ❌ (terceira arte seguida em que isso não vem).
+
+A ponte aqui é o **passo 15**, e é ela que entrega o aluno na floresta. A trilha
+de luz pintada atravessa a ponte, o que confirma que ela é caminho.
+
+Cinco objetos pintados se passaram por disco ou por prato na detecção: a Terra,
+a janela da cápsula, a antena parabólica em dois pontos e o balde de pipoca. A
+conferência por clareira apontou todos. **Isso é normal e esperado**: o detector
+aponta, a pessoa confirma no PNG numerado.
+
+Esta arte também obrigou a consertar o detector: ele ainda tinha um piso fixo de
+brilho, e os discos do espaço têm canal mínimo 134, abaixo do corte. O piso saiu
+e entrou Otsu, que acha o corte no histograma de cada arte.
+
+**A emenda entre mundos ficou explícita nos dois lados**, e vale manter a regra:
+a borda que encosta em outro mundo mostra a transição, não só o cenário seguinte.
+O universo acaba numa ponte entrando na floresta; a floresta começa no espaço.
 
 ---
 
