@@ -50,7 +50,11 @@ var LicaoAberta = (function(){
     '.la-regua .n{writing-mode:vertical-rl;transform:rotate(180deg);font-size:17px;',
     '  font-weight:700;color:var(--texto);font-variant-numeric:tabular-nums}',
     /* a espinha azul clara que costura os itens */
-    '.la-fila{flex:1;position:relative;display:flex;flex-direction:column;gap:9px;min-width:0}',
+    /* `align-self:flex-start` para a fila NÃO esticar até a altura do bloco:
+       a régua é alta (texto deitado) e, esticada, a espinha azul descia muito
+       depois do último item. Aparece nas aulas curtas, como as das provas. */
+    '.la-fila{flex:1;align-self:flex-start;position:relative;display:flex;',
+    '  flex-direction:column;gap:9px;min-width:0}',
     '.la-fila::before{content:"";position:absolute;left:19px;top:8px;bottom:8px;width:10px;',
     '  background:var(--espinha);border-radius:6px}',
     /* a pílula de cada item */
