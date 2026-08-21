@@ -97,6 +97,16 @@ licDoPlano.forEach(l => l.aulas.forEach(a => a.itens.concat(a.extras).forEach(fu
 })));
 exige(orfaos.length === 0, orfaos.length + ' itens do plano não existem no gabarito: ' + orfaos.slice(0, 3).join(' | '));
 
+/* ── 4b. o texto do checking chegou inteiro ─────────────────────────────
+   A linha `checking` não é item, mas carrega o rótulo do quadro e os quatro
+   critérios do BEST. Uma versão guardava só `check:true` e jogava o texto
+   fora, e a tela mostrava um quadro genérico onde o impresso tem pronúncia,
+   estrutura, fluência e vocabulário. */
+const comCheck = licDoPlano.reduce((s, l) => s + l.aulas.filter(a => a.check).length, 0);
+const comBest  = licDoPlano.reduce((s, l) => s + l.aulas.filter(a => (a.best||[]).length).length, 0);
+exige(comCheck === chk, `aulas com check: ${comCheck}, linhas checking no CSV: ${chk}`);
+exige(comBest === chk, `${chk - comBest} quadro(s) de check perderam os critérios do BEST`);
+
 /* ── 5. o plano e o mundo falam a mesma língua ──────────────────────────
    O mapa manda o `id` da etapa e o painel procura esse id no plano. Se um
    dos dois mudar de vocabulário, o aluno clica no passo e recebe "lição não

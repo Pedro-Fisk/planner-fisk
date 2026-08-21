@@ -66,6 +66,14 @@ var LicaoAberta = (function(){
     '  background:var(--marinho);border-radius:999px;padding:5px 13px}',
     '.la-item[data-pil="lavanda"] .la-ir{background:var(--roxo)}',
     /* a marca de duas metades */
+    /* o quadradinho do tipo, com a cor que o impresso dá a cada família */
+    '.la-icone{flex:0 0 auto;width:34px;height:34px;border-radius:9px;display:grid;',
+    '  place-items:center;font-size:17px;line-height:1;color:#fff;background:var(--marinho)}',
+    '.la-icone[data-i="pipoca"]{background:#c0392b}',
+    '.la-icone[data-i="qr"]{background:#2b2b2b}',
+    '.la-icone[data-i="nota"]{background:#0f7a6c}',
+    '.la-icone[data-i="clap"]{background:#7a3fa8}',
+    '.la-icone[data-i="casa"]{background:var(--magenta)}',
     '.la-marca{flex:0 0 auto;width:44px;height:44px}',
     '.la-marca .fundo{fill:var(--papel)}',
     '.la-marca .base{fill:none;stroke:var(--azul-traco);stroke-width:2.4}',
@@ -90,7 +98,17 @@ var LicaoAberta = (function(){
     /* o CHECK começa depois da espinha (19px + 10 de largura + folga), senão
        a barra azul clara atravessa o quadro lima por baixo */
     '.la-check{margin:10px 0 0 40px;background:var(--lima);border-radius:16px;',
-    '  padding:10px 16px;font-size:13.5px;font-weight:700;color:#3f4a00;position:relative;z-index:1}',
+    '  padding:10px 16px;color:#3f4a00;position:relative;z-index:1}',
+    '.la-check .cab{font-size:14px;font-weight:700}',
+    '.la-check .best{font-size:11.5px;font-weight:700;text-transform:uppercase;',
+    '  letter-spacing:.08em;opacity:.7;margin-top:6px}',
+    '.la-crits{display:flex;flex-wrap:wrap;gap:7px;margin-top:5px}',
+    '.la-crit{background:rgba(0,0,0,.12);border-radius:999px;padding:3px 11px;',
+    '  font-size:12.5px;font-weight:700}',
+    /* a caixa da data: no papel ela é um retângulo que a professora preenche.
+       Fica em branco porque a data da aula vem do cronograma do card, e o
+       Planner ainda não recebe as células. */
+    '.la-regua .data{width:44px;height:22px;border:2px dashed #9aa6c2;border-radius:6px}',
     '.la-nota{margin:16px 0 0;font-size:12.5px;color:var(--tinta-media);max-width:70ch}',
     '.la-vazio{color:#a2540a;font-weight:700}',
     '@media (max-width:760px){',
@@ -103,6 +121,11 @@ var LicaoAberta = (function(){
   ].join('\n');
 
   var ROTULO_MODO = { duplo:'você + plataforma', aluno:'só você', prof:'a professora' };
+  /* um glifo por família de item. São os mesmos nomes que o `build` grava em
+     `ic`, e glifos de fonte comum de propósito: emoji muda de desenho em
+     cada sistema e o planner é um documento. */
+  var GLIFO = { balao:'❝', caderno:'▤', casa:'⌂', check:'✓', qr:'▦',
+                lapis:'✎', nota:'♪', pipoca:'▶', clap:'▶' };
 
   function el(t, cls, txt){
     var e = document.createElement(t);
@@ -149,6 +172,11 @@ var LicaoAberta = (function(){
     var li = el('div','la-item');
     if(item.modo === 'prof') li.setAttribute('data-pil','lavanda');
     li.appendChild(marca(item));
+    if(item.ic){
+      var ic = el('span','la-icone', GLIFO[item.ic] || '·');
+      ic.setAttribute('data-i', item.ic); ic.setAttribute('aria-hidden','true');
+      li.appendChild(ic);
+    }
     var rot = el('span','la-rot');
     rot.appendChild(document.createTextNode(item.nm));
     if(item.pg){ var pg = el('span','pag',' — ' + item.pg); rot.appendChild(pg); }
@@ -163,12 +191,23 @@ var LicaoAberta = (function(){
     var reg = el('div','la-regua');
     reg.appendChild(el('span','rot', aula.papel || ''));
     reg.appendChild(el('span','n', String(aula.a)));
+    reg.appendChild(el('span','data'));   /* o retângulo que a professora preenche */
     sec.appendChild(reg);
 
     var fila = el('div','la-fila');
     (aula.itens || []).forEach(function(i){ fila.appendChild(linhaItem(i)); });
-    if(aula.check)
-      fila.appendChild(el('div','la-check','CHECK · a professora fecha esta aula com você'));
+    if(aula.check){
+      var ck = el('div','la-check');
+      ck.appendChild(el('div','cab', '✓ ' + (aula.checkRot || 'CHECK')
+        + ' · a professora fecha esta aula com você'));
+      if((aula.best || []).length){
+        ck.appendChild(el('div','best','BEST:'));
+        var cr = el('div','la-crits');
+        aula.best.forEach(function(c){ cr.appendChild(el('span','la-crit', c)); });
+        ck.appendChild(cr);
+      }
+      fila.appendChild(ck);
+    }
     sec.appendChild(fila);
 
     /* os extras saem da régua e viram cartão na margem, como no impresso */

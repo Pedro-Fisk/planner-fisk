@@ -83,7 +83,19 @@ rows.forEach(function (r) {
     aula = { a: +r.aula, papel: r.papel_da_aula, itens: [], extras: [] };
     atual.aulas.push(aula);
   }
-  if (r.tipo === 'checking') { aula.check = true; return; }
+  if (r.tipo === 'checking') {
+    /* A linha `checking` NÃO é item, mas também não é vazia: ela traz o
+       rótulo do quadro ("CHECK L1") e os quatro critérios do BEST, que são
+       conteúdo do papel. A versão anterior guardava só `check:true` e jogava
+       o texto fora — a tela mostrava um quadro genérico onde o impresso tem
+       pronúncia, estrutura, fluência e vocabulário. */
+    aula.check = true;
+    const m = String(r.item).split('—');
+    aula.checkRot = m[0].trim();
+    const best = (m[1] || '').replace(/^\s*BEST:\s*/i, '').trim();
+    if (best) aula.best = best.split('/').map(function (x) { return x.trim(); }).filter(Boolean);
+    return;
+  }
   const base = modoDe(r);
   const it = Object.assign({
     nm: nomeCurto(r.item),
