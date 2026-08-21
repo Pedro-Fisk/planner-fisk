@@ -1,54 +1,37 @@
 /* ═══════════════════════════════════════════════════════════════════════
    O MUNDO DO ESSENTIALS 1 — só o dado, nenhum desenho.
 
-   ARTE OFICIAL: `essentials-1-v1` (1774×887, 2,00:1), feita pelo Pedro em
-   20/08/2026 e aprovada de primeira. Geometria detectada por
-   `detectar-arte.py`, conferida no PNG numerado; posições de rótulo pelo
-   `posicionar-rotulos.py`. Nada estimado a olho.
+   ARTE OFICIAL: `essentials-1-v3` (2160×1080), da série cartunizada de
+   21/08/2026. Geometria detectada por análise de pixel e conferida num PNG
+   numerado; posições de rótulo pelo `posicionar-rotulos.py`. Nada a olho.
 
-   ⚠️ A PONTE É O PASSO 15 (Test 2), e é ela que entrega o aluno na floresta
-   do Essentials 2. São 14 discos mais a ponte. Mesma regra da floresta, onde
-   a ponte é o passo 5: travessia conta como passo. A trilha de luz da arte
-   atravessa a ponte, o que confirma que ela é caminho e não cenário.
-
-   ⚠️ CINCO OBJETOS PINTADOS SE PASSARAM POR DISCO OU POR PRATO na detecção,
-   e todos foram cortados à mão depois de conferir o PNG: a Terra (103,506),
-   a janela da cápsula (456,142), a antena parabólica em dois pontos
-   (738,604) e (757,636), e o balde de pipoca do telão (1219,189). Se a
-   detecção rodar de novo, eles voltam.
-
-   ⚠️ A sombra que destaca o caminho não se aplica aqui: o fundo é espaço
-   escuro e a trilha já é a coisa mais clara da tela, ligada por um fio de
-   luz pintado.
+   ⚠️ SÃO SEMPRE 15 PASSOS. Se a arte entregar 14 marcos, a travessia (ponte)
+   completa; se entregar 15, a travessia é cenário. A ponte da direita é só a saída para a floresta, NÃO é passo: a arte entregou os 15.
    ═══════════════════════════════════════════════════════════════════════ */
-var MUNDO_E1 = {
+var MUNDO_ESSENTIALS_1 = {
   id: 'essentials-1',
   livro: 'Essentials 1',
   meta: '15 steps · the road out of Earth',
-  arte: 'assets/trajetoria/essentials-1-v1.webp',
-  larg: 1774, alt: 887,
-  descricao: 'Essentials 1: a trail of stepping stones through space, from Earth to '
-           + 'the forest, with a space capsule for the Video Book, a radio dish for '
-           + 'the songs and a screen among the stars for the movies.',
+  arte: 'assets/trajetoria/essentials-1-v3.webp',
+  larg: 2160, alt: 1080,
+  descricao: 'Essentials 1: a trail of stepping stones through space, from Earth to the forest, with a radio dish for the songs, a space capsule for the Video Book and a screen among the stars for the movies.',
 
-  /* os 15 marcos, da esquerda para a direita. O último é a ponte. */
   passos: [
-    [197,442],[306,414],[411,467],[515,490],[557,400],
-    [659,354],[779,393],[875,461],[987,485],[1094,428],
-    [1213,460],[1329,512],[1443,550],[1544,576],[1663,594]
+    [244,535],[377,500],[507,566],[634,597],[684,484],
+    [810,427],[955,476],[1072,559],[1208,592],[1338,515],
+    [1476,562],[1472,679],[1610,736],[1762,669],[1888,700]
   ],
 
-  /* o que está pintado no miolo de cada plataforma e não pode ser tapado por
-     rótulo, mais a Terra. Entra no `posicionar-rotulos.py` como obstáculo. */
+  /* o que está pintado no miolo de cada clareira, para o rótulo não tapar */
   predios: [
-    [337,59,544,237],      /* a cápsula */
-    [674,568,852,733],     /* a antena e o console */
-    [1082,89,1349,272],    /* o telão e as caixas de som */
-    [0,400,200,887]        /* a Terra */
+    [420,60,675,255],
+    [848,675,1012,885],
+    [1335,135,1635,330],
+    [0,450,240,1080]
   ],
 
   etapas: [
-    {id:'INTRO', rot:'Intro', tema:'Before you start', lado:-1, dy:-16},
+    {id:'INTRO', rot:'Intro', tema:'Before you start', lado:-1, dy:-64},
     {id:'L1', rot:'Lesson 1', tema:'All about you', lado:+1},
     {id:'L2', rot:'Lesson 2', tema:'Food', lado:-1},
     {id:'L3', rot:'Lesson 3', tema:'Everyday life', lado:+1},
@@ -65,18 +48,19 @@ var MUNDO_E1 = {
     {id:'TEST2', rot:'Test 2', tema:'Lessons 6–10', lado:-1, marco:1, trofeu:1},
   ],
 
-  /* cinco pratos em cada plataforma, conferidos um a um no PNG numerado.
-     A leitura é a mesma dos outros mundos: cápsula = Video Book, o que toca
-     som = Songs, telão com pipoca = Movies. */
+  /* `anima` é onde o movimento nasce quando o aluno toca ou passa o cursor
+     na clareira: as notas saem da antena/fogueira/palco, a luz pisca na
+     janela/tela, a pipoca pula, a folha de jornal esvoaça. Só isso se move,
+     e só por `transform` e `opacity`: filtro ou área grande engasga no
+     celular, que é justamente onde isso vai ser visto. */
   programas: [
-    {id:'videobook', nome:'Video Book', rotXY:[437,324],
-     slots:[[350,235],[390,268],[440,278],[490,267],[525,232]]},
-    {id:'songs',     nome:'Song Program',      rotXY:[749,816],
-     slots:[[657,726],[697,759],[750,770],[803,758],[841,721]]},
-    {id:'movies',    nome:'Movie Program',     rotXY:[1214,359],
-     slots:[[1118,266],[1159,298],[1210,313],[1263,308],[1310,283]]}
+    {id:'songs', nome:'Song Program', rotXY:[554,381], anima:{tipo:'notas', x:600, y:110},
+     slots:[[442,280],[490,321],[554,335],[621,319],[667,274]]},
+    {id:'videobook', nome:'Video Book', rotXY:[928,984], anima:{tipo:'luz', x:930, y:780},
+     slots:[[816,884],[867,926],[932,938],[996,924],[1040,879]]},
+    {id:'movies', nome:'Movie Program', rotXY:[1482,426], anima:{tipo:'pipoca', x:1485, y:230},
+     slots:[[1365,323],[1413,362],[1476,380],[1541,374],[1599,341]]}
   ],
 
-  /* a arte já pinta a Terra à esquerda e a floresta à direita */
   vizinhos: []
 };

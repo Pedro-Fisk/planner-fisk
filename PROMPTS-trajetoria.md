@@ -13,13 +13,14 @@ sessão. **Prompt novo entra aqui**, junto com o que a arte entregou de fato.
 
 | regra | valor |
 |---|---|
-| proporção | **2:1** — 1774 × 887 e 1800 × 873 foram as aceitas. O 2,75:1 das primeiras tentativas era largo demais para celular |
+| proporção | **2:1**. As três oficiais vieram em 2880×1440 e foram reduzidas para **2160×1080**, que economiza 30% do WebP e ainda é o dobro da maior tela |
 | vista | de cima, estilo mapa de jogo mobile, sem contorno preto, luz do dia |
 | borda esquerda | o mundo **anterior** derretendo para dentro |
 | borda direita | o mundo **seguinte** já à vista |
 | as bordas | são só um **gostinho**: não precisam casar com a arte do vizinho |
-| trilha | **exatamente 15 marcos**, todos vazios: sem número, sem ícone |
-| material | 11 marcos de um material, **4 de outro — nas posições 7, 8, 14 e 15** |
+| trilha | **exatamente 15 marcos**, todos vazios: sem número, sem ícone. Se a arte entregar 14, a travessia (ponte) completa os 15 |
+| material | 11 marcos de um material, **4 de outro — nas posições 7, 8, 14 e 15**. ⚠️ Nunca veio em nenhuma das seis rodadas; quem marca checkpoint e teste é a placa do código |
+| emblema | **um emblema no meio de cada marco da trilha** (uma estrela funcionou). É o que deixa a detecção separar marco de prato |
 | clareiras | **3 nos dois Essentials, 4 do Transitions 1 em diante**, ligadas à trilha por atalhos, com **exatamente 5 pratos brancos vazios** cada |
 | respiro | espaço calmo acima e abaixo da trilha, para os rótulos |
 | texto | **nenhuma letra, número ou símbolo na imagem** |
@@ -36,7 +37,7 @@ Contagem errada é o que mais sai errado do gerador e é justamente o que quebra
 o encaixe. Conferir **antes** de gastar tempo detectando coordenada:
 
 - [ ] 15 marcos na trilha, da esquerda para a direita
-- [ ] a ponte sobre o rio/canyon **entra** na conta dos 15 (mudou em 20/08/2026)
+- [ ] se a arte deu 14, a travessia completa; se deu 15, a travessia é cenário
 - [ ] 4 deles de material diferente, e nas posições 7, 8, 14 e 15
 - [ ] 5 pratos em **cada** clareira (3 no Essentials, 4 do Transitions 1 em diante)
 - [ ] nenhum texto
@@ -48,9 +49,41 @@ numerados por cima. Nunca estimar coordenada a olho.
 
 ---
 
-## Essentials 2 — a floresta ✅ pronta (v3)
+## As três oficiais (21/08/2026) — série cartunizada
 
-`assets/trajetoria/essentials-2-v3.png` · `essentials-2-v3.webp` (365 KB)
+| mundo | arte | trilha | clareiras | WebP |
+|---|---|---|---|---|
+| Essentials 1 · universo | `essentials-1-v3` | 15 marcos | 3 × 5 | 158 KB |
+| Essentials 2 · floresta | `essentials-2-v4` | 14 + a ponte = 15 | 3 × 5 | 323 KB |
+| Transitions 1 · deserto | `transitions-1-v3` | 15 marcos | 4 × 5 | 438 KB |
+
+**A regra dos 15, na forma final:** são sempre 15 passos. Se a arte entregar 14
+marcos, a travessia (ponte) completa; se entregar 15, a travessia é cenário.
+Isso encerra quatro trocas de regra: a ponte não é especial, o número é.
+
+**O emblema salvou a detecção.** Foram seis rodadas em que cor, brilho, tamanho
+e forma falharam em separar marco de trilha de prato de clareira, e a última
+falha foi a pior: disco e prato com a mesma tinta (saturação 0,280 contra
+0,281), sem solução possível por cor. Nas cartunizadas todo marco traz uma
+estrela e nenhum prato traz, e a separação passou a sair de primeira, sem
+falso positivo. **Pedir emblema no marco em todo prompt novo.**
+
+Onde a estrela também aparece no prato (a floresta), o tamanho separa: 102 px
+no marco contra 73 no prato. Onde não há estrela (o deserto), a área separa:
+6.650 no disco da trilha contra 4.200 no prato, sem sobreposição.
+
+**As bolinhas de sobra.** O deserto veio com duas a mais, uma no começo e uma
+no fim da trilha, que o Pedro não conseguiu tirar. Elas são visivelmente
+menores (área 5.263 e menos, contra 6.594 do menor disco de verdade), então
+saem por medida e não por posição. Se repetir, é seguro descartar assim.
+
+---
+
+## Essentials 2 — a floresta · histórico das rodadas
+
+⚠️ O que segue é **histórico**. A arte oficial é a `essentials-2-v4`, da série
+cartunizada; os prompts abaixo são das rodadas anteriores e ficam como registro
+do que funcionou e do que não funcionou.
 
 > Top-down game map illustration, aspect ratio 2:1. A sunlit
 > forest seen from directly above, in the style of a mobile adventure game
@@ -111,7 +144,7 @@ Não passar o `assar-sombra.py` nela. O script fica para arte que vier lavada.
 
 ---
 
-## Essentials 1 — o universo ✅ pronta (v1)
+## Essentials 1 — o universo · histórico das rodadas
 
 O primeiro mundo: começa na Terra e acaba entrando na floresta.
 

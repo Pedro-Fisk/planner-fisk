@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Trajetória · Essentials 2 · com a arte</title>
+<title>Trajetória · Essentials 1 · com a arte</title>
 <!-- ═══════════════════════════════════════════════════════════════════════
      O MUNDO DO ESSENTIALS 2 — arte v2 (16/08/2026)
 
@@ -12,7 +12,7 @@
                 quanto de cada programa foi feito.
 
      Esta página é só a moldura. O que faz o trabalho:
-       mundo-essentials-2.js  a geometria detectada na arte + os textos
+       mundo-essentials-1.js  a geometria detectada na arte + os textos
        trajetoria-mundo.js    o desenho do estado, comum a todos os mundos
 
      ⚠️ Precisa ser servido por HTTP. Em `file://` o WebP não carrega e o
@@ -72,14 +72,13 @@
 
 <div class="chrome">
   <span class="marca">FISK</span>
-  <span class="sec">Portal do Aluno · Planner — o mundo do Essentials 2</span>
+  <span class="sec">Portal do Aluno · Planner — o mundo do Essentials 1</span>
 </div>
 
 <div class="wrap">
   <span class="selo">Dados simulados · teste de encaixe da arte</span>
-  <h1>A trilha da floresta</h1>
-  <p class="sub">A floresta agora é arte pintada; o código desenha só o que muda:
-    o que você venceu, onde está e o progresso de cada programa.</p>
+  <h1>A trilha do universo</h1>
+  <p class="sub">O mundo é arte pintada; o código desenha só o que muda: o que você venceu, onde está e o progresso de cada programa.</p>
 
   <section class="mapa">
     <div class="cab">
@@ -88,26 +87,21 @@
       <span class="conta" id="conta"></span>
     </div>
     <div class="pista" id="pista"></div>
-    <p class="legenda">This trail is your <b>plan</b>, not a deadline. The stones are lessons;
-      the wooden badges are checkpoints and tests. The campfire sings, the cabin shows the Video Book,
-      the screen plays the movies — side paths never block the trail. Behind you the universe of
-      <b>Essentials 1</b> fades out; ahead, the desert of <b>Transitions 1</b> is already in sight.</p>
+    <p class="legenda">This trail is your <b>plan</b>, not a deadline. The radio dish sings, the capsule shows the Video Book, the screen among the stars plays the movies — side paths never block the trail. You start at Earth; beyond the last step, the forest of <b>Essentials 2</b> is waiting.</p>
   </section>
 
-  <p class="nota"><b>Encaixe:</b> as 15 lajes e os 15 pratos das clareiras foram detectados
-    na arte por análise de pixel, não estimados a olho. Arte v2 em WebP de 368 KB
-    (o PNG tinha 2,9 MB).</p>
+  <p class="nota"><b>Encaixe:</b> os 15 marcos e os pratos das clareiras foram detectados na arte por análise de pixel e conferidos num PNG numerado. As posições dos rótulos saíram por busca, com zero conflito.</p>
 </div>
 
-<script src="mundo-essentials-2.js"></script>
+<script src="mundo-essentials-1.js"></script>
 <script src="trajetoria-mundo.js"></script>
 <script>
 /* dado simulado: o aluno está na Lesson 3 */
 var ESTADO={iAtual:3, programas:{songs:2, videobook:0, movies:1}};
 
-document.getElementById('livro').textContent=MUNDO_E2.livro;
-document.getElementById('meta').textContent=MUNDO_E2.meta;
-document.getElementById('conta').textContent=ESTADO.iAtual+' of '+MUNDO_E2.etapas.length+' steps';
+document.getElementById('livro').textContent=MUNDO_ESSENTIALS_1.livro;
+document.getElementById('meta').textContent=MUNDO_ESSENTIALS_1.meta;
+document.getElementById('conta').textContent=ESTADO.iAtual+' of '+MUNDO_ESSENTIALS_1.etapas.length+' steps';
 
 /* ── a escolha do Pedro, 20/08/2026: no celular vale a variante 3 ────────
    No telefone a arte encolhe até o mundo caber de cima a baixo, e só o passo
@@ -120,7 +114,7 @@ document.getElementById('conta').textContent=ESTADO.iAtual+' of '+MUNDO_E2.etapa
    `maquete-tamanho-celular.html`. */
 function pintar(){
   var estreito = window.matchMedia('(max-width: 700px)').matches;
-  TrajetoriaMundo.desenhar(document.getElementById('pista'), MUNDO_E2, ESTADO,
+  TrajetoriaMundo.desenhar(document.getElementById('pista'), MUNDO_ESSENTIALS_1, ESTADO,
     estreito ? {ajuste:'altura', rotulos:'foco'}
              : {ajuste:'natural', rotulos:'todos'});
 }

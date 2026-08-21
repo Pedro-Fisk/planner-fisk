@@ -32,6 +32,70 @@ var TrajetoriaMundo = (function(){
   var NS='http://www.w3.org/2000/svg';
   function el(t,a){var e=document.createElementNS(NS,t);for(var k in (a||{}))e.setAttribute(k,a[k]);return e;}
 
+
+  /* ── o movimento das clareiras ─────────────────────────────────────────
+     Regra dura, aprendida caro: só `transform` e `opacity`, e só em coisa
+     pequena. A sombra do caminho chegou a ser tentada como filtro SVG e
+     travou o navegador duas vezes; filtro ou área grande engasga no celular,
+     que é justamente onde isto vai ser visto.
+
+     A animação fica sempre rodando, e o que aparece e some é o grupo inteiro
+     por opacidade: assim o navegador não precisa recalcular nada ao entrar e
+     sair, só compor. */
+  var CSS_ANIMA = [
+    /* quem liga e desliga a animação é o JS, não o CSS. A versão por
+       seletor descendente (`.no.tocado .anima`) casava no `matches()` e
+       mesmo assim não aplicava dentro do <style> do SVG; em vez de brigar,
+       o JS escreve a opacidade direto. O CSS aqui cuida só do movimento. */
+    '.anima{opacity:0;transition:opacity .25s ease;pointer-events:none}',
+    '.anima > *{transform-box:fill-box;transform-origin:center}',
+    '@media (prefers-reduced-motion:no-preference){',
+    '  .an-nota{animation:sobe 2.6s ease-out infinite}',
+    '  .an-nota:nth-child(2){animation-delay:.85s}',
+    '  .an-nota:nth-child(3){animation-delay:1.7s}',
+    '  .an-luz{animation:pisca 3.2s ease-in-out infinite}',
+    '  .an-milho{animation:pula 1.5s cubic-bezier(.3,-0.5,.6,1.6) infinite}',
+    '  .an-milho:nth-child(2){animation-delay:.5s}',
+    '  .an-milho:nth-child(3){animation-delay:1s}',
+    '  .an-folha{animation:esvoaca 3.4s ease-in-out infinite}',
+    '  .an-folha:nth-child(2){animation-delay:1.7s}',
+    '}',
+    '@keyframes sobe{0%{transform:translateY(6px) scale(.7);opacity:0}',
+    '  18%{opacity:1}70%{opacity:1}100%{transform:translateY(-46px) scale(1.05);opacity:0}}',
+    '@keyframes pisca{0%,100%{opacity:.15}45%{opacity:.85}55%{opacity:.8}}',
+    '@keyframes pula{0%,100%{transform:translateY(0)}45%{transform:translateY(-22px)}}',
+    '@keyframes esvoaca{0%{transform:translate(0,0) rotate(-6deg);opacity:0}',
+    '  20%{opacity:1}80%{opacity:1}100%{transform:translate(26px,-34px) rotate(14deg);opacity:0}}'
+  ].join('\n');
+
+  /* ── o desenho de cada tipo de movimento ─────────────────────────────── */
+  function anima(g, a){
+    if(!a) return null;
+    var w=el('g',{class:'anima'});
+    if(a.tipo==='notas'){
+      [['♪',0,0,'#ffe08a'],['♫',26,-8,'#9ad7ff'],['♪',-24,-4,'#ffb3e6']].forEach(function(n){
+        var t=el('text',{class:'an-nota',x:a.x+n[1],y:a.y+n[2],'font-size':34,
+          'text-anchor':'middle',fill:n[3],stroke:'#2a1c00','stroke-width':1.2,
+          'paint-order':'stroke fill'});
+        t.textContent=n[0]; w.appendChild(t);
+      });
+    }else if(a.tipo==='luz'){
+      w.appendChild(el('ellipse',{class:'an-luz',cx:a.x,cy:a.y,rx:46,ry:34,fill:'#ffd98a'}));
+    }else if(a.tipo==='pipoca'){
+      [[-20,4],[0,-6],[20,2]].forEach(function(d){
+        w.appendChild(el('circle',{class:'an-milho',cx:a.x+d[0],cy:a.y+d[1],r:9,
+          fill:'#fff3cf',stroke:'#c98a2e','stroke-width':2}));
+      });
+    }else if(a.tipo==='papel'){
+      [[0,0],[-18,10]].forEach(function(d){
+        w.appendChild(el('rect',{class:'an-folha',x:a.x+d[0],y:a.y+d[1],width:26,height:32,rx:3,
+          fill:'#fdfaf2',stroke:'#8d8577','stroke-width':2}));
+      });
+    }
+    g.appendChild(w);
+    return w;
+  }
+
   /* pílula escura, porque texto solto some numa arte cheia.
      O x é preso à moldura para o rótulo dos extremos não vazar. */
   function rotulo(g,x,y,titulo,tema,larguraMundo){
@@ -49,6 +113,10 @@ var TrajetoriaMundo = (function(){
   }
 
   function desenhar(pista, mundo, estado, opcoes){
+    var acesos=[];
+    function apagaTodas(menos){
+      acesos.forEach(function(m){ if(m!==menos){ m.fixo=false; m.style.opacity=0; } });
+    }
     opcoes=opcoes||{};
     var ajuste=opcoes.ajuste||'natural';
     var modoRot=opcoes.rotulos||'todos';
@@ -59,6 +127,8 @@ var TrajetoriaMundo = (function(){
 
     /* o xlink:href entra ANTES do href: se o href vier primeiro, o navegador
        resolve a imagem duas vezes e baixa a arte de novo. */
+    var est=el('style'); est.textContent=CSS_ANIMA; svg.appendChild(est);
+
     var img=el('image',{x:0,y:0,width:W,height:H});
     img.setAttributeNS('http://www.w3.org/1999/xlink','href',mundo.arte);
     img.setAttribute('href',mundo.arte);
@@ -175,6 +245,23 @@ var TrajetoriaMundo = (function(){
         g.appendChild(el('path',{d:'M'+(s[0]-7)+','+s[1]+' l5,5 l9,-11',fill:'none',
           stroke:'#7a3f04','stroke-width':3.4,'stroke-linecap':'round','stroke-linejoin':'round'}));
       });
+      var mov = anima(g, pr.anima);
+      if(mov){
+        /* `fixo` distingue o cursor de passagem do toque: passar o mouse
+           acende enquanto está em cima, tocar deixa aceso até tocar outra.
+           Sem isso, no celular o clique acende e o mouseleave sintético que
+           alguns navegadores disparam logo em seguida apaga na mesma hora. */
+        mov.fixo = false;
+        g.addEventListener('mouseenter', function(){ mov.style.opacity = 1; });
+        g.addEventListener('mouseleave', function(){ if(!mov.fixo) mov.style.opacity = 0; });
+        g.addEventListener('focus',      function(){ mov.style.opacity = 1; });
+        g.addEventListener('blur',       function(){ if(!mov.fixo) mov.style.opacity = 0; });
+        g.addEventListener('click',      function(){
+          apagaTodas(mov); mov.fixo = true; mov.style.opacity = 1;
+        });
+        acesos.push(mov);
+      }
+
       var gr=el('g');
       rotulo(gr, pr.rotXY[0], pr.rotXY[1], pr.nome, feitos+' of '+pr.slots.length, W);
       if(modoRot==='foco'){
