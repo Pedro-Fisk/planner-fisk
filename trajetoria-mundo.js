@@ -158,7 +158,11 @@ var TrajetoriaMundo = (function(){
       });
     }
 
-    /* ── os três programas, nas clareiras ── */
+    /* ── os programas, nas clareiras ────────────────────────────────────
+       Quantos são vem do mundo, não do código: Essentials tem três (Songs,
+       Video Book, Movies) e o Transitions ganha um quarto. O `pr.slots.length`
+       também manda no "x of y", então uma clareira com outro número de pratos
+       funciona sem tocar aqui. */
     mundo.programas.forEach(function(pr){
       var feitos=(estado.programas&&estado.programas[pr.id])||0;
       var g=el('g',{class:'no',role:'button',tabindex:'0',

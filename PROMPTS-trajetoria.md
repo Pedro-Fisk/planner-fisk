@@ -13,14 +13,14 @@ sessão. **Prompt novo entra aqui**, junto com o que a arte entregou de fato.
 
 | regra | valor |
 |---|---|
-| proporção | 2,75:1 — **2080 × 756** funcionou bem |
+| proporção | **2:1** — 1774 × 887 e 1800 × 873 foram as aceitas. O 2,75:1 das primeiras tentativas era largo demais para celular |
 | vista | de cima, estilo mapa de jogo mobile, sem contorno preto, luz do dia |
 | borda esquerda | o mundo **anterior** derretendo para dentro |
 | borda direita | o mundo **seguinte** já à vista |
 | as bordas | são só um **gostinho**: não precisam casar com a arte do vizinho |
 | trilha | **exatamente 15 marcos**, todos vazios: sem número, sem ícone |
 | material | 11 marcos de um material, **4 de outro — nas posições 7, 8, 14 e 15** |
-| clareiras | 3, ligadas à trilha por atalhos, com **exatamente 5 pratos brancos vazios** cada |
+| clareiras | **3 no Essentials, 4 no Transitions**, ligadas à trilha por atalhos, com **exatamente 5 pratos brancos vazios** cada |
 | respiro | espaço calmo acima e abaixo da trilha, para os rótulos |
 | texto | **nenhuma letra, número ou símbolo na imagem** |
 
@@ -38,9 +38,9 @@ o encaixe. Conferir **antes** de gastar tempo detectando coordenada:
 - [ ] 15 marcos na trilha, da esquerda para a direita
 - [ ] a ponte sobre o rio/canyon **entra** na conta dos 15 (mudou em 20/08/2026)
 - [ ] 4 deles de material diferente, e nas posições 7, 8, 14 e 15
-- [ ] 5 pratos em cada uma das 3 clareiras (15 no total)
+- [ ] 5 pratos em **cada** clareira (3 clareiras no Essentials, 4 no Transitions)
 - [ ] nenhum texto
-- [ ] 2080 × 756
+- [ ] proporção perto de 2:1
 
 Depois: converter para WebP (`cwebp -q 82 -m 6`), detectar as coordenadas por
 análise de pixel e conferir gerando um PNG de depuração com os marcos
@@ -50,9 +50,9 @@ numerados por cima. Nunca estimar coordenada a olho.
 
 ## Essentials 2 — a floresta ✅ pronta (v3)
 
-`assets/trajetoria/essentials-2-v2.png` · `essentials-2-v2.webp` (368 KB)
+`assets/trajetoria/essentials-2-v3.png` · `essentials-2-v3.webp` (365 KB)
 
-> Top-down game map illustration, 2080×756, aspect ratio 2.75:1. A sunlit
+> Top-down game map illustration, aspect ratio 2:1. A sunlit
 > forest seen from directly above, in the style of a mobile adventure game
 > map: lush stylised treetops, soft painterly shading, no black outlines,
 > bright daylight.
@@ -113,10 +113,9 @@ Não passar o `assar-sombra.py` nela. O script fica para arte que vier lavada.
 
 ## Essentials 1 — o universo ✅ pronta (v1)
 
-O mundo **anterior** ao Essentials 2. A borda direita dele tem de conversar
-com a borda esquerda da floresta, que já mostra o espaço.
+O primeiro mundo: começa na Terra e acaba entrando na floresta.
 
-> Top-down game map illustration, 2080×756, aspect ratio 2.75:1. Deep space
+> Top-down game map illustration, aspect ratio 2:1. Deep space
 > seen as a flat map, in the style of a mobile adventure game map: soft
 > painterly nebulae in violet, teal and rose, scattered stars, small drifting
 > asteroids, a large ringed planet in the upper left. No black outlines,
@@ -164,42 +163,68 @@ O universo acaba numa ponte entrando na floresta; a floresta começa no espaço.
 
 ---
 
-## Transitions 1 — o deserto ⏳ a gerar
+## Transitions 1 — o deserto ⚠️ v1 recusada, regerar
 
-**Decisão do Pedro, 16/08/2026: é DESERTO, não cidade.** A borda direita da
-floresta já mostra o deserto. O `trajetoria-transitions-1.html`, feito por
-outra sessão, desenha uma **cidade ao entardecer** — está em conflito e vai
-ser refeito em cima desta arte.
+**A v1 (20/08/2026) ficou bonita mas não bate com a estrutura:** entregou
+**18 discos** na trilha onde são 15, e a ponte da borda esquerda daria 19.
+As quatro plataformas vieram com 5 pratos cada, isso ✅.
 
-> Top-down game map illustration, 2080×756, aspect ratio 2.75:1. A warm
-> daylight desert seen from directly above, in the style of a mobile
-> adventure game map: golden sand, red rock mesas, tall saguaro cacti,
-> scattered dry shrubs, soft painterly shading, no black outlines.
+Decisões que saíram dessa rodada:
+
+- **A quarta plataforma fica.** O Transitions tem um quarto programa, o das
+  notícias, além de Songs, Video Book e Movies. O `trajetoria-mundo.js` já
+  desenha quantos programas o mundo tiver, não precisou mudar nada.
+- **A v1 vira referência de estilo**, não de contagem: o clima do deserto,
+  as mesas de rocha, os esqueletos e o castelo roxo na borda direita estão
+  certos e valem repetir.
+
+⚠️ Esta arte também tem um problema de **detecção**: os discos da trilha e os
+pratos das plataformas são a mesma tinta creme (saturação 0,280 contra 0,281),
+então o `detectar-arte.py`, que separa por cor, não consegue cortar. Se a arte
+nova repetir isso, o detector precisa aprender a separar por posição, e isso é
+trabalho de verdade. **Vale pedir na regeração que o disco da trilha seja de
+uma cor e o prato da plataforma de outra.**
+
+> Top-down game map illustration, 2:1 aspect ratio. A warm daylight desert
+> seen from directly above, in the style of a mobile adventure game map:
+> golden sand, layered red rock mesas, tall saguaro cacti, dry shrubs,
+> dinosaur skeletons half-buried in the sand, soft painterly shading.
 >
-> A packed sand trail runs from the left edge to the right edge, gently
-> winding. Set into the trail are exactly 15 stepping marks, evenly spaced,
-> all of them completely empty — no numbers, no icons, no symbols. Eleven of
-> them are round flat red sandstone discs; four of them are square wooden
-> boardwalk platforms, and those four are the 7th, 8th, 14th and 15th marks
-> counting from the left.
+> A trail runs from the left edge to the right edge, gently winding. Set into
+> the trail are **exactly 15** stepping marks, evenly spaced, all of them
+> completely empty — no numbers, no icons, no symbols. Count them carefully:
+> fifteen, no more and no fewer. Eleven of them are round **pale red
+> sandstone** discs; four of them are square wooden boardwalk platforms, and
+> those four are the 7th, 8th, 14th and 15th marks counting from the left.
 >
-> A narrow dry canyon crosses the trail on the left third, with a small
-> plank bridge over it. The plank bridge **is one of the 15 stepping marks** —
-> count it as one.
->
-> Three round oasis clearings open off the trail, joined to it by short
-> sandy side paths: one below the trail with a campfire and floating music
-> notes; one above the trail on the left with an adobe house; one above the
-> trail on the right with an outdoor cinema screen and a popcorn cart. Each
-> oasis has a little green grass and a palm or two. In each clearing,
-> exactly 5 empty white round plates are laid out in an arc on the ground —
-> plain, blank, no icons.
+> **Four** round raised rock platforms sit off the trail, joined to it by
+> short sandy side paths: one below the trail with a festival stage and
+> floating music notes; one above the trail on the left with a big stack of
+> newspapers; one above the trail on the right with an oasis pool and a
+> screen showing a play button; one below the trail with a popcorn stand. On
+> each platform, exactly 5 empty **white** round plates are laid out in an arc
+> — plain, blank, no icons. The plates must be clearly **whiter and paler**
+> than the sandstone discs of the trail, so the two never look alike.
 >
 > The left edge dissolves into the green treetops of a sunlit forest. The
-> right edge dissolves into the next world.
+> right edge dissolves into a purple crystal castle with a glowing portal.
 >
 > Keep the sand just above and just below the trail calm and uncluttered.
 > No text, no letters, no numbers anywhere in the image.
+
+**O parágrafo em português, para colar junto:**
+
+> O caminho principal tem quinze pontos, sempre. São um bloco de abertura, dez
+> blocos de lição, dois blocos de checkpoint e dois blocos de prova. Contando
+> da esquerda para a direita, os checkpoints e as provas caem nas posições 7,
+> 8, 14 e 15, e é só nessas quatro que o material muda: as outras onze são
+> todas do mesmo material. Todos os quinze blocos ficam vazios, sem número,
+> sem letra e sem ícone em cima, porque quem desenha o que já foi feito é o
+> sistema, não a imagem. Se houver um rio ou um canyon cruzando o caminho, a
+> ponte que passa por cima dele conta como um dos quinze. Os pratos das
+> plataformas laterais precisam ser visivelmente mais brancos que os blocos do
+> caminho, para os dois nunca se confundirem.
+
 
 ---
 
