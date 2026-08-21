@@ -157,7 +157,11 @@ var TrajetoriaMundo = (function(){
     mundo.etapas.forEach(function(e,i){
       var p=mundo.passos[i], x=p[0], y=p[1];
       var st = i<iAtual ? 'feita' : (i===iAtual ? 'aqui' : 'futura');
-      var g=el('g',{class:'no',role:'button',tabindex:'0',
+    /* `data-etapa` existe para quem for LIGAR o passo a alguma coisa (abrir
+       a lição, por exemplo) não precisar casar por posição no SVG. A ordem
+       aqui é passos, vizinhos e programas, e depender dela deixaria um bug
+       esperando o dia em que um vizinho for acrescentado. */
+      var g=el('g',{class:'no',role:'button',tabindex:'0','data-etapa':e.id,
         'aria-label':e.rot+(e.tema?', '+e.tema:'')+'. '+
           (st==='feita'?'Done.':st==='aqui'?'You are here.':'Not started.')});
       g.appendChild(el('circle',{class:'foco',cx:x,cy:y,r:32,fill:'none',

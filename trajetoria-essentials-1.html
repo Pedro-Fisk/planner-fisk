@@ -68,6 +68,41 @@
   }
   .nota{font-size:13px;color:#5a6b8c;margin-top:16px;max-width:78ch}
   .nota b{color:#22304d}
+
+  /* ── a lição aberta ────────────────────────────────────────────────── */
+  .licao{background:#fff;border:1px solid #ccd6e9;border-radius:16px;padding:20px 22px 26px;
+    margin-top:18px;box-shadow:0 10px 30px rgba(20,40,80,.08)}
+  .la-voltar{border:0;background:none;color:#1d3685;font-weight:700;font-size:14px;
+    cursor:pointer;padding:0 0 12px}
+  .la-topo{border-bottom:2px solid #d4e909;padding-bottom:10px;margin-bottom:16px}
+  .la-tit{margin:0;font-size:22px;color:#002060}
+  .la-sub{margin:2px 0 0;font-size:13.5px;color:#54648d;font-weight:600}
+  .la-aula{margin:0 0 18px}
+  .la-cab{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+  .la-n{font-weight:700;font-size:13px;color:#1d3685;background:#dce6f2;
+    border-radius:999px;padding:2px 10px}
+  .la-papel{font-size:12.5px;color:#54648d;font-weight:600;text-transform:uppercase;
+    letter-spacing:.06em}
+  .la-lista{list-style:none;margin:0;padding:0}
+  .la-item{display:flex;align-items:flex-start;gap:10px;padding:7px 0;
+    border-bottom:1px solid #eef2f9}
+  .la-item-extra{opacity:.78}
+  .la-marca{width:18px;height:18px;flex:0 0 18px;margin-top:2px}
+  /* as quatro donas do impresso, cada uma com o seu preenchimento */
+  .la-forma{stroke:#1d3685;stroke-width:1.6}
+  .la-duplo{fill:url(#la-metade)}
+  .la-aluno{fill:#dce6f2}
+  .la-prof{fill:#e6e0ec;stroke:#912d99}
+  .la-extra{fill:#fff;stroke-dasharray:3 2}
+  .la-meio{flex:1;min-width:0}
+  .la-nm{display:block;font-size:14.5px;color:#002060}
+  .la-meta{display:block;font-size:12px;color:#7c88a6}
+  .la-ir{flex:0 0 auto;font-size:11.5px;font-weight:700;color:#0d38c3;
+    background:#eaf0ff;border-radius:8px;padding:3px 9px;align-self:center}
+  .la-check{margin-top:8px;background:#f6fbd6;border:1px solid #d4e909;border-radius:10px;
+    padding:8px 12px;font-size:12.5px;font-weight:700;color:#5c6b00}
+  .la-nota{margin:18px 0 0;font-size:12.5px;color:#7c88a6;max-width:70ch}
+  .la-vazio{color:#a2540a}
 </style>
 
 <div class="chrome">
@@ -90,12 +125,22 @@
     <p class="legenda">This trail is your <b>plan</b>, not a deadline. The radio dish sings, the capsule shows the Video Book, the screen among the stars plays the movies — side paths never block the trail. You start at Earth; beyond the last step, the forest of <b>Essentials 2</b> is waiting.</p>
   </section>
 
+  <!-- A LIÇÃO ABERTA. Fica escondida até o aluno tocar num passo do mapa:
+       abrir com tudo aberto daria uma página de 15 lições, que é justamente
+       o PDF que esta tela existe para substituir. -->
+  <section class="licao" id="licao" hidden>
+    <button class="la-voltar" id="la-voltar">&#8592; voltar ao mapa</button>
+    <div id="la-corpo"></div>
+  </section>
+
   <p class="nota"><b>Encaixe:</b> os 15 marcos e os pratos das clareiras foram detectados na arte por análise de pixel e conferidos num PNG numerado. As posições dos rótulos saíram por busca, com zero conflito.</p>
 </div>
 
 <script src="mundo-essentials-1.js"></script>
 <script src="trajetoria-mundo.js"></script>
 <script src="trajetoria-estado.js"></script>
+<script src="plano-essentials-1.js"></script>
+<script src="licao-aberta.js"></script>
 <script>
 /* ── de onde vem o estado ──────────────────────────────────────────────
    Real quando o Portal já fez o `action=bootstrap` (ele guarda em
@@ -150,9 +195,39 @@ pintar();
 /* redesenha ao virar o telefone: o 'altura' mede o recipiente, e o
    recipiente muda de altura na rotação */
 var ultimo=window.innerWidth, t;
+/* ── tocar num passo abre a lição ───────────────────────────────────────
+   O mapa já dá `role=button`, `tabindex` e `data-etapa` a cada passo; aqui
+   só falta dizer o que o toque faz. O casamento é pelo `data-etapa`, e não
+   pela posição: o SVG tem 18 grupos clicáveis (15 passos e 3 clareiras) e
+   contar por índice quebraria no dia em que entrasse um vizinho. */
+function ligarPassos(){
+  var svg = document.querySelector('#pista svg');
+  if(!svg) return;
+  MUNDO_ESSENTIALS_1.etapas.forEach(function(e){
+    var g = svg.querySelector('g[data-etapa="' + e.id + '"]');
+    if(!g) return;
+    g.addEventListener('click', function(){ abrirLicao(e); });
+    g.addEventListener('keydown', function(ev){
+      if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); abrirLicao(e); }
+    });
+  });
+}
+function abrirLicao(etapa){
+  var lic = window.PLANO_E1 ? LicaoAberta.porId(PLANO_E1, etapa.id) : null;
+  LicaoAberta.desenhar(document.getElementById('la-corpo'), lic,
+    {livro: MUNDO_ESSENTIALS_1.livro, rot: etapa.rot});
+  var p = document.getElementById('licao');
+  p.hidden = false; p.scrollIntoView({block:'start', behavior:'smooth'});
+}
+document.getElementById('la-voltar').addEventListener('click', function(){
+  document.getElementById('licao').hidden = true;
+  document.querySelector('.mapa').scrollIntoView({block:'start', behavior:'smooth'});
+});
+ligarPassos();
+
 addEventListener('resize',function(){
   if(window.innerWidth===ultimo) return;      /* barra de endereço subindo não conta */
   ultimo=window.innerWidth;
-  clearTimeout(t); t=setTimeout(pintar,180);
+  clearTimeout(t); t=setTimeout(function(){ pintar(); ligarPassos(); },180);
 });
 </script>
