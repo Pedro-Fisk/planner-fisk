@@ -55,32 +55,32 @@ var MUNDO_E2 = {
      Resultado: zero conflitos. Se um texto mudar, a largura muda (~7,4px por
      caractere da linha mais longa) e o script tem de rodar de novo. */
   etapas: [
-    {id:'INTRO', rot:'Intro',        tema:'Before you start',     lado:-1},
-    {id:'L1',    rot:'Lesson 1',     tema:'Good times',           lado:+1},
-    {id:'L2',    rot:'Lesson 2',     tema:'Having fun',           lado:-1},
-    {id:'L3',    rot:'Lesson 3',     tema:'Food talk',            lado:+1},
-    {id:'L4',    rot:'Lesson 4',     tema:'City life',            lado:-1},   /* a ponte */
-    {id:'L5',    rot:'Lesson 5',     tema:'Looking back',         lado:+1},
-    {id:'CHP1',  rot:'Checkpoint 1', tema:'Review 1–5',           lado:+1, marco:1},
-    {id:'TEST1', rot:'Test 1',       tema:'Lessons 1–5',          lado:+1, marco:1, trofeu:1},
-    {id:'L6',    rot:'Lesson 6',     tema:'Health',               lado:-1},
-    {id:'L7',    rot:'Lesson 7',     tema:'Chores and errands',   lado:+1, dy:+16},
-    {id:'L8',    rot:'Lesson 8',     tema:'Appearances',          lado:-1},
-    {id:'L9',    rot:'Lesson 9',     tema:'Read this',            lado:+1},
-    {id:'L10',   rot:'Lesson 10',    tema:'The world we live in', lado:-1, dy:-16},
-    {id:'CHP2',  rot:'Checkpoint 2', tema:'Review 6–10',          lado:+1, marco:1},
-    {id:'TEST2', rot:'Test 2',       tema:'Lessons 6–10',         lado:-1, marco:1, trofeu:1}
+    {id:'INTRO', rot:'Intro', tema:'Before you start', lado:-1},
+    {id:'L1', rot:'Lesson 1', tema:'Good times', lado:+1},
+    {id:'L2', rot:'Lesson 2', tema:'Having fun', lado:-1},
+    {id:'L3', rot:'Lesson 3', tema:'Food talk', lado:+1},
+    {id:'L4', rot:'Lesson 4', tema:'City life', lado:-1},
+    {id:'L5', rot:'Lesson 5', tema:'Looking back', lado:+1},
+    {id:'CHP1', rot:'Checkpoint 1', tema:'Review 1–5', lado:+1, marco:1},
+    {id:'TEST1', rot:'Test 1', tema:'Lessons 1–5', lado:+1, marco:1, trofeu:1},
+    {id:'L6', rot:'Lesson 6', tema:'Health', lado:-1},
+    {id:'L7', rot:'Lesson 7', tema:'Chores and errands', lado:+1, dy:+16},
+    {id:'L8', rot:'Lesson 8', tema:'Appearances', lado:-1, dx:-18},
+    {id:'L9', rot:'Lesson 9', tema:'Read this', lado:+1},
+    {id:'L10', rot:'Lesson 10', tema:'The world we live in', lado:-1, dx:+36},
+    {id:'CHP2', rot:'Checkpoint 2', tema:'Review 6–10', lado:+1, marco:1},
+    {id:'TEST2', rot:'Test 2', tema:'Lessons 6–10', lado:-1, marco:1, trofeu:1},
   ],
 
   /* cinco pratos em cada clareira, conferidos um a um no PNG numerado.
      O detector achou 16 e a conferência por clareira pegou o intruso: o
      balde de pipoca pintado no telão passa por prato. */
   programas: [
-    {id:'songs',     nome:'Songs',      rotXY:[715,756],
+    {id:'songs',     nome:'Song Program',      rotXY:[715,756],
      slots:[[623,653],[661,697],[718,710],[774,697],[808,653]]},
     {id:'videobook', nome:'Video Book', rotXY:[842,363],
      slots:[[748,262],[786,304],[842,317],[899,304],[936,262]]},
-    {id:'movies',    nome:'Movies',     rotXY:[1304,399],
+    {id:'movies',    nome:'Movie Program',     rotXY:[1304,399],
      slots:[[1197,284],[1239,332],[1301,353],[1365,348],[1412,313]]}
   ],
 

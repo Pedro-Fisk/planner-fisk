@@ -71,9 +71,9 @@ var MUNDO_E1 = {
   programas: [
     {id:'videobook', nome:'Video Book', rotXY:[437,324],
      slots:[[350,235],[390,268],[440,278],[490,267],[525,232]]},
-    {id:'songs',     nome:'Songs',      rotXY:[749,816],
+    {id:'songs',     nome:'Song Program',      rotXY:[749,816],
      slots:[[657,726],[697,759],[750,770],[803,758],[841,721]]},
-    {id:'movies',    nome:'Movies',     rotXY:[1214,359],
+    {id:'movies',    nome:'Movie Program',     rotXY:[1214,359],
      slots:[[1118,266],[1159,298],[1210,313],[1263,308],[1310,283]]}
   ],
 

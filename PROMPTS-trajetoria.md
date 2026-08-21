@@ -228,12 +228,29 @@ uma cor e o prato da plataforma de outra.**
 
 ---
 
-## A leitura das três clareiras
+## O quarto programa: News Program
+
+O **News Program** é de leitura, e existe a partir do Transitions, seguindo nos
+estágios seguintes, **menos no Focus**. Por isso Essentials tem três clareiras e
+Transitions tem quatro.
+
+⚠️ Falta confirmar em qual estágio exatamente ele começa. O Pedro disse
+"a partir do Transition Zoom" e eu não sei que estágio é esse: não aparece em
+lugar nenhum do repositório. Enquanto não for confirmado, só o Transitions 1
+está com quatro clareiras, porque a arte dele foi feita assim.
+
+**O nome é `News Program`, por extenso.** Vale a mesma regra para os outros: as
+pílulas da trajetória dizem `Song Program`, `Movie Program` e `Video Book`, do
+jeito que o Portal chama. Chegaram a dizer "Songs" e "Movies", que era invenção
+minha, e foi corrigido em 20/08/2026.
+
+## A leitura das clareiras
 
 Fixa em todos os mundos, para o aluno não ter de reaprender a cada estágio:
 
 | clareira | programa |
 |---|---|
-| fogueira com notas musicais | **Songs** |
-| casa / cabana / estação | **Video Book** |
-| telão com pipoca | **Movies** |
+| o que toca som, com notas musicais | **Song Program** |
+| casa, cabana ou estação | **Video Book** |
+| telão com pipoca | **Movie Program** |
+| jornais empilhados | **News Program** (só do Transitions em diante) |
