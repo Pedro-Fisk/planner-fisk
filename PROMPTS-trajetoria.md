@@ -20,7 +20,7 @@ sessão. **Prompt novo entra aqui**, junto com o que a arte entregou de fato.
 | as bordas | são só um **gostinho**: não precisam casar com a arte do vizinho |
 | trilha | **exatamente 15 marcos**, todos vazios: sem número, sem ícone |
 | material | 11 marcos de um material, **4 de outro — nas posições 7, 8, 14 e 15** |
-| clareiras | **3 no Essentials, 4 no Transitions**, ligadas à trilha por atalhos, com **exatamente 5 pratos brancos vazios** cada |
+| clareiras | **3 nos dois Essentials, 4 do Transitions 1 em diante**, ligadas à trilha por atalhos, com **exatamente 5 pratos brancos vazios** cada |
 | respiro | espaço calmo acima e abaixo da trilha, para os rótulos |
 | texto | **nenhuma letra, número ou símbolo na imagem** |
 
@@ -38,7 +38,7 @@ o encaixe. Conferir **antes** de gastar tempo detectando coordenada:
 - [ ] 15 marcos na trilha, da esquerda para a direita
 - [ ] a ponte sobre o rio/canyon **entra** na conta dos 15 (mudou em 20/08/2026)
 - [ ] 4 deles de material diferente, e nas posições 7, 8, 14 e 15
-- [ ] 5 pratos em **cada** clareira (3 clareiras no Essentials, 4 no Transitions)
+- [ ] 5 pratos em **cada** clareira (3 no Essentials, 4 do Transitions 1 em diante)
 - [ ] nenhum texto
 - [ ] proporção perto de 2:1
 
@@ -230,14 +230,20 @@ uma cor e o prato da plataforma de outra.**
 
 ## O quarto programa: News Program
 
-O **News Program** é de leitura, e existe a partir do Transitions, seguindo nos
-estágios seguintes, **menos no Focus**. Por isso Essentials tem três clareiras e
-Transitions tem quatro.
+O **News Program** é de leitura. Ele **começa no Transitions 1** e segue em
+todos os estágios daí em diante, **menos no Focus** (confirmado pelo Pedro em
+20/08/2026).
 
-⚠️ Falta confirmar em qual estágio exatamente ele começa. O Pedro disse
-"a partir do Transition Zoom" e eu não sei que estágio é esse: não aparece em
-lugar nenhum do repositório. Enquanto não for confirmado, só o Transitions 1
-está com quatro clareiras, porque a arte dele foi feita assim.
+Ou seja, quantas clareiras o mundo tem sai direto do estágio:
+
+| estágio | clareiras |
+|---|---|
+| Essentials 1 e 2 | **3** — Song, Video Book, Movie |
+| Transitions 1 em diante | **4** — as três mais o News |
+| Focus | **3** — o News não existe lá |
+
+Isso decide o prompt de cada mundo novo, e errar custa uma regeração inteira:
+foi exatamente o que aconteceu com a v1 do deserto.
 
 **O nome é `News Program`, por extenso.** Vale a mesma regra para os outros: as
 pílulas da trajetória dizem `Song Program`, `Movie Program` e `Video Book`, do
