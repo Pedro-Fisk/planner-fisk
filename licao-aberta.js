@@ -1,62 +1,108 @@
 /* ═══════════════════════════════════════════════════════════════════════
    A LIÇÃO ABERTA — o planner de papel virando tela.
 
-   Recebe uma lição do `plano-essentials-1.js` (que saiu do gabarito, que é
-   o PDF impresso transcrito caixa a caixa) e desenha as aulas dela com os
-   itens, as páginas e o dono de cada um.
+   Recebe uma lição do `plano-essentials-1.js` (que saiu do gabarito, que é o
+   PDF impresso transcrito caixa a caixa) e desenha as aulas dela.
+
+   ── a estética é a da maquete aprovada em 13/08 ────────────────────────
+   Bloco marinho por aula, régua vertical com o papel da aula, espinha azul
+   clara descendo pelos itens, pílulas claras, cartões lima na margem para o
+   que é extra, e a MARCA DE DUAS METADES: esquerda do aluno, direita do
+   professor. É o desenho do papel, e o aluno reconhece.
+
+   O CSS vem JUNTO, injetado uma vez. A primeira versão desta tela deixou a
+   folha na página que hospeda, e o resultado foi uma lista branca no Portal
+   porque metade das regras não tinha sido copiada. Duas folhas para manter é
+   uma folha a mais do que dá para manter.
 
    ── o que a tela mostra e o que ela NÃO mostra ─────────────────────────
-   Mostra o que o PLANO sabe: as aulas, o papel de cada uma, os itens com
-   página e destino no Portal, os extras e o quadro de checking.
-
-   Não mostra progresso por item, porque a plataforma ainda não sabe disso:
-   `_passivo` e `_atividades` provam áudio, vídeo, filme e música, não
-   "fiz o Exercises L1 A". Inventar um estado aqui seria a tela mentir
-   sobre o aluno, que é o erro mais caro que este projeto pode cometer.
-   Quando a aba `_planner` existir (ARQUITETURA-planner.md, fatia 2), o
-   estado entra por aqui sem mexer no desenho.
-
-   ── o dono de cada item, que é a régua do impresso ─────────────────────
-     duplo  as duas metades: o aluno faz e a plataforma (ou o professor)
-            confere. É a maioria, 73 dos 126.
-     aluno  só do aluno. Homework é sempre triângulo (`f:'tri'`).
-     prof   o professor faz ao vivo; o aluno não tem o que marcar.
-     extra  fora da régua: música, filme e o que o impresso marca com ✦.
+   As marcas nascem VAZIAS, as duas metades. A plataforma sabe provar áudio,
+   vídeo, filme e música, e não "fiz o Exercises L1 A": inventar um estado
+   aqui seria a tela mentir sobre o aluno. Quando a aba `_planner` existir
+   (ARQUITETURA-planner.md, fatia 2), o estado entra sem mexer no desenho.
    ═══════════════════════════════════════════════════════════════════════ */
 var LicaoAberta = (function(){
-
-  var ROTULO_MODO = {
-    duplo: 'você e a plataforma',
-    aluno: 'só você',
-    prof:  'a professora, na aula',
-    extra: 'extra'
-  };
-
-  /* A metade preenchida do `duplo` é um gradiente duro. Ele fica no topo do
-     painel, UMA vez: a primeira versão criava um `<defs>` por marca e a
-     página terminava com doze elementos de mesmo `id`. Funcionava por acaso
-     (o navegador usa o primeiro), e é o tipo de coisa que morde no dia em
-     que duas lições forem desenhadas lado a lado. */
-  var GRAD_ID = 'la-metade';
-  function defsUmaVez(caixa){
-    var s = document.createElementNS(NS,'svg');
-    s.setAttribute('width','0'); s.setAttribute('height','0');
-    s.setAttribute('aria-hidden','true');
-    s.style.position='absolute';
-    var d = document.createElementNS(NS,'defs');
-    var lg = document.createElementNS(NS,'linearGradient');
-    lg.setAttribute('id',GRAD_ID);
-    lg.setAttribute('x1','0'); lg.setAttribute('x2','0');
-    lg.setAttribute('y1','0'); lg.setAttribute('y2','1');
-    [['0','#dce6f2'],['.5','#dce6f2'],['.5','#ffffff'],['1','#ffffff']].forEach(function(pr){
-      var st = document.createElementNS(NS,'stop');
-      st.setAttribute('offset',pr[0]); st.setAttribute('stop-color',pr[1]);
-      lg.appendChild(st);
-    });
-    d.appendChild(lg); s.appendChild(d); caixa.appendChild(s);
-  }
-
   var NS = 'http://www.w3.org/2000/svg';
+
+  var CSS = [
+    '.la{--marinho:#1d3685;--marinho-fundo:#16295f;--roxo:#912d99;--lima:#d4e909;',
+    '  --pil-azul:#dce6f2;--pil-lavanda:#e6e0ec;--espinha:#c6d9f1;--texto:#002060;',
+    '  --magenta:#d91e9e;--azul-traco:#0d38c3;--papel:#fff;--tinta-media:#54648d;',
+    '  --feito:#dfe5ef;--feito-tinta:#7c88a6;',
+    '  font-family:"Trebuchet MS","Lucida Grande","Segoe UI",system-ui,sans-serif}',
+    '.la-topo{margin:0 0 14px}',
+    '.la-tit{margin:0;font-size:26px;color:var(--texto);line-height:1.15}',
+    '.la-sub{margin:3px 0 0;font-size:14px;color:var(--tinta-media);font-weight:700}',
+    /* a fita roxa com o número da lição, deitada, igual à maquete */
+    '.la-corpo{display:flex;gap:14px;align-items:stretch}',
+    '.la-aba{flex:0 0 52px;background:var(--roxo);color:#fff;border-radius:20px;',
+    '  display:grid;place-items:center;writing-mode:vertical-rl;transform:rotate(180deg);',
+    '  font-weight:700;font-size:22px;letter-spacing:.14em;padding:22px 0}',
+    '.la-aulas{flex:1;display:flex;flex-direction:column;gap:14px;min-width:0}',
+    /* uma aula = bloco marinho */
+    '.la-aula{background:var(--marinho);border-radius:22px;padding:14px;',
+    '  display:flex;gap:14px;align-items:stretch}',
+    '.la-regua{flex:0 0 66px;background:var(--papel);border:3px solid #0f2260;',
+    '  border-radius:16px;display:flex;flex-direction:column;align-items:center;',
+    '  justify-content:center;gap:10px;padding:12px 4px}',
+    '.la-regua .rot{writing-mode:vertical-rl;transform:rotate(180deg);font-size:13px;',
+    '  letter-spacing:.1em;font-weight:700;color:var(--tinta-media);text-transform:uppercase}',
+    '.la-regua .n{writing-mode:vertical-rl;transform:rotate(180deg);font-size:17px;',
+    '  font-weight:700;color:var(--texto);font-variant-numeric:tabular-nums}',
+    /* a espinha azul clara que costura os itens */
+    '.la-fila{flex:1;position:relative;display:flex;flex-direction:column;gap:9px;min-width:0}',
+    '.la-fila::before{content:"";position:absolute;left:19px;top:8px;bottom:8px;width:10px;',
+    '  background:var(--espinha);border-radius:6px}',
+    /* a pílula de cada item */
+    '.la-item{display:flex;align-items:center;gap:12px;position:relative;z-index:1;',
+    '  background:var(--pil-azul);border-radius:26px;padding:7px 18px 7px 7px;min-height:56px;',
+    '  flex-wrap:wrap;row-gap:6px}',
+    '.la-item[data-pil="lavanda"]{background:var(--pil-lavanda)}',
+    '.la-rot{font-weight:700;font-size:17px;color:var(--texto);flex:1 1 auto;min-width:0}',
+    '.la-rot .pag{font-weight:400;color:#2f4278;font-size:15px}',
+    '.la-dono{font-size:12px;font-weight:700;color:var(--tinta-media);',
+    '  text-transform:uppercase;letter-spacing:.05em;flex:0 0 auto}',
+    '.la-ir{flex:0 0 auto;font-size:12.5px;font-weight:700;color:#fff;',
+    '  background:var(--marinho);border-radius:999px;padding:5px 13px}',
+    '.la-item[data-pil="lavanda"] .la-ir{background:var(--roxo)}',
+    /* a marca de duas metades */
+    '.la-marca{flex:0 0 auto;width:44px;height:44px}',
+    '.la-marca .fundo{fill:var(--papel)}',
+    '.la-marca .base{fill:none;stroke:var(--azul-traco);stroke-width:2.4}',
+    '.la-marca[data-forma="triangulo"] .base{stroke:var(--magenta)}',
+    '.la-marca .divisa{stroke:var(--azul-traco);stroke-width:1.6;opacity:.35}',
+    '.la-marca[data-forma="triangulo"] .divisa{stroke:var(--magenta)}',
+    /* as metades existem e nascem apagadas: o dia em que houver estado, é só
+       ligar a opacidade, sem tocar no desenho */
+    '.la-marca .metadeA,.la-marca .metadeP{opacity:0;fill:var(--azul-traco)}',
+    '.la-marca[data-forma="triangulo"] .metadeA,',
+    '.la-marca[data-forma="triangulo"] .metadeP{fill:var(--magenta)}',
+    '.la-marca[data-aluno="1"] .metadeA{opacity:1}',
+    '.la-marca[data-prof="1"] .metadeP{opacity:1}',
+    /* a margem: o que é extra sai da régua e vira cartão lima */
+    '.la-margem{flex:0 0 180px;display:flex;flex-direction:column;gap:10px;justify-content:center}',
+    '.la-extra{background:var(--lima);border-radius:18px;padding:10px 14px;',
+    '  font-weight:700;font-size:13px;color:var(--texto);text-transform:uppercase;',
+    '  letter-spacing:.04em;line-height:1.25}',
+    '.la-extra small{display:block;font-weight:700;font-size:11px;opacity:.72;',
+    '  text-transform:none;letter-spacing:0;margin-top:2px}',
+    /* o quadro de checking */
+    /* o CHECK começa depois da espinha (19px + 10 de largura + folga), senão
+       a barra azul clara atravessa o quadro lima por baixo */
+    '.la-check{margin:10px 0 0 40px;background:var(--lima);border-radius:16px;',
+    '  padding:10px 16px;font-size:13.5px;font-weight:700;color:#3f4a00;position:relative;z-index:1}',
+    '.la-nota{margin:16px 0 0;font-size:12.5px;color:var(--tinta-media);max-width:70ch}',
+    '.la-vazio{color:#a2540a;font-weight:700}',
+    '@media (max-width:760px){',
+    '  .la-aula{flex-wrap:wrap}',
+    '  .la-margem{flex:1 1 100%}',
+    '  .la-regua{flex:0 0 100%;flex-direction:row;padding:8px}',
+    '  .la-regua .rot,.la-regua .n{writing-mode:horizontal-tb;transform:none}',
+    '  .la-aba{flex:0 0 42px;font-size:18px}',
+    '}'
+  ].join('\n');
+
+  var ROTULO_MODO = { duplo:'você + plataforma', aluno:'só você', prof:'a professora' };
 
   function el(t, cls, txt){
     var e = document.createElement(t);
@@ -64,52 +110,76 @@ var LicaoAberta = (function(){
     if(txt != null) e.textContent = txt;
     return e;
   }
+  function svgEl(t, at){
+    var e = document.createElementNS(NS, t);
+    for(var k in (at||{})) e.setAttribute(k, at[k]);
+    return e;
+  }
 
-  /* a marca do impresso: triângulo para homework, quadrado para o resto.
-     Desenhada em SVG porque é a mesma forma do papel, e o aluno reconhece. */
+  /* injeta a folha uma vez por documento */
+  function folha(){
+    if(document.getElementById('la-css')) return;
+    var st = document.createElement('style');
+    st.id = 'la-css'; st.textContent = CSS;
+    document.head.appendChild(st);
+  }
+
+  /* A marca do papel: círculo partido ao meio, triângulo quando é homework.
+     A divisa vertical é o que diz "isto tem dois donos" mesmo vazia. */
   function marca(item){
-    var s = document.createElementNS(NS,'svg');
-    s.setAttribute('viewBox','0 0 20 20'); s.setAttribute('class','la-marca');
-    s.setAttribute('aria-hidden','true');
-    var p = document.createElementNS(NS,'path');
-    p.setAttribute('d', item.f === 'tri' ? 'M10 2 L18 17 H2 Z' : 'M3 3 H17 V17 H3 Z');
-    p.setAttribute('class','la-forma la-' + item.modo);
-    s.appendChild(p); return s;
+    var tri = item.f === 'tri';
+    var s = svgEl('svg', {viewBox:'0 0 48 48', class:'la-marca',
+      'data-forma': tri ? 'triangulo' : 'circulo', 'aria-hidden':'true'});
+    var d = tri ? 'M24 5 L44 41 H4 Z' : 'M24 4 a20 20 0 1 1 0 40 a20 20 0 1 1 0 -40';
+    s.appendChild(svgEl('path', {d:d, class:'fundo'}));
+    var cl = svgEl('clipPath', {id:'la-c' + (marca.n = (marca.n||0)+1)});
+    cl.appendChild(svgEl('path', {d:d}));
+    s.appendChild(cl);
+    var g = svgEl('g', {'clip-path':'url(#la-c'+marca.n+')'});
+    g.appendChild(svgEl('rect', {x:0,y:0,width:24,height:48, class:'metadeA'}));
+    g.appendChild(svgEl('rect', {x:24,y:0,width:24,height:48, class:'metadeP'}));
+    s.appendChild(g);
+    s.appendChild(svgEl('path', {d:d, class:'base'}));
+    if(item.modo === 'duplo')
+      s.appendChild(svgEl('line', {x1:24,y1: tri?14:6, x2:24, y2:42, class:'divisa'}));
+    return s;
   }
 
   function linhaItem(item){
-    var li = el('li', 'la-item' + (item.modo === 'extra' ? ' la-item-extra' : ''));
+    var li = el('div','la-item');
+    if(item.modo === 'prof') li.setAttribute('data-pil','lavanda');
     li.appendChild(marca(item));
-    var meio = el('div','la-meio');
-    meio.appendChild(el('span','la-nm', item.nm));
-    var meta = el('span','la-meta');
-    var partes = [ROTULO_MODO[item.modo] || item.modo];
-    if(item.pg) partes.push(item.pg);
-    meta.textContent = partes.join(' · ');
-    meio.appendChild(meta);
-    li.appendChild(meio);
-    if(item.ir){
-      /* o destino no Portal vira etiqueta, não botão: quem sabe abrir a
-         ferramenta é o Portal, e a tela solta não teria para onde mandar */
-      li.appendChild(el('span','la-ir', item.ir));
-    }
+    var rot = el('span','la-rot');
+    rot.appendChild(document.createTextNode(item.nm));
+    if(item.pg){ var pg = el('span','pag',' — ' + item.pg); rot.appendChild(pg); }
+    li.appendChild(rot);
+    li.appendChild(el('span','la-dono', ROTULO_MODO[item.modo] || item.modo));
+    if(item.ir) li.appendChild(el('span','la-ir', item.ir));
     return li;
   }
 
   function bloco(aula){
-    var sec = el('section','la-aula');
-    var h = el('header','la-cab');
-    h.appendChild(el('span','la-n', 'Aula ' + aula.a));
-    h.appendChild(el('span','la-papel', aula.papel || ''));
-    sec.appendChild(h);
-    var ul = el('ul','la-lista');
-    (aula.itens || []).forEach(function(i){ ul.appendChild(linhaItem(i)); });
-    (aula.extras || []).forEach(function(i){ ul.appendChild(linhaItem(i)); });
-    sec.appendChild(ul);
-    if(aula.check){
-      /* o quadro lima do impresso. Vazio de propósito: é o professor que
-         preenche na aula, e ainda não existe rota para ele fazer isso. */
-      sec.appendChild(el('div','la-check','CHECK · a professora fecha esta aula com você'));
+    var sec = el('div','la-aula');
+    var reg = el('div','la-regua');
+    reg.appendChild(el('span','rot', aula.papel || ''));
+    reg.appendChild(el('span','n', String(aula.a)));
+    sec.appendChild(reg);
+
+    var fila = el('div','la-fila');
+    (aula.itens || []).forEach(function(i){ fila.appendChild(linhaItem(i)); });
+    if(aula.check)
+      fila.appendChild(el('div','la-check','CHECK · a professora fecha esta aula com você'));
+    sec.appendChild(fila);
+
+    /* os extras saem da régua e viram cartão na margem, como no impresso */
+    if((aula.extras || []).length){
+      var mg = el('div','la-margem');
+      aula.extras.forEach(function(i){
+        var c = el('div','la-extra', i.nm);
+        if(i.ir) c.appendChild(el('small', null, i.ir));
+        mg.appendChild(c);
+      });
+      sec.appendChild(mg);
     }
     return sec;
   }
@@ -117,35 +187,36 @@ var LicaoAberta = (function(){
   /**
    * @param caixa  onde desenhar
    * @param licao  um item de `PLANO_E1.licoes`
-   * @param cab    {livro, rot} — o nome do estágio e o rótulo humano da
-   *               etapa ("Lesson 1", "Checkpoint 1"). O rótulo vem do
-   *               `mundo-*.js`, NÃO do plano: o plano guarda `id` (L1, CHP1)
-   *               e tema, e quem traduz id em nome de gente é o mundo.
+   * @param cab    {livro, rot} — o rótulo humano vem do `mundo-*.js`, não do
+   *               plano: o plano guarda `id` (L1, CHP1) e tema.
    */
   function desenhar(caixa, licao, cab){
+    folha();
     caixa.textContent = '';
-    defsUmaVez(caixa);
+    caixa.classList.add('la');
     if(!licao){ caixa.appendChild(el('p','la-vazio','Lição não encontrada no plano.')); return; }
-
     cab = cab || {};
+
     var top = el('header','la-topo');
     top.appendChild(el('h2','la-tit', cab.rot || licao.id));
-    var sub = el('p','la-sub');
-    var nItens = (licao.aulas||[]).reduce(function(s,a){ return s + (a.itens||[]).length; }, 0);
-    var nExtras = (licao.aulas||[]).reduce(function(s,a){ return s + (a.extras||[]).length; }, 0);
-    sub.textContent = [cab.livro, licao.tema, (licao.aulas||[]).length + ' aulas',
-      nItens + ' itens' + (nExtras ? ' + ' + nExtras + ' extras' : '')]
-      .filter(Boolean).join(' · ');
-    top.appendChild(sub);
+    var nI = (licao.aulas||[]).reduce(function(s,a){ return s + (a.itens||[]).length; }, 0);
+    var nX = (licao.aulas||[]).reduce(function(s,a){ return s + (a.extras||[]).length; }, 0);
+    top.appendChild(el('p','la-sub', [cab.livro, licao.tema,
+      (licao.aulas||[]).length + ' aulas',
+      nI + ' itens' + (nX ? ' + ' + nX + ' extras' : '')].filter(Boolean).join(' · ')));
     caixa.appendChild(top);
 
-    (licao.aulas || []).forEach(function(a){ caixa.appendChild(bloco(a)); });
+    var corpo = el('div','la-corpo');
+    corpo.appendChild(el('div','la-aba', (cab.rot || licao.id).toUpperCase()));
+    var aulas = el('div','la-aulas');
+    (licao.aulas || []).forEach(function(a){ aulas.appendChild(bloco(a)); });
+    corpo.appendChild(aulas);
+    caixa.appendChild(corpo);
 
-    var nota = el('p','la-nota');
-    nota.textContent = 'Do planner impresso, caixa a caixa. O que você já fez ainda '
-      + 'não aparece aqui: a plataforma sabe provar áudio, vídeo, filme e música, '
-      + 'e não item de aula.';
-    caixa.appendChild(nota);
+    caixa.appendChild(el('p','la-nota',
+      'Do planner impresso, caixa a caixa. As duas metades de cada marca são suas '
+      + 'e da professora; elas ainda não acendem, porque a plataforma sabe provar '
+      + 'áudio, vídeo, filme e música, e não item de aula.'));
   }
 
   function porId(plano, id){
