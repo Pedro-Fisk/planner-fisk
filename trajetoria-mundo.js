@@ -234,9 +234,17 @@ var TrajetoriaMundo = (function(){
        também manda no "x of y", então uma clareira com outro número de pratos
        funciona sem tocar aqui. */
     mundo.programas.forEach(function(pr){
-      var feitos=(estado.programas&&estado.programas[pr.id])||0;
+      /* `null` e `0` NÃO são a mesma coisa e não podem virar o mesmo rótulo:
+         0 é "você ainda não fez nenhum", null é "a plataforma ainda não tem
+         esse programa". O News Program do Transitions 1 é o caso vivo — não
+         existe id `np:` em lugar nenhum. Sem esta distinção a clareira dizia
+         "0 of 5", que acusa o aluno de não ter feito o que não dá para fazer. */
+      var bruto = estado.programas ? estado.programas[pr.id] : undefined;
+      var semDado = (bruto === null);
+      var feitos = semDado ? 0 : (bruto || 0);
+      var placar = semDado ? 'coming soon' : (feitos+' of '+pr.slots.length);
       var g=el('g',{class:'no',role:'button',tabindex:'0',
-        'aria-label':pr.nome+': '+feitos+' of '+pr.slots.length+' done.'});
+        'aria-label':pr.nome+': '+(semDado?'not available yet.':feitos+' of '+pr.slots.length+' done.')});
       /* ── o prato é CONTADOR, não lugar (decisão do Pedro, 21/08/2026) ───
          Preenche na sequência do mapa: "2 de 5" acende os dois primeiros
          pratos, mesmo que o aluno tenha feito a terceira música e a quinta.
@@ -274,7 +282,7 @@ var TrajetoriaMundo = (function(){
       }
 
       var gr=el('g');
-      rotulo(gr, pr.rotXY[0], pr.rotXY[1], pr.nome, feitos+' of '+pr.slots.length, W);
+      rotulo(gr, pr.rotXY[0], pr.rotXY[1], pr.nome, placar, W);
       if(modoRot==='foco'){
         var ax=pr.rotXY[0], ay=pr.rotXY[1], k=1/escala;
         gr.setAttribute('transform','translate('+ax+','+ay+') scale('+k+') translate('+(-ax)+','+(-ay)+')');
