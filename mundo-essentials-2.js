@@ -12,6 +12,10 @@ var MUNDO_ESSENTIALS_2 = {
   id: 'essentials-2',
   livro: 'Essentials 2',
   meta: '15 steps · the forest trail',
+  /* como o card escreve este livro. Texto livre lá ("ESSENTIALS 1",
+     "Essentials 1 - manhã"), então o casamento é por expressão, no mesmo
+     molde do `degrau()`/`ESCADAS` do portal. */
+  cardRx: 'essentials\\s*2',
   arte: 'assets/trajetoria/essentials-2-v4.webp',
   larg: 2160, alt: 1080,
   descricao: 'Essentials 2: a forest trail with 15 steps, a campfire for songs, a cabin for the Video Book and an outdoor screen for the movies.',

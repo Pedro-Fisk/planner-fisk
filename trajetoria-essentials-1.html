@@ -95,9 +95,36 @@
 
 <script src="mundo-essentials-1.js"></script>
 <script src="trajetoria-mundo.js"></script>
+<script src="trajetoria-estado.js"></script>
 <script>
-/* dado simulado: o aluno está na Lesson 3 */
-var ESTADO={iAtual:3, programas:{songs:2, videobook:0, movies:1}};
+/* ── de onde vem o estado ──────────────────────────────────────────────
+   Real quando o Portal já fez o `action=bootstrap` (ele guarda em
+   `bootCache`); simulado quando esta página é aberta solta, como maquete.
+   O selo no topo diz qual dos dois está na tela: uma maquete que não avisa
+   que é maquete é a forma mais barata de alguém tomar decisão com número
+   inventado. */
+var ESTADO_SIMULADO = {iAtual:3, programas:{songs:2, videobook:0, movies:1}};
+/* `__bootTeste__` no sessionStorage é só para conferir a ligação sem
+   sessão do Portal: dá para colar um bootstrap de verdade ali e ver o mapa
+   responder. Dentro do Portal quem manda é o `bootCache`, que vem primeiro. */
+var BOOT = window.bootCache || window.__BOOT__ ||
+  (function(){ try{ return JSON.parse(sessionStorage.getItem('__bootTeste__')||'null'); }catch(e){ return null; } })();
+var REAL = (window.TrajetoriaEstado && BOOT) ? TrajetoriaEstado.de(BOOT, MUNDO_ESSENTIALS_1) : null;
+var ESTADO = REAL || ESTADO_SIMULADO;
+
+(function(){
+  var selo = document.querySelector('.selo');
+  if(!selo) return;
+  if(REAL){
+    selo.textContent = 'Dados reais · ' + (REAL.fonte.book || '');
+    selo.style.background = '#dff5e3'; selo.style.borderColor = '#8fd3a0';
+    selo.style.color = '#1c6b34';
+    /* o card pode trazer um código que não é etapa (PT1, FB1, R1-2): nesse
+       caso o mapa caiu na lição prevista, e isso precisa aparecer */
+    if(!REAL.fonte.reconheceuLicao) selo.textContent += ' · lição pela prevista';
+    if(REAL.fonte.semDado.length)   selo.textContent += ' · sem dado: ' + REAL.fonte.semDado.join(', ');
+  }
+})();
 
 document.getElementById('livro').textContent=MUNDO_ESSENTIALS_1.livro;
 document.getElementById('meta').textContent=MUNDO_ESSENTIALS_1.meta;

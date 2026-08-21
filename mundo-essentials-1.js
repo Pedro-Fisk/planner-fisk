@@ -12,6 +12,10 @@ var MUNDO_ESSENTIALS_1 = {
   id: 'essentials-1',
   livro: 'Essentials 1',
   meta: '15 steps · the road out of Earth',
+  /* como o card escreve este livro. Texto livre lá ("ESSENTIALS 1",
+     "Essentials 1 - manhã"), então o casamento é por expressão, no mesmo
+     molde do `degrau()`/`ESCADAS` do portal. */
+  cardRx: 'essentials\\s*1',
   arte: 'assets/trajetoria/essentials-1-v3.webp',
   larg: 2160, alt: 1080,
   descricao: 'Essentials 1: a trail of stepping stones through space, from Earth to the forest, with a radio dish for the songs, a space capsule for the Video Book and a screen among the stars for the movies.',

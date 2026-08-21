@@ -12,6 +12,10 @@ var MUNDO_TRANSITIONS_1 = {
   id: 'transitions-1',
   livro: 'Transitions 1',
   meta: '15 steps · the desert crossing',
+  /* como o card escreve este livro. Texto livre lá ("ESSENTIALS 1",
+     "Essentials 1 - manhã"), então o casamento é por expressão, no mesmo
+     molde do `degrau()`/`ESCADAS` do portal. */
+  cardRx: 'transitions\\s*1',
   arte: 'assets/trajetoria/transitions-1-v3.webp',
   larg: 2160, alt: 1080,
   descricao: 'Transitions 1: a desert trail with 15 steps, a festival stage for songs, a stack of newspapers for the news, an oasis screen for the Video Book and a popcorn stand for the movies.',
