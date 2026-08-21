@@ -237,6 +237,17 @@ var TrajetoriaMundo = (function(){
       var feitos=(estado.programas&&estado.programas[pr.id])||0;
       var g=el('g',{class:'no',role:'button',tabindex:'0',
         'aria-label':pr.nome+': '+feitos+' of '+pr.slots.length+' done.'});
+      /* ── o prato é CONTADOR, não lugar (decisão do Pedro, 21/08/2026) ───
+         Preenche na sequência do mapa: "2 de 5" acende os dois primeiros
+         pratos, mesmo que o aluno tenha feito a terceira música e a quinta.
+         O prato não sabe qual item ele é, e não precisa saber: quem tem a
+         lista ordenada é o programa, não a trajetória.
+
+         Isto é escolha, não pendência. Quem vier depois vai achar que
+         "falta amarrar cada prato ao seu item" e vai querer consertar; não
+         é para consertar. Amarrar exigiria uma lista ordenada dos 5 itens
+         por programa e por estágio, e não vale o custo: aqui o mapa só
+         mostra quanto falta. */
       pr.slots.forEach(function(s,k){
         if(k>=feitos) return;      /* o prato vazio já está pintado na arte */
         g.appendChild(el('circle',{cx:s[0],cy:s[1],r:26,fill:'#ffb347',opacity:.28}));
