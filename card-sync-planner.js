@@ -321,7 +321,11 @@
       esconderAvisoSemCard();
       var a = alunos[+sel.value]; if (!a) return;
       cardLink = { escola: dados.escola, prof: dados.aba, turma: String(dados.turma || '').split('\n')[0],
-                   nome: a.nome, book: a.book, raf: a.raf || '' };
+                   nome: a.nome, book: a.book, raf: a.raf || '',
+                   /* o cronograma do card (14/09/2026): as células com data e a sequência de aulas do livro */
+                   cels: Array.isArray(a.cels) ? a.cels : null,
+                   seq: (dados.seqs && Array.isArray(dados.seqs[String(a.book || '').trim()])) ? dados.seqs[String(a.book || '').trim()] : null };
+      prefillDoCronograma(cardLink.cels);
       window.RAF_DO_CARD = String(a.raf || '').trim();
       window.ultimoPDF = null; esconderVerPasta(); syncDriveBtn();
       var nomeEl = el('studentName');
@@ -333,6 +337,30 @@
                 ', nome preenchido.', 'ok');
     };
   }
+
+  /* O FORMATO E O INÍCIO SAEM DO CARD (14/09/2026): os dias da semana das colunas do cronograma dizem se a turma
+     é de segunda e quarta, terça e quinta ou dobradinha (duas colunas no mesmo dia), e a primeira aula com data é
+     o início. O professor ainda pode mudar; as datas do card mandam no cálculo (index.html, datasDoCard). */
+  function prefillDoCronograma(cels) {
+    if (!cels || !cels.length) return;
+    var datas = cels.filter(function (c) { return c && c.d; }).map(function (c) { return c.d; });
+    if (!datas.length) return;
+    var dow = {}, repetida = null, vistos = {};
+    datas.forEach(function (d) { var x = new Date(d + 'T12:00:00').getDay(); dow[x] = (dow[x] || 0) + 1; if (vistos[d]) repetida = x; vistos[d] = 1; });
+    var fmt = null;
+    if (repetida != null) fmt = 'DOUBLE';
+    else if (dow[1] && dow[3] && !dow[2] && !dow[4]) fmt = 'MON_WED';
+    else if (dow[2] && dow[4] && !dow[1] && !dow[3]) fmt = 'TUE_THU';
+    if (fmt) {
+      var r = document.querySelector('input[name=format][value="' + fmt + '"]');
+      if (r) { r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); }
+      if (fmt === 'DOUBLE') { var ds = el('doubleDaySelect'); if (ds) { ds.value = String(repetida); ds.dispatchEvent(new Event('change')); } }
+    }
+    var primeira = cels.find(function (c) { return c && c.d && (c.s === 'dada' || c.s === 'plano' || c.s === 'falta'); }) || cels.find(function (c) { return c && c.d; });
+    var sd = el('startDate');
+    if (sd && primeira) { sd.value = primeira.d; sd.dispatchEvent(new Event('change')); sd.dispatchEvent(new Event('input')); }
+  }
+  window.fiskCronogramaDoCard = function () { return cardLink && cardLink.cels ? { cels: cardLink.cels, seq: cardLink.seq, book: cardLink.book } : null; };
 
   /* Quem precisa saber se há vínculo: o aviso da página e, mais tarde, o recado
      para a secretaria. Fica em window porque o script da página é separado. */
