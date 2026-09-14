@@ -10,6 +10,52 @@
 
   var cardLink = null;   // { escola, prof, turma, nome, book, raf }
 
+  /* ── A TRAVA DO PLACEHOLDER (Pedro, 14/09/2026) ──────────────────────────
+     A secretaria é dona do cronograma do aluno no card (os placeholders .L1,
+     .L2…). O professor não cria placeholder, e o criador de planners só abre
+     planner de quem JÁ TEM: sem aluno escolhido no card, aluno fora do card ou
+     aluno sem placeholder, não gera. Isto substitui a decisão antiga de que o
+     aluno fora do card era só aviso: hoje é trava, e o botão "Avisar a
+     secretaria" é o caminho. O `temPlaceholder` vem do fn=turma (ctAnalisarAluno_). */
+  var MSG_TRAVA = {
+    escolha: '🔒 Escolha a turma e o aluno no card. O planner só é criado para quem já tem o cronograma (os placeholders) lançado pela secretaria.',
+    fora: '🔒 Aluno fora do card não tem cronograma: o planner não pode ser criado. Avise a secretaria para cadastrar o aluno e lançar os placeholders.',
+    sem: '🔒 Este aluno ainda não tem o cronograma no card (os placeholders da secretaria). O planner só pode ser criado depois que a secretaria lançar.'
+  };
+  var trava = { ok: false, motivo: 'escolha', msg: MSG_TRAVA.escolha };
+  window.fiskPodeCriarPlanner = function () { return trava; };
+  function aplicarTrava(novo, dados, aluno) {
+    trava = novo;
+    ['btnGenerate', 'btnGeneratePdf'].forEach(function (id) {
+      var b = el(id); if (!b) return;
+      b.disabled = !trava.ok; b.title = trava.ok ? '' : trava.msg;
+    });
+    var box = el('travaPlaceholder');
+    if (!box) {
+      box = document.createElement('div'); box.id = 'travaPlaceholder';
+      box.style.cssText = 'margin-top:10px;padding:10px 12px;border-radius:8px;border:1.5px solid #c0392b;background:#fdecea;font-size:13px;line-height:1.45';
+      var wrap = el('cardAlunoWrap') || el('cardConnect'); if (wrap) wrap.appendChild(box);
+    }
+    box.hidden = trava.ok || trava.motivo === 'escolha';
+    box.innerHTML = '';
+    if (box.hidden) return;
+    var p = document.createElement('div'); p.textContent = trava.msg; box.appendChild(p);
+    if (typeof window.fiskAvisarForaDoCard === 'function') {
+      var bt = document.createElement('button'); bt.type = 'button'; bt.className = 'btn btn-ghost btn-sm'; bt.style.marginTop = '8px';
+      bt.textContent = '📣 Avisar a secretaria';
+      bt.onclick = function () {
+        bt.disabled = true; bt.textContent = 'Avisando…';
+        var nome = (aluno && aluno.nome) || ((el('studentName') || {}).value || '').trim();
+        window.fiskAvisarForaDoCard({ documento: trava.motivo === 'sem' ? 'planner (aluno sem placeholder no card)' : 'planner (aluno fora do card)',
+          aluno: nome, escola: (dados && dados.escola) || '', turma: dados ? String(dados.turma || '').split('\n')[0] : '',
+          professor: (dados && dados.aba) || '' })
+          .then(function (r) { bt.textContent = r && r.avisado ? '✓ Secretaria avisada' : (r && r.motivo === 'sem_sessao' ? 'Entre no Fisk Hub para avisar' : 'Não consegui avisar: avise você mesmo'); })
+          .catch(function () { bt.disabled = false; bt.textContent = '📣 Avisar a secretaria'; });
+      };
+      box.appendChild(bt);
+    }
+  }
+
   function el(id) { return document.getElementById(id); }
   function setStatus(msg, kind) {
     var s = el('cardStatus'); if (!s) return;
@@ -249,7 +295,9 @@
         return '<option value="' + i + '">' + String(a.nome).replace(/</g, '&lt;') + '</option>';
       }).join('') +
       '<option value="__none__">o aluno não está na lista (preencher à mão)</option>';
-    /* A saída à mão CONTINUA existindo. Aluno fora do card quase sempre é
+    /* ⚠️ DESDE 14/09/2026 A SAÍDA À MÃO NÃO GERA MAIS PLANNER (a trava do placeholder, acima): ela
+       fica para o professor avisar a secretaria. O texto abaixo é a decisão ANTERIOR, mantida como história.
+       A saída à mão CONTINUA existindo. Aluno fora do card quase sempre é
        cadastro atrasado (transferência que a secretaria ainda não concluiu), e
        travar o professor por isso põe o custo em quem não causou o problema: o
        aluno está na sala, atrasado de verdade, e o documento é o que os pais
@@ -267,6 +315,7 @@
         ['studentBirth', 'studentPhone'].forEach(function (id) { var e = el(id); if (e) e.value = ''; });
         var hint = el('cabecalhoHint'); if (hint) hint.textContent = '';
         mostrarAvisoSemCard(dados);
+        aplicarTrava({ ok: false, motivo: 'fora', msg: MSG_TRAVA.fora }, dados, null);
         return;
       }
       esconderAvisoSemCard();
@@ -278,6 +327,8 @@
       var nomeEl = el('studentName');
       if (nomeEl) { nomeEl.value = a.nome; nomeEl.dispatchEvent(new Event('input')); }
       preencherCabecalho(a, dados);
+      aplicarTrava(a.temPlaceholder === false ? { ok: false, motivo: 'sem', msg: MSG_TRAVA.sem } : { ok: true, motivo: '', msg: '' }, dados, a);
+      if (a.temPlaceholder === false) { setStatus('🔒 ' + a.nome + ': sem cronograma no card, o planner não pode ser criado.', 'err'); return; }
       setStatus('✓ ' + a.nome + (a.book ? ' · ' + a.book + ' (confira o planner escolhido)' : '') +
                 ', nome preenchido.', 'ok');
     };
@@ -337,6 +388,7 @@
   }
 
   /* ---- boot ---- */
+  aplicarTrava(trava, null, null);
   var eu = profDaSessao();
   if (eu) initSessao(eu); else initCascade();
   var d = el('btnDrive'); if (d) d.onclick = salvarNaPasta;
@@ -345,5 +397,6 @@
     cardLink = null; window.RAF_DO_CARD = ''; window.ultimoPDF = null;
     esconderVerPasta(); syncDriveBtn();
     var sel = el('selAluno'); if (sel && sel.options.length) sel.selectedIndex = 0;
+    aplicarTrava({ ok: false, motivo: 'escolha', msg: MSG_TRAVA.escolha }, null, null);
   });
 })();
