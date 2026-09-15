@@ -356,6 +356,7 @@
     var b = String(book || '').toLowerCase().replace(/\s+/g, ' ').trim(), m;
     if ((m = /^(essentials|transitions|fluency)\s*([12])\b/.exec(b))) return { essentials: 'ESS', transitions: 'TRA', fluency: 'FLU' }[m[1]] + m[2];
     if (/focus\s*review|review\s*focus/.test(b)) return 'NFORE';
+    if (/pathways/.test(b)) return 'PATHW';
     if (/^in focus(?! review)/.test(b)) return 'IFO';
     if ((m = /inmediato\s*([123])/.exec(b))) return 'INM' + m[1];
     return '';
