@@ -26,7 +26,8 @@
   /* O REVIEW NÃO TEM TRAVA (Pedro, 15/09/2026): é um pré-curso de alguns meses antes do livro oficial, e o placeholder
      que já existe no card costuma ser o do livro em que o aluno VAI entrar, não o da revisão. O planner do Review é
      criado sem depender de placeholder (e as datas são calculadas, não lidas do card). */
-  function ehReview() { var s = el('plannerSelect'); return !!(s && s.value === 'REVIS'); }
+  /* o In Focus Review também (Pedro, 15/09/2026): vem depois do In Focus, mas é conteúdo aberto, pelas dificuldades do aluno */
+  function ehReview() { var s = el('plannerSelect'); return !!(s && (s.value === 'REVIS' || s.value === 'NFORE')); }
   /* trocar de planner refaz a trava: escolher o Review libera, voltar para o livro trava de novo */
   document.addEventListener('change', function (ev) { if (ev.target && ev.target.id === 'plannerSelect') aplicarTrava.apply(null, ultimaTrava || [trava, null, null]); });
   window.fiskPodeCriarPlanner = function () { return ehReview() ? { ok: true, motivo: '', msg: '' } : trava; };
@@ -343,7 +344,7 @@
       aplicarTrava(a.temPlaceholder !== true ? { ok: false, motivo: 'sem', msg: MSG_TRAVA.sem } : { ok: true, motivo: '', msg: '' }, dados, a);
       if (a.temPlaceholder !== true) { setStatus('🔒 ' + a.nome + ': sem cronograma no card, o planner não pode ser criado.', 'err'); return; }
       var chave = plannerDoBook(a.book), selP = el('plannerSelect');
-      if (chave && selP && selP.value !== chave && selP.value !== 'REVIS') {   /* quem escolheu o Review fica nele: o livro do card é o que o aluno vai fazer depois */ selP.value = chave; selP.dispatchEvent(new Event('change')); }
+      if (chave && selP && selP.value !== chave && !ehReview()) {   /* quem escolheu o Review fica nele: o livro do card é o que o aluno vai fazer depois */ selP.value = chave; selP.dispatchEvent(new Event('change')); }
       setStatus('✓ ' + a.nome + (a.book ? ' · ' + a.book + (chave ? ' (planner escolhido pelo livro do card)' : ' (escolha o planner: este livro não tem planner novo)') : '') +
                 ', nome preenchido.', 'ok');
     };
@@ -354,6 +355,7 @@
   function plannerDoBook(book) {
     var b = String(book || '').toLowerCase().replace(/\s+/g, ' ').trim(), m;
     if ((m = /^(essentials|transitions|fluency)\s*([12])\b/.exec(b))) return { essentials: 'ESS', transitions: 'TRA', fluency: 'FLU' }[m[1]] + m[2];
+    if (/focus\s*review|review\s*focus/.test(b)) return 'NFORE';
     if (/^in focus(?! review)/.test(b)) return 'IFO';
     if ((m = /inmediato\s*([123])/.exec(b))) return 'INM' + m[1];
     return '';
