@@ -331,11 +331,24 @@
       var nomeEl = el('studentName');
       if (nomeEl) { nomeEl.value = a.nome; nomeEl.dispatchEvent(new Event('input')); }
       preencherCabecalho(a, dados);
-      aplicarTrava(a.temPlaceholder === false ? { ok: false, motivo: 'sem', msg: MSG_TRAVA.sem } : { ok: true, motivo: '', msg: '' }, dados, a);
-      if (a.temPlaceholder === false) { setStatus('🔒 ' + a.nome + ': sem cronograma no card, o planner não pode ser criado.', 'err'); return; }
-      setStatus('✓ ' + a.nome + (a.book ? ' · ' + a.book + ' (confira o planner escolhido)' : '') +
+      /* só libera com o placeholder CONFIRMADO (Pedro, 15/09/2026): resposta sem o campo também trava */
+      aplicarTrava(a.temPlaceholder !== true ? { ok: false, motivo: 'sem', msg: MSG_TRAVA.sem } : { ok: true, motivo: '', msg: '' }, dados, a);
+      if (a.temPlaceholder !== true) { setStatus('🔒 ' + a.nome + ': sem cronograma no card, o planner não pode ser criado.', 'err'); return; }
+      var chave = plannerDoBook(a.book), selP = el('plannerSelect');
+      if (chave && selP && selP.value !== chave) { selP.value = chave; selP.dispatchEvent(new Event('change')); }
+      setStatus('✓ ' + a.nome + (a.book ? ' · ' + a.book + (chave ? ' (planner escolhido pelo livro do card)' : ' (escolha o planner: este livro não tem planner novo)') : '') +
                 ', nome preenchido.', 'ok');
     };
+  }
+
+  /* O PLANNER PELO LIVRO DO CARD (15/09/2026): com os dez planners novos no catálogo, o livro da coluna BOOK escolhe
+     o planner; livro fora dos dez (Pathways, Review...) fica na escolha do professor */
+  function plannerDoBook(book) {
+    var b = String(book || '').toLowerCase().replace(/\s+/g, ' ').trim(), m;
+    if ((m = /^(essentials|transitions|fluency)\s*([12])\b/.exec(b))) return { essentials: 'ESS', transitions: 'TRA', fluency: 'FLU' }[m[1]] + m[2];
+    if (/^in focus(?! review)/.test(b)) return 'IFO';
+    if ((m = /inmediato\s*([123])/.exec(b))) return 'INM' + m[1];
+    return '';
   }
 
   /* O FORMATO E O INÍCIO SAEM DO CARD (14/09/2026): os dias da semana das colunas do cronograma dizem se a turma
