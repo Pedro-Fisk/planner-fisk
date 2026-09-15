@@ -23,12 +23,20 @@
     sem: '🔒 Este aluno ainda não tem o cronograma no card (os placeholders da secretaria). O planner só pode ser criado depois que a secretaria lançar.'
   };
   var trava = { ok: false, motivo: 'escolha', msg: MSG_TRAVA.escolha };
-  window.fiskPodeCriarPlanner = function () { return trava; };
+  /* O REVIEW NÃO TEM TRAVA (Pedro, 15/09/2026): é um pré-curso de alguns meses antes do livro oficial, e o placeholder
+     que já existe no card costuma ser o do livro em que o aluno VAI entrar, não o da revisão. O planner do Review é
+     criado sem depender de placeholder (e as datas são calculadas, não lidas do card). */
+  function ehReview() { var s = el('plannerSelect'); return !!(s && s.value === 'REVIS'); }
+  /* trocar de planner refaz a trava: escolher o Review libera, voltar para o livro trava de novo */
+  document.addEventListener('change', function (ev) { if (ev.target && ev.target.id === 'plannerSelect') aplicarTrava.apply(null, ultimaTrava || [trava, null, null]); });
+  window.fiskPodeCriarPlanner = function () { return ehReview() ? { ok: true, motivo: '', msg: '' } : trava; };
+  var ultimaTrava = null;
   function aplicarTrava(novo, dados, aluno) {
-    trava = novo;
+    trava = novo; ultimaTrava = [novo, dados, aluno];
+    var livre = trava.ok || ehReview();
     ['btnGenerate', 'btnGeneratePdf'].forEach(function (id) {
       var b = el(id); if (!b) return;
-      b.disabled = !trava.ok; b.title = trava.ok ? '' : trava.msg;
+      b.disabled = !livre; b.title = livre ? '' : trava.msg;
     });
     var box = el('travaPlaceholder');
     if (!box) {
@@ -36,7 +44,7 @@
       box.style.cssText = 'margin-top:10px;padding:10px 12px;border-radius:8px;border:1.5px solid #c0392b;background:#fdecea;font-size:13px;line-height:1.45';
       var wrap = el('cardAlunoWrap') || el('cardConnect'); if (wrap) wrap.appendChild(box);
     }
-    box.hidden = trava.ok || trava.motivo === 'escolha';
+    box.hidden = livre || trava.motivo === 'escolha';
     box.innerHTML = '';
     if (box.hidden) return;
     var p = document.createElement('div'); p.textContent = trava.msg; box.appendChild(p);
@@ -335,7 +343,7 @@
       aplicarTrava(a.temPlaceholder !== true ? { ok: false, motivo: 'sem', msg: MSG_TRAVA.sem } : { ok: true, motivo: '', msg: '' }, dados, a);
       if (a.temPlaceholder !== true) { setStatus('🔒 ' + a.nome + ': sem cronograma no card, o planner não pode ser criado.', 'err'); return; }
       var chave = plannerDoBook(a.book), selP = el('plannerSelect');
-      if (chave && selP && selP.value !== chave) { selP.value = chave; selP.dispatchEvent(new Event('change')); }
+      if (chave && selP && selP.value !== chave && selP.value !== 'REVIS') {   /* quem escolheu o Review fica nele: o livro do card é o que o aluno vai fazer depois */ selP.value = chave; selP.dispatchEvent(new Event('change')); }
       setStatus('✓ ' + a.nome + (a.book ? ' · ' + a.book + (chave ? ' (planner escolhido pelo livro do card)' : ' (escolha o planner: este livro não tem planner novo)') : '') +
                 ', nome preenchido.', 'ok');
     };
