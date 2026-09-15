@@ -582,10 +582,23 @@ function datasDoCard(cron, total, formato, diaDobra){
   const seq = cron.seq.filter(c => !/^DT\d+$/.test(String(c))), cels = cron.cels;
   if (seq.length !== total) return { erro: 'caixas', seq: seq.length };
   const blocos = new Array(total).fill(null), fontes = new Array(total).fill('');
+  /* ONDE ESTE LIVRO COMEÇA NA LINHA DO CARD (15/09/2026): a linha traz o semestre inteiro, e quem terminou o livro
+     anterior no meio do semestre tem antes as células dele. Como os códigos se repetem entre livros (a "L10" do
+     Fluency 2 é também a L10 do In Focus), a primeira célula prendia o ponteiro no fim da sequência e o planner saía
+     quase todo em branco (Geovanna Elena, In Focus, 15/09/2026). Um TOMBO na sequência é o livro anterior acabando. */
+  let ini = 0, maxK = -1;
+  cels.forEach((c, ci) => {
+    if (!c || !c.c || c.s === 'feriado') return;
+    const k = seq.indexOf(c.c);
+    if (k < 0) return;
+    /* só a VOLTA AO COMEÇO conta como livro novo (k 0 ou 1: a introdução e a primeira lição). Um aluno que refaz
+       uma lição ou uma turma com o cronograma remontado também "cai" na sequência, e isso não é livro novo. */
+    if (maxK >= 3 && k <= 1) { ini = ci; maxK = k; } else maxK = Math.max(maxK, k);
+  });
   let ptr = 0, primeiro = -1, ultimoIdx = -1, ultimaCel = -1;
   const usadas = {};
   cels.forEach((c, ci) => {
-    if (!c) return;
+    if (!c || ci < ini) return;
     /* aula dada ou falta já aconteceram: nenhuma aula futura cai antes delas (o aluno que refez a L8 quatro vezes) */
     if (c.s === 'dada' || c.s === 'falta') ultimaCel = Math.max(ultimaCel, ci);
     if (!c.c || (c.s !== 'dada' && c.s !== 'plano')) return;
