@@ -77,7 +77,17 @@
    * @param PlannerV2 a régua do portal
    * @returns {{pintadas:number, semPosicao:string[]}}
    */
-  function desenhar(PDFLib, pdfDoc, marcas, plano, ctx, PlannerV2) {
+  /* DUAS VERSÕES DO PAPEL (16/09/2026): o v2 (lançamento, Keep Studying com todos os extras do gabarito) e o v3
+     (espelho da tela, "Extras · Suggested Practice" com as duas sugestões). As bolinhas mudaram de lugar em até 1 pt
+     entre eles, então cada PDF usa o marcas.json da SUA versão (o do v2 fica em gabarito-v2/v2-original/). A
+     versão vem do título do PDF ("Planner · <livro> · v3 · ..."). */
+  function versaoDoPdf(pdfDoc) {
+    var t = ''; try { t = String(pdfDoc.getTitle() || ''); } catch (e) {}
+    return /·\s*v3\b/.test(t) ? 'v3' : 'v2';
+  }
+  function desenhar(PDFLib, pdfDoc, marcas, plano, ctx, PlannerV2, opts) {
+    opts = opts || {};
+    var versao = opts.versao || versaoDoPdf(pdfDoc);
     var pages = pdfDoc.getPages();
     var out = { pintadas: 0, semPosicao: [] };
     var checking = (ctx.planner && ctx.planner.plano && ctx.planner.plano.checking) || {};
@@ -99,12 +109,15 @@
         });
         if (au.checking && checking[et.id] && checking[et.id].feito) vai(et.id + '-chk', { inteira: 'prof' });
       });
-      (est.extras || []).forEach(function (x) { if (x.feito) vai(x.id, { inteira: 'aluno', check: true }); });
+      if (versao === 'v3') {
+        var ks = PlannerV2.keepStudying(plano, et.id, ctx) || { sugeridos: [] };
+        ks.sugeridos.forEach(function (x) { if (x.feito) vai(x.id, { inteira: 'aluno', check: true }); });
+      } else (est.extras || []).forEach(function (x) { if (x.feito) vai(x.id, { inteira: 'aluno', check: true }); });
     });
     return out;
   }
 
-  var api = { desenhar: desenhar, pinturaDe: pinturaDe };
+  var api = { desenhar: desenhar, pinturaDe: pinturaDe, versaoDoPdf: versaoDoPdf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else raiz.PlannerMarcas = api;
 })(typeof window !== 'undefined' ? window : this);
