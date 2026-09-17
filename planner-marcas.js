@@ -83,7 +83,39 @@
      versão vem do título do PDF ("Planner · <livro> · v3 · ..."). */
   function versaoDoPdf(pdfDoc) {
     var t = ''; try { t = String(pdfDoc.getTitle() || ''); } catch (e) {}
-    return /·\s*v3\b/.test(t) ? 'v3' : 'v2';
+    return /·\s*v3\b/.test(t) ? 'v3' : /·\s*v2\b/.test(t) ? 'v2' : null;   /* o planner antigo (v1) não tem versão no título: não se toca */
+  }
+  /* LIMPAR (17/09/2026): a sincronização da noite roda sobre o PDF da pasta, que já tem a tinta da noite anterior.
+     Antes de pintar, cada marca volta ao miolo branco do papel, para uma marca DESFEITA na tela sumir também. */
+  function limpar(PDFLib, pdfDoc, marcas){
+    var pages = pdfDoc.getPages(), n = 0;
+    Object.keys(marcas || {}).forEach(function (id) {
+      var pos = marcas[id], page = pos && pages[pos.page]; if (!page) return;
+      if (pos.forma === 'tri') pinta(PDFLib, page, pos, { inteira: 'branco' });
+      else if (pos.forma === 'quad') pinta(PDFLib, page, pos, { inteira: 'branco' });
+      else pinta(PDFLib, page, pos, { inteira: 'branco' });
+      n++;
+    });
+    return n;
+  }
+  /* AS DATAS DO PLACEHOLDER (17/09/2026): cada pílula de data do título da aula (fundo branco) é coberta e
+     reescrita com a data que o card diz hoje; aula sem data fica em branco. Mesma fonte, cor e medida do criador
+     de planners (index.html, drawDateAtCoord). */
+  var AZUL_DATA = [41, 53, 116];
+  function ddmm(iso){ var p = String(iso || '').split('-'); return p.length === 3 ? p[2] + '/' + p[1] : ''; }
+  function cabe(font, txt, larg, alt, max, min){ var s = max; while (s > min && (font.widthOfTextAtSize(txt, s) > larg || s > alt)) s -= 0.25; return s; }
+  function reescreverDatas(PDFLib, pdfDoc, coords, datas, font){
+    var pages = pdfDoc.getPages(), n = 0;
+    (coords || []).forEach(function (c, i) {
+      var page = pages[c.page]; if (!page || !c.horiz) return;
+      var m = 1.6;
+      page.drawRectangle({ x: c.x + m, y: c.y + 0.8, width: c.w - 2 * m, height: c.h - 1.6, color: rgb(PDFLib, COR.branco) });
+      var txt = ddmm(datas[i] && datas[i].d); if (!txt) return;
+      var size = cabe(font, txt, c.w - 4, c.h - 3, 9, 5), tw = font.widthOfTextAtSize(txt, size);
+      page.drawText(txt, { x: c.x + (c.w - tw) / 2, y: c.y + (c.h - size * 0.72) / 2, size: size, font: font, color: rgb(PDFLib, AZUL_DATA) });
+      n++;
+    });
+    return n;
   }
   function desenhar(PDFLib, pdfDoc, marcas, plano, ctx, PlannerV2, opts) {
     opts = opts || {};
@@ -117,7 +149,7 @@
     return out;
   }
 
-  var api = { desenhar: desenhar, pinturaDe: pinturaDe, versaoDoPdf: versaoDoPdf };
+  var api = { desenhar: desenhar, pinturaDe: pinturaDe, versaoDoPdf: versaoDoPdf, limpar: limpar, reescreverDatas: reescreverDatas };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else raiz.PlannerMarcas = api;
 })(typeof window !== 'undefined' ? window : this);
