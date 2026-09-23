@@ -647,32 +647,17 @@ document.getElementById('btnGenerate').addEventListener('click', () => {
   const format = document.querySelector('input[name=format]:checked').value;
   const doubleWeekday = parseInt(document.getElementById('doubleDaySelect').value, 10);
 
-  /* O LIVRO DO CARD MANDA NAS DATAS (22/09/2026). O aluno que acabou de virar de livro tem, no card, o cronograma
-     do livro ANTERIOR: o Mateus terminou o Essentials 1 e chegou com o Essentials 2 na mão. Como os códigos de aula
-     se repetem entre livros e os dois planners têm 39 caixas, o cálculo casava as células do livro velho com as
-     caixas do livro novo e o planner saía com tracinhos e datas de meses atrás. Livro diferente do card = datas
-     CALCULADAS, e um aviso dizendo o que a secretaria precisa corrigir. */
-  const livroCard = (typeof window.fiskLivroDoCard === 'function' && window.fiskLivroDoCard()) || '';
-  const chaveCard = (typeof window.fiskPlannerDoLivroDoCard === 'function' && window.fiskPlannerDoLivroDoCard()) || '';
-  const outroLivro = !!(chaveCard && chaveCard !== plannerSelect.value);
-  const doCard = outroLivro ? { erro: 'outro-livro' }
-                            : datasDoCard(window.fiskCronogramaDoCard ? window.fiskCronogramaDoCard() : null, totalBlocks, format, doubleWeekday);
-  if (!doCard.erro){
-    currentBlocks = doCard.blocos; currentFontes = doCard.fontes;
-    const conta = k => currentFontes.filter(x => x === k).length;
-    const partes = [['dada', 'dadas'], ['card', 'dos placeholders'], ['calendario', 'do calendário da turma'], ['calculada', 'calculadas'], ['antes', 'de semestre anterior, sem data']].filter(p => conta(p[0])).map(p => conta(p[0]) + ' ' + p[1]);
-    const primeira = currentBlocks.find(Boolean);
-    if (primeira) document.getElementById('startDate').value = toKey(primeira).length === 10 ? toKey(primeira) : startStr;
-    renderPreview();
-    statusEl.textContent = `${totalBlocks} aulas de ${planner.label}, com as datas do card: ${partes.join(', ')}. Revise a prévia antes de gerar o PDF.`;
-    statusEl.className = 'status ok';
-    document.getElementById('previewCard').style.display = 'block';
-    return;
-  }
+  /* AS DATAS DO PLANNER IMPRESSO SÃO CALCULADAS (Pedro, 22/09/2026) ─────────
+     De 14/09 a 22/09 este botão tirava as datas do cronograma do card. A regra caiu por decisão do Pedro: a
+     secretaria nem sempre consegue lançar o placeholder a tempo, e o professor precisa entregar o planner ao aluno
+     na aula em que ele vira de livro. Pior: o card do aluno que acabou de virar ainda tem o cronograma do livro
+     ANTERIOR, e as células dele caíam nas caixas do livro novo (planner com tracinhos e datas de meses atrás, o
+     caso do Mateus em 22/09/2026). O impresso agora é uma previsão: basta o início estar aproximadamente certo.
+     O card continua mandando no PLANNER ONLINE do aluno, que é refeito toda noite. O que o card ainda faz aqui é
+     preencher sozinho a data de início e o formato da turma (card-sync-planner.js), que o professor pode ajustar. */
   currentBlocks = generateDates(startDate, format, doubleWeekday, totalBlocks, SKIP_DATES);
   currentFontes = currentBlocks.map(() => 'calculada');
-  const avisoCard = doCard.erro === 'caixas' ? ` ⚠️ Este PDF tem ${totalBlocks} caixas e o cronograma do card, ${doCard.seq} aulas: as datas foram CALCULADAS. Use o planner novo (v2) do livro, quando houver.`
-                  : doCard.erro === 'outro-livro' ? ` ⚠️ O card diz que este aluno está em ${livroCard}, e você escolheu ${planner.label}. O cronograma do card é do livro anterior, então as datas foram CALCULADAS a partir da data de início. Peça à secretaria para trocar o livro no card; depois disso o planner volta a sair com as datas da turma.` : '';
+  const avisoCard = '';
 
   if (currentBlocks.some(b => b === null)){
     statusEl.textContent = 'Não foi possível calcular todas as datas.';
