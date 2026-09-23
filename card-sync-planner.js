@@ -415,6 +415,8 @@
 
   /* ---- salvar na pasta do aluno + ver pasta ---- */
   function syncDriveBtn() {
+    /* 22/09/2026: o botão saiu da tela (o planner online da noite é o que mora na pasta).
+       A função fica, e não faz nada quando o botão não existe. */
     var b = el('btnDrive'); if (b) b.hidden = !(cardLink && window.ultimoPDF);
   }
   window.onPDFGerado = syncDriveBtn;

@@ -267,8 +267,10 @@
     </div>
     <div class="actions">
       <button id="btnGeneratePdf" class="btn btn-generate" type="button">Gerar PDF preenchido</button>
-      <button id="btnDrive" class="btn btn-generate" type="button" hidden
-        style="background:#27866e">📁 Salvar na pasta do aluno</button>
+      <!-- 22/09/2026: o botão "Salvar na pasta do aluno" saiu daqui, por decisão do Pedro. A pasta do aluno já
+           recebe TODA NOITE o "Planner - <livro> - <nome> - online.pdf", feito do card e sempre atualizado; guardar
+           também o impresso deixava dois arquivos de nome quase igual na mesma pasta, e o Gerador de Boletins lia o
+           mais recente dos dois. O impresso agora é só o que o professor baixa e entrega em mãos. -->
       <a id="btnVerPasta" class="btn btn-ghost" hidden target="_blank" rel="noopener">📂 Ver pasta</a>
     </div>
     <div id="pdfStatus" class="status"></div>
@@ -912,8 +914,8 @@ document.getElementById('btnGeneratePdf').addEventListener('click', async () => 
     const nomeLegado = 'Planner_' + planner.label.replace(/\s+/g, '_') + '_' +
                        (studentName || 'aluno').replace(/[^\w\-]+/g, '_');
 
-    /* guarda o PDF para o "Salvar na pasta do aluno" — sem isso o botão do
-       Drive teria de montar o arquivo de novo */
+    /* guarda o PDF gerado (o botão de Drive saiu em 22/09/2026; fica aqui para quem
+       precisar do último arquivo sem refazer) */
     window.ultimoPDF = { bytes: outBytes, filename: a.download, aluno: studentName,
                          substituiPrefixo: nomeLegado, substituiSufixo: '.pdf' };
     if (typeof window.onPDFGerado === 'function') window.onPDFGerado();
