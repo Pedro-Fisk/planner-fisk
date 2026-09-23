@@ -647,7 +647,16 @@ document.getElementById('btnGenerate').addEventListener('click', () => {
   const format = document.querySelector('input[name=format]:checked').value;
   const doubleWeekday = parseInt(document.getElementById('doubleDaySelect').value, 10);
 
-  const doCard = datasDoCard(window.fiskCronogramaDoCard ? window.fiskCronogramaDoCard() : null, totalBlocks, format, doubleWeekday);
+  /* O LIVRO DO CARD MANDA NAS DATAS (22/09/2026). O aluno que acabou de virar de livro tem, no card, o cronograma
+     do livro ANTERIOR: o Mateus terminou o Essentials 1 e chegou com o Essentials 2 na mão. Como os códigos de aula
+     se repetem entre livros e os dois planners têm 39 caixas, o cálculo casava as células do livro velho com as
+     caixas do livro novo e o planner saía com tracinhos e datas de meses atrás. Livro diferente do card = datas
+     CALCULADAS, e um aviso dizendo o que a secretaria precisa corrigir. */
+  const livroCard = (typeof window.fiskLivroDoCard === 'function' && window.fiskLivroDoCard()) || '';
+  const chaveCard = (typeof window.fiskPlannerDoLivroDoCard === 'function' && window.fiskPlannerDoLivroDoCard()) || '';
+  const outroLivro = !!(chaveCard && chaveCard !== plannerSelect.value);
+  const doCard = outroLivro ? { erro: 'outro-livro' }
+                            : datasDoCard(window.fiskCronogramaDoCard ? window.fiskCronogramaDoCard() : null, totalBlocks, format, doubleWeekday);
   if (!doCard.erro){
     currentBlocks = doCard.blocos; currentFontes = doCard.fontes;
     const conta = k => currentFontes.filter(x => x === k).length;
@@ -662,7 +671,8 @@ document.getElementById('btnGenerate').addEventListener('click', () => {
   }
   currentBlocks = generateDates(startDate, format, doubleWeekday, totalBlocks, SKIP_DATES);
   currentFontes = currentBlocks.map(() => 'calculada');
-  const avisoCard = doCard.erro === 'caixas' ? ` ⚠️ Este PDF tem ${totalBlocks} caixas e o cronograma do card, ${doCard.seq} aulas: as datas foram CALCULADAS. Use o planner novo (v2) do livro, quando houver.` : '';
+  const avisoCard = doCard.erro === 'caixas' ? ` ⚠️ Este PDF tem ${totalBlocks} caixas e o cronograma do card, ${doCard.seq} aulas: as datas foram CALCULADAS. Use o planner novo (v2) do livro, quando houver.`
+                  : doCard.erro === 'outro-livro' ? ` ⚠️ O card diz que este aluno está em ${livroCard}, e você escolheu ${planner.label}. O cronograma do card é do livro anterior, então as datas foram CALCULADAS a partir da data de início. Peça à secretaria para trocar o livro no card; depois disso o planner volta a sair com as datas da turma.` : '';
 
   if (currentBlocks.some(b => b === null)){
     statusEl.textContent = 'Não foi possível calcular todas as datas.';

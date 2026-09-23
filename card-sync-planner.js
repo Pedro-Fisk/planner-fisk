@@ -389,6 +389,10 @@
   /* Quem precisa saber se há vínculo: o aviso da página e, mais tarde, o recado
      para a secretaria. Fica em window porque o script da página é separado. */
   window.fiskAlunoDoCard = function () { return cardLink; };
+  /* 22/09/2026: a chave do planner que corresponde ao livro ESCRITO no card. O index.html compara com o planner
+     escolhido: livro diferente = o cronograma do card é de outro livro, e as datas dele não servem. */
+  window.fiskPlannerDoLivroDoCard = function () { return cardLink ? plannerDoBook(cardLink.book) : ''; };
+  window.fiskLivroDoCard = function () { return cardLink ? String(cardLink.book || '') : ''; };
 
   /* Aviso de aluno fora do card: para o professor, aqui e agora. Não impede
      nada — só deixa claro que o documento sai solto e que alguém precisa
