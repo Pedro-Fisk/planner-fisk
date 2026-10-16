@@ -107,8 +107,13 @@
   .status.ok{color:#1a7d3a;}
   .actions{display:flex; gap:12px; margin-top:16px; flex-wrap:wrap; align-items:center;}
   .hint{font-size:12px; color:var(--gray); margin-top:-10px; margin-bottom:16px;}
-  #avisoDrive{margin:12px 0 0; padding:10px 12px; border-radius:8px; background:#eef6f3; border:1.5px solid #cfe7de; color:#1f5e4c; font-size:13px; line-height:1.5;}
-  body.theme-dark #avisoDrive{background:#16302a; border-color:#2c5546; color:#a7e2ca;}
+  #avisoDrive{margin:16px 0 0; padding:14px 16px; border-radius:10px; background:#eef6f3; border:2px solid #7cc4a8; color:#1f5e4c; font-size:14px; line-height:1.55;}
+  #avisoDrive[hidden]{display:none;}
+  #avisoDrive h3{margin:0 0 8px; font-size:16px; color:#155a43;}
+  #avisoDrive p{margin:0 0 8px;}
+  #avisoDrive p:last-child{margin-bottom:0;}
+  body.theme-dark #avisoDrive{background:#16302a; border-color:#3f8a6d; color:#a7e2ca;}
+  body.theme-dark #avisoDrive h3{color:#c8f0de;}
   #previewWrap{max-height:480px; overflow-y:auto; border:1.5px solid var(--gray-light); border-radius:8px;}
   .badge{
     display:inline-block;
@@ -273,13 +278,22 @@
            recebe TODA NOITE o "Planner - <livro> - <nome> - online.pdf", feito do card e sempre atualizado; guardar
            também o impresso deixava dois arquivos de nome quase igual na mesma pasta, e o Gerador de Boletins lia o
            mais recente dos dois. O impresso agora é só o que o professor baixa e entrega em mãos. -->
-      <a id="btnVerPasta" class="btn btn-ghost" hidden target="_blank" rel="noopener">📂 Ver pasta</a>
+      <!-- 16/10/2026: saiu também o "📂 Ver pasta". Só o salvar no Drive o mostrava, mas o hidden dele perdia para o
+           display do .btn e ele aparecia sempre, sem link, ao lado do aviso de que não há o que salvar. -->
     </div>
     <div id="pdfStatus" class="status"></div>
-    <!-- o professor procurava o botão verde de salvar no Drive: a explicação fica onde ele estava (22/09/2026) -->
-    <p class="hint" id="avisoDrive" style="margin-top:12px">📁 <b>O botão "Salvar na pasta do aluno" saiu.</b>
-      Não é preciso salvar nada: o sistema grava sozinho, toda noite, o planner de cada aluno na pasta dele,
-      com as aulas já dadas marcadas. Este PDF aqui é o de imprimir e entregar em mãos.</p>
+    <!-- O AVISO DEPOIS DO PDF (Pedro, 16/10/2026). Antes era uma linha miúda sempre visível; o professor
+         continuava procurando o botão de salvar no Drive. Agora aparece só quando o PDF acaba de ser gerado,
+         que é o momento em que ele pensa "e agora, onde guardo isto?". -->
+    <div id="avisoDrive" role="status" hidden>
+      <h3>✅ Pronto. Não é preciso fazer mais nada com este PDF.</h3>
+      <p>Esta ferramenta serve <b>só para gerar o Planner físico</b>, o de imprimir e entregar ao aluno.
+        <b>Não salve este arquivo na pasta do aluno.</b> É por isso que o botão de salvar no Drive não existe mais.</p>
+      <p>O <b>Planner online</b> é criado pelo próprio sistema, <b>toda meia-noite</b>, e vai sozinho para a pasta
+        do aluno. Ele não aparece na hora: <b>pode levar até um dia</b>.</p>
+      <p>Esse Planner online é <b>apenas uma cópia de segurança em PDF</b>. Por isso o professor não marca as
+        bolinhas nele: toda meia-noite o sistema consulta o que o aluno fez e <b>marca as bolinhas sozinho</b>.</p>
+    </div>
   </div>
 
 </main>
@@ -792,6 +806,7 @@ document.getElementById('btnGeneratePdf').addEventListener('click', async () => 
   const btnLabel = btn.innerHTML;
   statusEl.textContent = 'Gerando PDF...';
   statusEl.className = 'status';
+  document.getElementById('avisoDrive').hidden = true;
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Gerando PDF...';
   try {
@@ -925,6 +940,7 @@ document.getElementById('btnGeneratePdf').addEventListener('click', async () => 
     window.ultimoPDF = { bytes: outBytes, filename: a.download, aluno: studentName,
                          substituiPrefixo: nomeLegado, substituiSufixo: '.pdf' };
     if (typeof window.onPDFGerado === 'function') window.onPDFGerado();
+    document.getElementById('avisoDrive').hidden = false;
     const semVinculo = !(typeof window.fiskAlunoDoCard === 'function' && window.fiskAlunoDoCard());
     if (!semVinculo){
       statusEl.textContent = 'PDF gerado e baixado com sucesso.';
@@ -982,6 +998,7 @@ function clearForm() {
   document.getElementById('genStatus').className = 'status';
   document.getElementById('pdfStatus').textContent = '';
   document.getElementById('pdfStatus').className = 'status';
+  document.getElementById('avisoDrive').hidden = true;
 }
 
 fiskInitClearConfirm({
