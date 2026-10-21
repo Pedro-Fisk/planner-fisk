@@ -10,7 +10,7 @@
 
   var cardLink = null;   // { escola, prof, turma, nome, book, raf }
 
-  /* ── A TRAVA DO PLACEHOLDER (Pedro, 14/09/2026) ──────────────────────────
+  /* ── A TRAVA DO PLACEHOLDER (Pedro, 14/09/2026; a parte do placeholder CAIU em 21/10/2026, ver onTurmaLoaded) ──
      A secretaria é dona do cronograma do aluno no card (os placeholders .L1,
      .L2…). O professor não cria placeholder, e o criador de planners só abre
      planner de quem JÁ TEM: sem aluno escolhido no card, aluno fora do card ou
@@ -18,7 +18,7 @@
      aluno fora do card era só aviso: hoje é trava, e o botão "Avisar a
      secretaria" é o caminho. O `temPlaceholder` vem do fn=turma (ctAnalisarAluno_). */
   var MSG_TRAVA = {
-    escolha: '🔒 Escolha a turma e o aluno no card. O planner só é criado para quem já tem o cronograma (os placeholders) lançado pela secretaria.',
+    escolha: '🔒 Escolha a turma e o aluno no card.',
     fora: '🔒 Aluno fora do card não tem cronograma: o planner não pode ser criado. Avise a secretaria para cadastrar o aluno e lançar os placeholders.',
     sem: '🔒 Este aluno ainda não tem o cronograma no card (os placeholders da secretaria). O planner só pode ser criado depois que a secretaria lançar.'
   };
@@ -342,13 +342,14 @@
       var nomeEl = el('studentName');
       if (nomeEl) { nomeEl.value = a.nome; nomeEl.dispatchEvent(new Event('input')); }
       preencherCabecalho(a, dados);
-      /* só libera com o placeholder CONFIRMADO (Pedro, 15/09/2026): resposta sem o campo também trava */
-      aplicarTrava(a.temPlaceholder !== true ? { ok: false, motivo: 'sem', msg: MSG_TRAVA.sem } : { ok: true, motivo: '', msg: '' }, dados, a);
-      if (a.temPlaceholder !== true) { setStatus('🔒 ' + a.nome + ': sem cronograma no card, o planner não pode ser criado.', 'err'); return; }
+      /* SEM TRAVA DO PLACEHOLDER (Pedro, 21/10/2026): aluno novo ficava sem planner físico até a secretaria lançar o
+         cronograma. Aluno do card sempre gera: as datas do impresso já são calculadas pelo início e pelo formato
+         (index.html, desde 22/09/2026), então o placeholder já não entrava na conta do papel. */
+      aplicarTrava({ ok: true, motivo: '', msg: '' }, dados, a);
       var chave = plannerDoBook(a.book), selP = el('plannerSelect');
       if (chave && selP && selP.value !== chave && !ehReview()) {   /* quem escolheu o Review fica nele: o livro do card é o que o aluno vai fazer depois */ selP.value = chave; selP.dispatchEvent(new Event('change')); }
       setStatus('✓ ' + a.nome + (a.book ? ' · ' + a.book + (chave ? ' (planner escolhido pelo livro do card)' : ' (escolha o planner: este livro não tem planner novo)') : '') +
-                ', nome preenchido.', 'ok');
+                ', nome preenchido.' + (a.temPlaceholder !== true ? ' Sem cronograma da secretaria no card: confira a data de início e o formato.' : ''), 'ok');
     };
   }
 
