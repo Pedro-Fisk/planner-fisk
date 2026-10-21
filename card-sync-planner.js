@@ -317,7 +317,7 @@
 
     sel.onchange = function () {
       if (sel.value === '__none__') {
-        cardLink = null; window.RAF_DO_CARD = ''; window.ultimoPDF = null;
+        cardLink = null; window.RAF_DO_CARD = ''; window.FISK_VINCULO = null; window.ultimoPDF = null;
         esconderVerPasta(); syncDriveBtn();
         /* sem isto o nascimento e o telefone do aluno anterior ficariam no
            formulario e entrariam no planner do aluno seguinte */
@@ -336,6 +336,8 @@
                    seq: (dados.seqs && Array.isArray(dados.seqs[String(a.book || '').trim()])) ? dados.seqs[String(a.book || '').trim()] : null };
       prefillDoCronograma(cardLink.cels);
       window.RAF_DO_CARD = String(a.raf || '').trim();
+    /* escola e turma para o botão Solicitar impressão (fisk-hub/assets/fisk-imprimir.js, 20/10/2026) */
+    window.FISK_VINCULO = { escola: cardLink.escola, turma: cardLink.turma, nome: cardLink.nome };
       window.ultimoPDF = null; esconderVerPasta(); syncDriveBtn();
       var nomeEl = el('studentName');
       if (nomeEl) { nomeEl.value = a.nome; nomeEl.dispatchEvent(new Event('input')); }
@@ -452,7 +454,7 @@
   var d = el('btnDrive'); if (d) d.onclick = salvarNaPasta;
   var c = el('confirmClearBtn') || el('clearBtn');
   if (c) c.addEventListener('click', function () {
-    cardLink = null; window.RAF_DO_CARD = ''; window.ultimoPDF = null;
+    cardLink = null; window.RAF_DO_CARD = ''; window.FISK_VINCULO = null; window.ultimoPDF = null;
     esconderVerPasta(); syncDriveBtn();
     var sel = el('selAluno'); if (sel && sel.options.length) sel.selectedIndex = 0;
     aplicarTrava({ ok: false, motivo: 'escolha', msg: MSG_TRAVA.escolha }, null, null);

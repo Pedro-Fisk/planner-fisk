@@ -286,7 +286,9 @@
          continuava procurando o botão de salvar no Drive. Agora aparece só quando o PDF acaba de ser gerado,
          que é o momento em que ele pensa "e agora, onde guardo isto?". -->
     <div id="avisoDrive" role="status" hidden>
-      <h3>✅ Pronto. Não é preciso fazer mais nada com este PDF.</h3>
+      <h3>✅ Pronto. O PDF foi baixado.</h3>
+      <p><b>Quer que a secretaria imprima?</b> Clique no botão verde <b>Solicitar impressão</b>, ao lado de "Gerar PDF preenchido".
+        Você recebe o aviso no Fisk Hub quando estiver no seu armário, e o arquivo some da Central de Impressões assim que é impresso.</p>
       <p>Esta ferramenta serve <b>só para gerar o Planner físico</b>, o de imprimir e entregar ao aluno.
         <b>Não salve este arquivo na pasta do aluno.</b> É por isso que o botão de salvar no Drive não existe mais.</p>
       <p>O <b>Planner online</b> é criado pelo próprio sistema, <b>toda meia-noite</b>, e vai sozinho para a pasta
@@ -1026,5 +1028,8 @@ fiskInitBeforeUnloadGuard(hasUnsavedWork);
 </footer>
 
 <script src="card-sync-planner.js"></script>
+<!-- Central de Impressões, fase 2 (20/10/2026): o botão verde aparece quando o PDF é gerado -->
+<script src="https://pedro-fisk.github.io/fisk-hub/assets/fisk-imprimir.js?v=2026-10-20a"></script>
+<script>if (window.fiskImpressao) fiskImpressao.ligar({ depoisDe: 'btnGeneratePdf', origem: 'planner', rotulo: 'Planner físico' });</script>
 </body>
 </html>
