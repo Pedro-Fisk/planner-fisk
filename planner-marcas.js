@@ -117,6 +117,60 @@
     });
     return n;
   }
+  /* DESFAZER DATAS MAL POSTAS (21/10/2026): de 18/09 a 21/10 a noite usou nos PDFs online as medidas do planner
+     IMPRESSO (o da coluna de presença, outro desenho): a capa branca da data caiu em cima de títulos ("CLASS 3",
+     "Extras") e a data saiu fora da pílula. Cada gravação do pdf-lib é um bloco próprio no fim do conteúdo da página
+     (começa por "q"; o desenho do Chrome não). Destes blocos saem só as capas brancas do tamanho de uma pílula e os
+     textos dd/mm que caem numa das posições de data (certa ou errada). O cabeçalho (datas com ano) e as bolinhas
+     ficam; o reescreverDatas põe as datas de volta no lugar. */
+  var RE_CAPA = /^q\n1 1 1 rg\n0 w\n\[\] 0 d\n1 0 0 1 (-?[\d.]+) (-?[\d.]+) cm\n1 0 0 1 0 0 cm\n1 0 0 1 0 0 cm\n0 0 m\n0 ([\d.]+) l\n([\d.]+) [\d.]+ l\n[\d.]+ 0 l\nh\nf\nQ$/;
+  var RE_DATA = /^q\nBT\n[\s\S]*\n1 0 0 1 (-?[\d.]+) (-?[\d.]+) Tm\n<([0-9A-Fa-f]+)> Tj\n[\s\S]*ET\nQ$/;
+  function texto(u8) { var s = '', i; for (i = 0; i < u8.length; i += 8192) s += String.fromCharCode.apply(null, u8.subarray(i, i + 8192)); return s; }
+  function desfazerDatas(PDFLib, pdfDoc, listas) {
+    var ctx = pdfDoc.context, n = 0, alvos = [];
+    (listas || []).forEach(function (l) { (l || []).forEach(function (c) { if (c && c.horiz) alvos.push(c); }); });
+    if (!alvos.length) return 0;
+    function ehCapa(pg, ch) {
+      var m = RE_CAPA.exec(ch); if (!m) return false;
+      var x = +m[1], y = +m[2], h = +m[3], w = +m[4];
+      return alvos.some(function (c) { return c.page === pg && Math.abs(x - c.x - 1.6) < 0.6 && Math.abs(y - c.y - 0.8) < 0.6 && Math.abs(w - (c.w - 3.2)) < 0.6 && Math.abs(h - (c.h - 1.6)) < 0.6; });
+    }
+    function ehData(pg, ch) {
+      var m = RE_DATA.exec(ch); if (!m) return false;
+      var x = +m[1], y = +m[2], t = m[3].replace(/../g, function (b) { return String.fromCharCode(parseInt(b, 16)); });
+      if (!/^\d\d\/\d\d$/.test(t)) return false;
+      return alvos.some(function (c) { return c.page === pg && x >= c.x - 1 && x <= c.x + c.w && y >= c.y - 1 && y <= c.y + c.h; });
+    }
+    pdfDoc.getPages().forEach(function (page, pg) {
+      var cont = page.node.get(PDFLib.PDFName.of('Contents')), refs = [];
+      if (cont instanceof PDFLib.PDFRef) { var alvo = ctx.lookup(cont); refs = alvo instanceof PDFLib.PDFArray ? alvo.asArray() : [cont]; }
+      else if (cont instanceof PDFLib.PDFArray) refs = cont.asArray();
+      refs.forEach(function (ref) {
+        if (!(ref instanceof PDFLib.PDFRef)) return;
+        var st = ctx.lookup(ref); if (!(st instanceof PDFLib.PDFRawStream)) return;
+        var s = texto(PDFLib.decodePDFRawStream(st).decode());
+        if (s.slice(0, 2) !== 'q\n' || s.length < 40) return;
+        /* os blocos de nível zero: de um "q" sozinho na linha até o "Q" que o fecha */
+        var linhas = s.split('\n'), out = [], bloco = null, fundo = 0, tirou = 0;
+        linhas.forEach(function (l) {
+          if (bloco) {
+            bloco.push(l);
+            if (l === 'q') fundo++; else if (l === 'Q' && --fundo === 0) {
+              var ch = bloco.join('\n');
+              if (ehCapa(pg, ch) || ehData(pg, ch)) tirou++; else out.push(ch);
+              bloco = null;
+            }
+          } else if (l === 'q') { bloco = [l]; fundo = 1; }
+          else out.push(l);
+        });
+        if (bloco) out.push(bloco.join('\n'));   /* bloco sem fecho (stream que só abre o q): fica como estava */
+        if (!tirou) return;
+        ctx.assign(ref, ctx.flateStream(out.join('\n')));
+        n += tirou;
+      });
+    });
+    return n;
+  }
   function desenhar(PDFLib, pdfDoc, marcas, plano, ctx, PlannerV2, opts) {
     opts = opts || {};
     var versao = opts.versao || versaoDoPdf(pdfDoc);
@@ -149,7 +203,7 @@
     return out;
   }
 
-  var api = { desenhar: desenhar, pinturaDe: pinturaDe, versaoDoPdf: versaoDoPdf, limpar: limpar, reescreverDatas: reescreverDatas };
+  var api = { desenhar: desenhar, pinturaDe: pinturaDe, versaoDoPdf: versaoDoPdf, limpar: limpar, reescreverDatas: reescreverDatas, desfazerDatas: desfazerDatas };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else raiz.PlannerMarcas = api;
 })(typeof window !== 'undefined' ? window : this);
