@@ -942,6 +942,21 @@ document.getElementById('btnGeneratePdf').addEventListener('click', async () => 
     window.ultimoPDF = { bytes: outBytes, filename: a.download, aluno: studentName,
                          substituiPrefixo: nomeLegado, substituiSufixo: '.pdf' };
     if (typeof window.onPDFGerado === 'function') window.onPDFGerado();
+    /* HISTÓRICO DO PROFESSOR (22/10/2026, fisk-hub-backend/Documentos.js): o planner físico não vai para a pasta do
+       aluno, mas uma CÓPIA fica guardada por 30 dias para o professor reabrir e pedir de novo na Central de Pedidos
+       do Hub. Silencioso: falhar aqui nunca atrapalha a geração. */
+    try {
+      const sessPl = JSON.parse(localStorage.getItem('fisk_prof') || 'null') || {};
+      if (sessPl.token) {
+        const vinc = window.FISK_VINCULO || {};
+        let bin = ''; for (let i = 0; i < outBytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, outBytes.subarray(i, i + 0x8000));
+        fetch('https://script.google.com/macros/s/AKfycbw13tpIVD3Ji9XhWW1VwDSw8qAZOmtMGPV0FI1rlHpEQ7HABumVpi_aMWQXfo7dwkd1/exec', {
+          method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'docGuardar', token: sessPl.token, filename: a.download, aluno: studentName,
+                                 turma: vinc.turma || '', escola: vinc.escola || '', professor: vinc.professor || '', dados: btoa(bin) })
+        }).catch(function () {});
+      }
+    } catch (e) {}
     document.getElementById('avisoDrive').hidden = false;
     const semVinculo = !(typeof window.fiskAlunoDoCard === 'function' && window.fiskAlunoDoCard());
     if (!semVinculo){
